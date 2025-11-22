@@ -5,3 +5,4 @@
  */
 
 export * from './postgres/client';
+export * from './postgres/types';
