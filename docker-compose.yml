@@ -1,0 +1,109 @@
+services:
+  # PostgreSQL with pgvector extension
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: unified-memory-postgres
+    ports:
+      - '5434:5432'  # Changed from 5432 to avoid conflict with pm-memory-db
+    environment:
+      - POSTGRES_USER=unified_memory
+      - POSTGRES_PASSWORD=unified_memory_dev
+      - POSTGRES_DB=unified_memory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U unified_memory']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - unified-memory-network
+
+  # API Service (Next.js)
+  # Uncomment to run API in Docker (optional - can run locally with pnpm dev:api)
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/api.Dockerfile
+  #   container_name: unified-memory-api
+  #   ports:
+  #     - '3000:3000'
+  #   environment:
+  #     - NODE_ENV=development
+  #     - POSTGRES_HOST=postgres
+  #     - POSTGRES_PORT=5432
+  #     - POSTGRES_USER=unified_memory
+  #     - POSTGRES_PASSWORD=unified_memory_dev
+  #     - POSTGRES_DB=unified_memory
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./apps/api:/app/apps/api
+  #     - ./packages:/app/packages
+  #     - /app/node_modules
+  #   networks:
+  #     - unified-memory-network
+
+  # Ingestion Service
+  # Uncomment to run in Docker (optional - can run locally with pnpm dev:ingestion)
+  # ingestion:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/ingestion.Dockerfile
+  #   container_name: unified-memory-ingestion
+  #   ports:
+  #     - '3001:3001'
+  #   environment:
+  #     - NODE_ENV=development
+  #     - POSTGRES_HOST=postgres
+  #     - POSTGRES_PORT=5432
+  #     - POSTGRES_USER=unified_memory
+  #     - POSTGRES_PASSWORD=unified_memory_dev
+  #     - POSTGRES_DB=unified_memory
+  #     - INGESTION_PORT=3001
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./services/ingestion:/app/services/ingestion
+  #     - ./packages:/app/packages
+  #     - /app/node_modules
+  #   networks:
+  #     - unified-memory-network
+
+  # Transformers Service
+  # Uncomment to run in Docker (optional - can run locally with pnpm dev:transformers)
+  # transformers:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/transformers.Dockerfile
+  #   container_name: unified-memory-transformers
+  #   ports:
+  #     - '3002:3002'
+  #   environment:
+  #     - NODE_ENV=development
+  #     - POSTGRES_HOST=postgres
+  #     - POSTGRES_PORT=5432
+  #     - POSTGRES_USER=unified_memory
+  #     - POSTGRES_PASSWORD=unified_memory_dev
+  #     - POSTGRES_DB=unified_memory
+  #     - TRANSFORMER_PORT=3002
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./services/transformers:/app/services/transformers
+  #     - ./packages:/app/packages
+  #     - /app/node_modules
+  #   networks:
+  #     - unified-memory-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  unified-memory-network:
+    driver: bridge
