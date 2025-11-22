@@ -1,0 +1,95 @@
+services:
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: unified-memory-qdrant
+    ports:
+      - '6333:6333'  # HTTP API
+      - '6334:6334'  # gRPC API
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:6333/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - unified-memory-network
+
+  # API Service (Next.js)
+  # Uncomment to run API in Docker (optional - can run locally with pnpm dev:api)
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/api.Dockerfile
+  #   container_name: unified-memory-api
+  #   ports:
+  #     - '3000:3000'
+  #   environment:
+  #     - NODE_ENV=development
+  #     - QDRANT_URL=http://qdrant:6333
+  #   depends_on:
+  #     qdrant:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./apps/api:/app/apps/api
+  #     - ./packages:/app/packages
+  #     - /app/node_modules
+  #   networks:
+  #     - unified-memory-network
+
+  # Ingestion Service
+  # Uncomment to run in Docker (optional - can run locally with pnpm dev:ingestion)
+  # ingestion:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/ingestion.Dockerfile
+  #   container_name: unified-memory-ingestion
+  #   ports:
+  #     - '3001:3001'
+  #   environment:
+  #     - NODE_ENV=development
+  #     - QDRANT_URL=http://qdrant:6333
+  #     - INGESTION_PORT=3001
+  #   depends_on:
+  #     qdrant:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./services/ingestion:/app/services/ingestion
+  #     - ./packages:/app/packages
+  #     - /app/node_modules
+  #   networks:
+  #     - unified-memory-network
+
+  # Transformers Service
+  # Uncomment to run in Docker (optional - can run locally with pnpm dev:transformers)
+  # transformers:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/transformers.Dockerfile
+  #   container_name: unified-memory-transformers
+  #   ports:
+  #     - '3002:3002'
+  #   environment:
+  #     - NODE_ENV=development
+  #     - QDRANT_URL=http://qdrant:6333
+  #     - TRANSFORMER_PORT=3002
+  #   depends_on:
+  #     qdrant:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./services/transformers:/app/services/transformers
+  #     - ./packages:/app/packages
+  #     - /app/node_modules
+  #   networks:
+  #     - unified-memory-network
+
+volumes:
+  qdrant_data:
+    driver: local
+
+networks:
+  unified-memory-network:
+    driver: bridge
