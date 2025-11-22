@@ -1,48 +1,41 @@
 # GitHub Client
 
-GitHub API client for unified memory system.
+Type-safe GitHub API client for the unified memory system.
 
 ## Features
 
-- ✅ Authentication with Personal Access Token or GitHub App
-- ✅ Repository metadata retrieval
-- ✅ List accessible repositories
-- ✅ Rate limit tracking and automatic handling
+- ✅ Authentication with Personal Access Token
+- ✅ Repository management
+- ✅ Issues fetching with filters and pagination
+- ✅ Pull Requests fetching with filters and pagination
+- ✅ Comments and reviews retrieval
+- ✅ Rate limit tracking and handling
 - ✅ Comprehensive error handling
-- ✅ TypeScript support with full type safety
+- ✅ Full TypeScript support
 
 ## Installation
 
 ```bash
-pnpm --filter @unified-memory/github-client install
+pnpm install
 ```
 
 ## Setup
 
-### 1. Create GitHub Personal Access Token
+1. Create a GitHub Personal Access Token:
+   - Go to GitHub Settings > Developer settings > Personal access tokens
+   - Click "Generate new token"
+   - Select scopes: `repo`, `read:org`, `read:user`
+   - Copy the token
 
-1. Go to [GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)](https://github.com/settings/tokens)
-2. Click "Generate new token (classic)"
-3. Give it a descriptive name (e.g., "Unified Memory Client")
-4. Select scopes:
-   - `repo` - Full control of private repositories
-   - `read:org` - Read org and team membership
-   - `read:user` - Read user profile data
-   - `read:project` - Read project data (optional)
-5. Click "Generate token"
-6. **Copy the token immediately** (you won't be able to see it again)
-
-### 2. Add Token to Environment
-
-Add the token to your `.env` file:
+2. Set environment variable:
 
 ```bash
-GITHUB_TOKEN=ghp_your_token_here
+export GITHUB_TOKEN=your_token_here
 ```
 
 ## Usage
 
-### Basic Authentication
+### Basic Setup
 
 ```typescript
 import { GitHubClient } from '@unified-memory/github-client';
@@ -51,166 +44,164 @@ const client = new GitHubClient({
   token: process.env.GITHUB_TOKEN!,
 });
 
-// Authenticate and verify token
+// Authenticate
 await client.authenticate();
 ```
 
-### Get Repository
+### Fetching Issues
 
 ```typescript
-const repo = await client.getRepository('octocat', 'Hello-World');
-console.log(repo.name); // "Hello-World"
-console.log(repo.full_name); // "octocat/Hello-World"
-console.log(repo.description); // "My first repository on GitHub!"
-```
-
-### List Repositories
-
-```typescript
-// List all accessible repositories
-const repos = await client.listRepositories();
-
-// List only owned repositories, sorted by updated date
-const ownedRepos = await client.listRepositories({
-  type: 'owner',
+// Get issues with filters
+const issues = await client.getIssues('owner', 'repo', {
+  state: 'open',
+  labels: 'bug,enhancement',
+  since: '2024-01-01T00:00:00Z',
   sort: 'updated',
   direction: 'desc',
   perPage: 50,
+  page: 1,
 });
+
+// Get all issues (automatic pagination)
+const allIssues = await client.getAllIssues('owner', 'repo', {
+  state: 'all',
+});
+
+// Get issue comments
+const comments = await client.getIssueComments('owner', 'repo', 123);
 ```
 
-### Rate Limit Management
+### Fetching Pull Requests
 
 ```typescript
-// Get current rate limit status
+// Get pull requests with filters
+const prs = await client.getPullRequests('owner', 'repo', {
+  state: 'closed',
+  sort: 'updated',
+  direction: 'desc',
+  perPage: 50,
+  page: 1,
+});
+
+// Get all pull requests (automatic pagination)
+const allPRs = await client.getAllPullRequests('owner', 'repo', {
+  state: 'all',
+});
+
+// Get PR reviews
+const reviews = await client.getPullRequestReviews('owner', 'repo', 456);
+
+// Get PR review comments
+const reviewComments = await client.getPullRequestComments('owner', 'repo', 456);
+```
+
+### Rate Limiting
+
+```typescript
+// Get rate limit status
 const rateLimit = await client.getRateLimit();
 console.log(`Remaining: ${rateLimit.core.remaining}/${rateLimit.core.limit}`);
-console.log(`Resets at: ${rateLimit.core.resetDate}`);
 
 // Check if rate limit is low (< 10%)
-if (await client.isRateLimitLow()) {
-  console.log('⚠️  Rate limit is running low');
-}
-
-// Wait for rate limit to reset
-await client.waitForRateLimitReset();
-```
-
-### Error Handling
-
-```typescript
-import {
-  GitHubAuthenticationError,
-  GitHubRateLimitError,
-  GitHubPermissionError,
-  GitHubNotFoundError,
-  GitHubNetworkError,
-} from '@unified-memory/github-client';
-
-try {
-  const repo = await client.getRepository('owner', 'repo');
-} catch (error) {
-  if (error instanceof GitHubAuthenticationError) {
-    console.error('Invalid token:', error.message);
-  } else if (error instanceof GitHubRateLimitError) {
-    console.error('Rate limit exceeded. Reset at:', error.resetAt);
-  } else if (error instanceof GitHubPermissionError) {
-    console.error('Insufficient permissions:', error.message);
-  } else if (error instanceof GitHubNotFoundError) {
-    console.error('Repository not found');
-  } else if (error instanceof GitHubNetworkError) {
-    console.error('Network error:', error.message);
-  }
+const isLow = await client.isRateLimitLow();
+if (isLow) {
+  await client.waitForRateLimitReset();
 }
 ```
 
 ## API Reference
 
-### `GitHubClient`
+### Issues
 
-#### Constructor
+- `getIssues(owner, repo, filters?)`: Fetch issues from a repository
+- `getIssueComments(owner, repo, issueNumber)`: Get comments for an issue
+- `getAllIssues(owner, repo, filters?)`: Fetch all issues with automatic pagination
+
+#### IssuesFilter Options
 
 ```typescript
-new GitHubClient(config: GitHubClientConfig)
+interface IssuesFilter {
+  state?: 'open' | 'closed' | 'all';
+  labels?: string; // Comma-separated list
+  since?: string; // ISO 8601 format
+  sort?: 'created' | 'updated' | 'comments';
+  direction?: 'asc' | 'desc';
+  perPage?: number;
+  page?: number;
+}
 ```
 
-**Config:**
+### Pull Requests
 
-- `token` (required): GitHub Personal Access Token
-- `userAgent` (optional): Custom user agent string
-- `baseUrl` (optional): API base URL (for GitHub Enterprise)
+- `getPullRequests(owner, repo, filters?)`: Fetch pull requests from a repository
+- `getPullRequestReviews(owner, repo, prNumber)`: Get reviews for a PR
+- `getPullRequestComments(owner, repo, prNumber)`: Get review comments for a PR
+- `getAllPullRequests(owner, repo, filters?)`: Fetch all PRs with automatic pagination
 
-#### Methods
+#### PullRequestsFilter Options
 
-##### `authenticate(): Promise<boolean>`
+```typescript
+interface PullRequestsFilter {
+  state?: 'open' | 'closed' | 'all';
+  head?: string; // Filter by head branch (user:ref-name)
+  base?: string; // Filter by base branch
+  sort?: 'created' | 'updated' | 'popularity' | 'long-running';
+  direction?: 'asc' | 'desc';
+  perPage?: number;
+  page?: number;
+}
+```
 
-Verify the GitHub token and authenticate.
+## Testing
 
-##### `getRepository(owner: string, repo: string): Promise<Repository>`
+Run integration tests with your GitHub token:
 
-Get repository metadata.
+```bash
+GITHUB_TOKEN=your_token npm test
+```
 
-##### `listRepositories(options?): Promise<Repository[]>`
+The tests use public repositories (`octocat/Hello-World`) for testing.
 
-List accessible repositories.
+## Error Handling
 
-**Options:**
+The client throws typed errors for different scenarios:
 
-- `type`: 'all' | 'owner' | 'member' (default: 'all')
-- `sort`: 'created' | 'updated' | 'pushed' | 'full_name' (default: 'updated')
-- `direction`: 'asc' | 'desc' (default: 'desc')
-- `perPage`: number (default: 30)
-- `page`: number (default: 1)
+- `GitHubAuthenticationError`: Invalid or expired token
+- `GitHubRateLimitError`: Rate limit exceeded
+- `GitHubPermissionError`: Insufficient permissions
+- `GitHubNotFoundError`: Resource not found
+- `GitHubNetworkError`: Network connection issues
+- `GitHubClientError`: General API errors
 
-##### `getRateLimit(): Promise<RateLimitStatus>`
-
-Get current rate limit status for core, search, and GraphQL APIs.
-
-##### `isRateLimitLow(): Promise<boolean>`
-
-Check if rate limit is below 10%.
-
-##### `waitForRateLimitReset(): Promise<void>`
-
-Wait until rate limit resets.
-
-##### `getAuthenticationStatus(): boolean`
-
-Check if client is authenticated.
-
-## Rate Limits
-
-GitHub API has the following rate limits for authenticated requests:
-
-- **Core API**: 5,000 requests per hour
-- **Search API**: 30 requests per minute
-- **GraphQL API**: 5,000 points per hour
-
-The client automatically tracks these limits and provides helpers to manage them.
+```typescript
+try {
+  const issues = await client.getIssues('owner', 'repo');
+} catch (error) {
+  if (error instanceof GitHubRateLimitError) {
+    console.log('Rate limit exceeded, waiting...');
+    await client.waitForRateLimitReset();
+  } else if (error instanceof GitHubNotFoundError) {
+    console.log('Repository not found');
+  }
+}
+```
 
 ## Development
 
-### Build
-
 ```bash
-pnpm run build
+# Build
+pnpm build
+
+# Type check
+pnpm type-check
+
+# Lint
+pnpm lint
+
+# Run tests
+GITHUB_TOKEN=your_token pnpm test
 ```
 
-### Type Check
+## License
 
-```bash
-pnpm run type-check
-```
-
-### Lint
-
-```bash
-pnpm run lint
-pnpm run lint:fix
-```
-
-## Resources
-
-- [GitHub REST API Documentation](https://docs.github.com/en/rest)
-- [Octokit REST Documentation](https://octokit.github.io/rest.js/)
-- [Creating a Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+MIT
