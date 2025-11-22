@@ -1,0 +1,28 @@
+{
+  "name": "@unified-memory/github-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GitHub API client for unified memory system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.1.2",
+    "@unified-memory/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.10",
+    "@types/node": "^20.10.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.2"
+  }
+}
