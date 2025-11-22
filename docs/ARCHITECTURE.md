@@ -43,12 +43,12 @@ The Unified Memory system is designed as a microservices architecture with the f
         │                  │                  │
         ▼                  ▼                  ▼
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Ingestion   │  │ Transformers │  │  Qdrant      │
-│  Service     │  │  Service     │  │  Vector DB   │
+│  Ingestion   │  │ Transformers │  │ PostgreSQL   │
+│  Service     │  │  Service     │  │  + pgvector  │
 │              │  │              │  │              │
 │  - Webhooks  │  │  - Slack     │  │  - Vectors   │
 │  - Batch     │  │  - Discord   │  │  - Search    │
-│  - Streaming │  │  - Email     │  │  - Metadata  │
+│  - Streaming │  │  - Email     │  │  - ACID      │
 └──────────────┘  └──────────────┘  └──────────────┘
 ```
 
@@ -60,35 +60,48 @@ The Unified Memory system is designed as a microservices architecture with the f
 2. **Validation**: API validates request with Zod schema
 3. **Transform**: If platform-specific, send to transformer service
 4. **Embeddings**: Generate vector embeddings (OpenAI/Cohere/local)
-5. **Storage**: Store in Qdrant with metadata
+5. **Storage**: Store in PostgreSQL with pgvector
 6. **Response**: Return created memory with ID
 
 ### Memory Search Flow
 
 1. **Input**: Client sends GET /api/memory with query
 2. **Embeddings**: Generate query embeddings
-3. **Vector Search**: Query Qdrant for similar vectors
-4. **Ranking**: Apply metadata filters and ranking
+3. **Vector Search**: Query PostgreSQL with pgvector (<=> operator)
+4. **Ranking**: Apply metadata filters and ranking (SQL WHERE)
 5. **Response**: Return top-k results with metadata
 
-## Database Schema (Qdrant)
+## Database Schema (PostgreSQL)
 
-### Collection Structure
+### Table Structure
 
-```typescript
-{
-  id: string,                    // UUID
-  vector: number[],              // Embeddings (e.g., 1536 dimensions for OpenAI)
-  payload: {
-    content: string,             // Original text
-    metadata: Record<string, any>, // Platform-specific metadata
-    tags: string[],              // User-defined tags
-    platform: string,            // Source platform
-    createdAt: string,           // ISO timestamp
-    updatedAt: string            // ISO timestamp
-  }
-}
+```sql
+CREATE TABLE memories (
+  id UUID PRIMARY KEY,
+  embedding vector(1536),              -- pgvector type
+  content TEXT NOT NULL,
+  metadata JSONB DEFAULT '{}',         -- Flexible JSON storage
+  tags TEXT[] DEFAULT '{}',            -- Array of tags
+  platform VARCHAR(50),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Vector similarity index (IVFFlat)
+CREATE INDEX ON memories USING ivfflat (embedding vector_cosine_ops);
+
+-- Metadata and tag indexes
+CREATE INDEX ON memories USING GIN (metadata);
+CREATE INDEX ON memories USING GIN (tags);
 ```
+
+### Key Features
+
+- **ACID Transactions**: Full PostgreSQL reliability
+- **JSONB**: Flexible metadata with GIN indexing for fast queries
+- **Vector Search**: pgvector extension with cosine/L2/inner product distance
+- **Array Support**: Native TEXT[] for tags
+- **Triggers**: Auto-update timestamps
 
 ## Scalability Considerations
 
@@ -97,7 +110,7 @@ The Unified Memory system is designed as a microservices architecture with the f
 - **API Service**: Stateless, can run multiple instances behind load balancer
 - **Ingestion Service**: Queue-based processing enables multiple workers
 - **Transformers Service**: Stateless transformation, easily parallelized
-- **Qdrant**: Supports sharding and replication for large-scale deployments
+- **PostgreSQL**: Native replication, sharding with pg_partman, connection pooling with PgBouncer
 
 ### Performance Optimizations
 
@@ -141,12 +154,15 @@ The Unified Memory system is designed as a microservices architecture with the f
 - Hot reload for fast development
 - Can add web UI later without new infrastructure
 
-### Why Qdrant?
+### Why pgvector (PostgreSQL)?
 
-- High-performance vector search
-- Built-in filtering on metadata
-- Docker-ready for local development
-- Rust-based for reliability and speed
+- **Unified Database**: Relational + vector data in one system (no separate DB)
+- **ACID Transactions**: Full consistency guarantees for critical operations
+- **Mature Ecosystem**: 30+ years of PostgreSQL reliability and tooling
+- **Cost-Effective**: Use existing PostgreSQL infrastructure, no additional DB
+- **Rich Queries**: Combine vector search with complex SQL filters (JOINs, aggregations)
+- **pgvector Performance**: Competitive with specialized vector DBs for < 10M vectors
+- **Production-Ready**: Used by major companies (Supabase, Neon, Timescale) for vector search
 
 ### Why pnpm?
 

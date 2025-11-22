@@ -1,7 +1,7 @@
 /**
  * @unified-memory/db
  *
- * Database client package for Qdrant vector database
+ * Database client package for PostgreSQL with pgvector
  */
 
-export * from './qdrant/client';
+export * from './postgres/client';

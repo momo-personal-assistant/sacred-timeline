@@ -1,6 +1,6 @@
 # Unified Memory
 
-A high-performance, production-ready unified memory system built with Next.js, Node.js, and Qdrant vector database. This monorepo provides a complete platform for ingesting, transforming, storing, and retrieving memories from multiple sources with semantic search capabilities.
+A high-performance, production-ready unified memory system built with Next.js, Node.js, and PostgreSQL with pgvector. This monorepo provides a complete platform for ingesting, transforming, storing, and retrieving memories from multiple sources with semantic search capabilities.
 
 ## Architecture
 
@@ -13,7 +13,7 @@ unified-memory/
 │   └── transformers/     # Platform-specific transformers
 ├── packages/
 │   ├── shared/           # Shared types and utilities
-│   └── db/               # Qdrant database client
+│   └── db/               # PostgreSQL database client
 ├── config/               # Configuration files
 ├── docs/                 # Documentation
 └── docker/               # Dockerfiles for services
@@ -24,7 +24,7 @@ unified-memory/
 - **API Service** (Next.js): REST API for memory operations with type-safe endpoints
 - **Ingestion Service**: Event-driven pipeline for data intake from multiple sources
 - **Transformers Service**: Platform-specific data normalization (Slack, Discord, Email, etc.)
-- **Qdrant Vector DB**: High-performance vector storage for semantic search
+- **PostgreSQL with pgvector**: High-performance vector storage for semantic search
 - **Shared Packages**: Type-safe utilities and database clients used across services
 
 ## Tech Stack
@@ -33,7 +33,7 @@ unified-memory/
 - **Framework**: Next.js 14+ (App Router)
 - **Language**: TypeScript 5.3+
 - **Package Manager**: pnpm 8+
-- **Vector Database**: Qdrant
+- **Vector Database**: PostgreSQL + pgvector
 - **Validation**: Zod
 - **Code Quality**: ESLint, Prettier, Husky
 - **Containerization**: Docker, Docker Compose
@@ -42,7 +42,7 @@ unified-memory/
 
 - **Node.js** >= 18.0.0
 - **pnpm** >= 8.0.0
-- **Docker** and **Docker Compose** (for Qdrant)
+- **Docker** and **Docker Compose** (for PostgreSQL)
 
 ```bash
 # Install pnpm globally
@@ -74,18 +74,22 @@ cp .env.example .env
 
 # Edit .env with your configuration
 # At minimum, you need:
-# - QDRANT_URL (default: http://localhost:6333)
+# - POSTGRES_* connection variables (see .env.example)
 # - Your embeddings provider API key (OpenAI, Cohere, etc.)
 ```
 
-### 3. Start Qdrant
+### 3. Start PostgreSQL
 
 ```bash
-# Start Qdrant vector database
+# Start PostgreSQL with pgvector
 pnpm docker:up
 
-# Verify Qdrant is running
-curl http://localhost:6333/health
+# Verify PostgreSQL is running
+docker ps | grep postgres
+
+# Or connect to verify
+psql -h localhost -U unified_memory -d unified_memory
+# Password: unified_memory_dev
 ```
 
 ### 4. Build Shared Packages
@@ -300,7 +304,7 @@ unified-memory/
 │   │
 │   └── db/
 │       ├── src/
-│       │   ├── qdrant/
+│       │   ├── postgres/
 │       │   │   └── client.ts
 │       │   └── index.ts
 │       ├── package.json
@@ -325,8 +329,12 @@ See `.env.example` for all available configuration options. Key variables:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `QDRANT_URL` | Qdrant database URL | Yes |
-| `QDRANT_COLLECTION_NAME` | Collection name for memories | Yes |
+| `POSTGRES_HOST` | PostgreSQL host | Yes (default: localhost) |
+| `POSTGRES_PORT` | PostgreSQL port | Yes (default: 5432) |
+| `POSTGRES_USER` | PostgreSQL user | Yes |
+| `POSTGRES_PASSWORD` | PostgreSQL password | Yes |
+| `POSTGRES_DB` | Database name | Yes |
+| `VECTOR_DIMENSIONS` | Embedding vector size | Yes (default: 1536) |
 | `OPENAI_API_KEY` | OpenAI API key for embeddings | Yes* |
 | `PORT` | API service port | No (default: 3000) |
 | `NODE_ENV` | Environment (development/production) | No |
@@ -348,17 +356,20 @@ pnpm test:watch
 
 ## Troubleshooting
 
-### Qdrant Connection Issues
+### PostgreSQL Connection Issues
 
 ```bash
-# Check if Qdrant is running
-docker ps | grep qdrant
+# Check if PostgreSQL is running
+docker ps | grep postgres
 
-# Check Qdrant logs
-docker logs unified-memory-qdrant
+# Check PostgreSQL logs
+docker logs unified-memory-postgres
 
-# Restart Qdrant
+# Restart PostgreSQL
 pnpm docker:down && pnpm docker:up
+
+# Connect manually to debug
+psql -h localhost -U unified_memory -d unified_memory
 ```
 
 ### TypeScript Errors in Monorepo

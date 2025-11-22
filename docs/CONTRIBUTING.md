@@ -93,7 +93,7 @@ describe('MemoryService', () => {
 ### Integration Tests
 
 - Test API endpoints end-to-end
-- Use test database (separate Qdrant collection)
+- Use test database (separate PostgreSQL database or schema)
 - Clean up test data after each run
 
 ## Git Workflow
@@ -221,7 +221,8 @@ logger.error('Operation failed', { error: error.message });
 // Load from environment with defaults
 const config = {
   port: parseInt(process.env.PORT || '3000', 10),
-  qdrantUrl: process.env.QDRANT_URL || 'http://localhost:6333',
+  postgresHost: process.env.POSTGRES_HOST || 'localhost',
+  postgresPort: parseInt(process.env.POSTGRES_PORT || '5432', 10),
 };
 ```
 
@@ -249,7 +250,7 @@ const validated = InputSchema.parse(input);
 
 - Never log sensitive data (API keys, passwords)
 - Validate all user input
-- Use parameterized queries (Qdrant client handles this)
+- Use parameterized queries (PostgreSQL prevents SQL injection)
 - Keep dependencies updated
 - Run security audits: `pnpm audit`
 
