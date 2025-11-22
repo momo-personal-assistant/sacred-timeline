@@ -1,5 +1,13 @@
-import { Pool, PoolClient, QueryResult } from 'pg';
 import type { Memory, CreateMemoryInput } from '@unified-memory/shared';
+import { Pool, PoolClient, QueryResult } from 'pg';
+
+import type {
+  CanonicalObject,
+  CreateCanonicalObjectInput,
+  UpdateCanonicalObjectInput,
+  CanonicalObjectFilters,
+  CanonicalObjectSearchResult,
+} from './types';
 
 /**
  * PostgreSQL Client Wrapper with pgvector
@@ -218,12 +226,7 @@ export class UnifiedMemoryDB {
       await this.initialize();
     }
 
-    const {
-      threshold = 0.7,
-      limit = 10,
-      platform = null,
-      tags = null,
-    } = options;
+    const { threshold = 0.7, limit = 10, platform = null, tags = null } = options;
 
     const embeddingVector = `[${queryEmbeddings.join(',')}]`;
 
@@ -405,10 +408,7 @@ export class UnifiedMemoryDB {
   /**
    * Get memory count
    */
-  async getMemoryCount(filters?: {
-    platform?: string;
-    tags?: string[];
-  }): Promise<number> {
+  async getMemoryCount(filters?: { platform?: string; tags?: string[] }): Promise<number> {
     if (!this.isInitialized) {
       await this.initialize();
     }
@@ -443,5 +443,418 @@ export class UnifiedMemoryDB {
     await this.pool.end();
     this.isInitialized = false;
     console.log('✅ PostgreSQL connection pool closed');
+  }
+
+  // =============================================================================
+  // CANONICAL OBJECTS METHODS
+  // =============================================================================
+
+  /**
+   * Create a canonical object
+   */
+  async createCanonicalObject(input: CreateCanonicalObjectInput): Promise<CanonicalObject> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const result: QueryResult = await this.pool.query(
+      `
+      INSERT INTO canonical_objects (
+        id,
+        platform,
+        object_type,
+        title,
+        body,
+        attachments,
+        actors,
+        timestamps,
+        relations,
+        properties,
+        summary,
+        semantic_hash,
+        visibility,
+        raw
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      RETURNING *
+      `,
+      [
+        input.id,
+        input.platform,
+        input.object_type,
+        input.title || null,
+        input.body || null,
+        input.attachments ? JSON.stringify(input.attachments) : null,
+        JSON.stringify(input.actors),
+        JSON.stringify(input.timestamps),
+        input.relations ? JSON.stringify(input.relations) : null,
+        input.properties ? JSON.stringify(input.properties) : null,
+        input.summary ? JSON.stringify(input.summary) : null,
+        input.semantic_hash || null,
+        input.visibility || 'team',
+        input.raw ? JSON.stringify(input.raw) : null,
+      ]
+    );
+
+    return this.mapRowToCanonicalObject(result.rows[0]);
+  }
+
+  /**
+   * Get a canonical object by ID
+   */
+  async getCanonicalObject(id: string): Promise<CanonicalObject | null> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const result: QueryResult = await this.pool.query(
+      `
+      SELECT * FROM canonical_objects
+      WHERE id = $1 AND deleted_at IS NULL
+      `,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return this.mapRowToCanonicalObject(result.rows[0]);
+  }
+
+  /**
+   * Update a canonical object
+   */
+  async updateCanonicalObject(
+    id: string,
+    updates: UpdateCanonicalObjectInput
+  ): Promise<CanonicalObject | null> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const setClauses: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+
+    if (updates.title !== undefined) {
+      setClauses.push(`title = $${paramIndex++}`);
+      values.push(updates.title || null);
+    }
+
+    if (updates.body !== undefined) {
+      setClauses.push(`body = $${paramIndex++}`);
+      values.push(updates.body || null);
+    }
+
+    if (updates.attachments !== undefined) {
+      setClauses.push(`attachments = $${paramIndex++}`);
+      values.push(updates.attachments ? JSON.stringify(updates.attachments) : null);
+    }
+
+    if (updates.actors !== undefined) {
+      setClauses.push(`actors = $${paramIndex++}`);
+      values.push(JSON.stringify(updates.actors));
+    }
+
+    if (updates.timestamps !== undefined) {
+      setClauses.push(`timestamps = $${paramIndex++}`);
+      values.push(JSON.stringify(updates.timestamps));
+    }
+
+    if (updates.relations !== undefined) {
+      setClauses.push(`relations = $${paramIndex++}`);
+      values.push(updates.relations ? JSON.stringify(updates.relations) : null);
+    }
+
+    if (updates.properties !== undefined) {
+      setClauses.push(`properties = $${paramIndex++}`);
+      values.push(updates.properties ? JSON.stringify(updates.properties) : null);
+    }
+
+    if (updates.summary !== undefined) {
+      setClauses.push(`summary = $${paramIndex++}`);
+      values.push(updates.summary ? JSON.stringify(updates.summary) : null);
+    }
+
+    if (updates.semantic_hash !== undefined) {
+      setClauses.push(`semantic_hash = $${paramIndex++}`);
+      values.push(updates.semantic_hash || null);
+    }
+
+    if (updates.visibility !== undefined) {
+      setClauses.push(`visibility = $${paramIndex++}`);
+      values.push(updates.visibility);
+    }
+
+    if (updates.raw !== undefined) {
+      setClauses.push(`raw = $${paramIndex++}`);
+      values.push(updates.raw ? JSON.stringify(updates.raw) : null);
+    }
+
+    if (setClauses.length === 0) {
+      return this.getCanonicalObject(id);
+    }
+
+    values.push(id);
+
+    const result: QueryResult = await this.pool.query(
+      `
+      UPDATE canonical_objects
+      SET ${setClauses.join(', ')}
+      WHERE id = $${paramIndex} AND deleted_at IS NULL
+      RETURNING *
+      `,
+      values
+    );
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return this.mapRowToCanonicalObject(result.rows[0]);
+  }
+
+  /**
+   * Soft delete a canonical object
+   */
+  async deleteCanonicalObject(id: string): Promise<boolean> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const result: QueryResult = await this.pool.query(
+      `
+      UPDATE canonical_objects
+      SET deleted_at = NOW()
+      WHERE id = $1 AND deleted_at IS NULL
+      `,
+      [id]
+    );
+
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  /**
+   * Search canonical objects with filters
+   */
+  async searchCanonicalObjects(
+    filters: CanonicalObjectFilters = {},
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<CanonicalObject[]> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const conditions: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+
+    // Always exclude deleted by default
+    if (!filters.include_deleted) {
+      conditions.push('deleted_at IS NULL');
+    }
+
+    // Platform filter
+    if (filters.platform) {
+      if (Array.isArray(filters.platform)) {
+        conditions.push(`platform = ANY($${paramIndex++})`);
+        values.push(filters.platform);
+      } else {
+        conditions.push(`platform = $${paramIndex++}`);
+        values.push(filters.platform);
+      }
+    }
+
+    // Object type filter
+    if (filters.object_type) {
+      if (Array.isArray(filters.object_type)) {
+        conditions.push(`object_type = ANY($${paramIndex++})`);
+        values.push(filters.object_type);
+      } else {
+        conditions.push(`object_type = $${paramIndex++}`);
+        values.push(filters.object_type);
+      }
+    }
+
+    // Visibility filter
+    if (filters.visibility) {
+      conditions.push(`visibility = $${paramIndex++}`);
+      values.push(filters.visibility);
+    }
+
+    // Date filters
+    if (filters.created_after) {
+      conditions.push(`(timestamps->>'created_at')::timestamptz >= $${paramIndex++}`);
+      values.push(filters.created_after);
+    }
+
+    if (filters.created_before) {
+      conditions.push(`(timestamps->>'created_at')::timestamptz <= $${paramIndex++}`);
+      values.push(filters.created_before);
+    }
+
+    if (filters.updated_after) {
+      conditions.push(`(timestamps->>'updated_at')::timestamptz >= $${paramIndex++}`);
+      values.push(filters.updated_after);
+    }
+
+    if (filters.updated_before) {
+      conditions.push(`(timestamps->>'updated_at')::timestamptz <= $${paramIndex++}`);
+      values.push(filters.updated_before);
+    }
+
+    // Actor filters
+    if (filters.created_by) {
+      conditions.push(`actors @> $${paramIndex++}::jsonb`);
+      values.push(JSON.stringify({ created_by: filters.created_by }));
+    }
+
+    if (filters.participant) {
+      conditions.push(`actors->'participants' @> $${paramIndex++}::jsonb`);
+      values.push(JSON.stringify([filters.participant]));
+    }
+
+    // Property filters
+    if (filters.has_label) {
+      conditions.push(`properties->'labels' @> $${paramIndex++}::jsonb`);
+      values.push(JSON.stringify([filters.has_label]));
+    }
+
+    if (filters.status) {
+      conditions.push(`properties @> $${paramIndex++}::jsonb`);
+      values.push(JSON.stringify({ status: filters.status }));
+    }
+
+    // Full-text search
+    if (filters.search_query) {
+      conditions.push(
+        `to_tsvector('english', COALESCE(search_text, '')) @@ plainto_tsquery('english', $${paramIndex++})`
+      );
+      values.push(filters.search_query);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    values.push(limit, offset);
+
+    const query = `
+      SELECT * FROM canonical_objects
+      ${whereClause}
+      ORDER BY (timestamps->>'created_at')::timestamptz DESC
+      LIMIT $${paramIndex++}
+      OFFSET $${paramIndex++}
+    `;
+
+    const result: QueryResult = await this.pool.query(query, values);
+
+    return result.rows.map((row) => this.mapRowToCanonicalObject(row));
+  }
+
+  /**
+   * Full-text search with ranking
+   */
+  async searchCanonicalObjectsByText(
+    query: string,
+    limit: number = 20
+  ): Promise<CanonicalObjectSearchResult[]> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const result: QueryResult = await this.pool.query(
+      `
+      SELECT
+        *,
+        ts_rank(
+          to_tsvector('english', COALESCE(search_text, '')),
+          plainto_tsquery('english', $1)
+        ) AS search_rank
+      FROM canonical_objects
+      WHERE
+        deleted_at IS NULL
+        AND to_tsvector('english', COALESCE(search_text, '')) @@ plainto_tsquery('english', $1)
+      ORDER BY search_rank DESC
+      LIMIT $2
+      `,
+      [query, limit]
+    );
+
+    return result.rows.map((row) => ({
+      ...this.mapRowToCanonicalObject(row),
+      search_rank: parseFloat(row.search_rank),
+    }));
+  }
+
+  /**
+   * Get canonical objects count
+   */
+  async getCanonicalObjectCount(filters: CanonicalObjectFilters = {}): Promise<number> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    const conditions: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 1;
+
+    if (!filters.include_deleted) {
+      conditions.push('deleted_at IS NULL');
+    }
+
+    if (filters.platform) {
+      if (Array.isArray(filters.platform)) {
+        conditions.push(`platform = ANY($${paramIndex++})`);
+        values.push(filters.platform);
+      } else {
+        conditions.push(`platform = $${paramIndex++}`);
+        values.push(filters.platform);
+      }
+    }
+
+    if (filters.object_type) {
+      if (Array.isArray(filters.object_type)) {
+        conditions.push(`object_type = ANY($${paramIndex++})`);
+        values.push(filters.object_type);
+      } else {
+        conditions.push(`object_type = $${paramIndex++}`);
+        values.push(filters.object_type);
+      }
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const result: QueryResult = await this.pool.query(
+      `SELECT COUNT(*) as count FROM canonical_objects ${whereClause}`,
+      values
+    );
+
+    return parseInt(result.rows[0].count, 10);
+  }
+
+  /**
+   * Helper method to map database row to CanonicalObject type
+   */
+  private mapRowToCanonicalObject(row: any): CanonicalObject {
+    return {
+      id: row.id,
+      platform: row.platform,
+      object_type: row.object_type,
+      title: row.title,
+      body: row.body,
+      attachments: row.attachments,
+      actors: row.actors,
+      timestamps: row.timestamps,
+      relations: row.relations,
+      properties: row.properties,
+      summary: row.summary,
+      search_text: row.search_text,
+      semantic_hash: row.semantic_hash,
+      visibility: row.visibility,
+      deleted_at: row.deleted_at,
+      indexed_at: row.indexed_at,
+      raw: row.raw,
+    };
   }
 }
