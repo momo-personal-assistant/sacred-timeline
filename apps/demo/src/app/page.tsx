@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 
+import ExperimentsPanel from '@/components/ExperimentsPanel';
 import QueryPanel from '@/components/QueryPanel';
 import ValidationPanel from '@/components/ValidationPanel';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'query' | 'validate'>('query');
+  const [activeTab, setActiveTab] = useState<'query' | 'validate' | 'experiments'>('query');
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
@@ -70,10 +71,31 @@ export default function Home() {
             >
               Validation Metrics
             </button>
+            <button
+              onClick={() => setActiveTab('experiments')}
+              style={{
+                flex: 1,
+                padding: '1rem',
+                border: 'none',
+                backgroundColor: activeTab === 'experiments' ? 'white' : '#f5f5f5',
+                borderBottom: activeTab === 'experiments' ? '2px solid #2563eb' : 'none',
+                fontWeight: activeTab === 'experiments' ? 600 : 400,
+                cursor: 'pointer',
+                fontSize: '1rem',
+              }}
+            >
+              Experiments
+            </button>
           </div>
 
           <div style={{ padding: '2rem' }}>
-            {activeTab === 'query' ? <QueryPanel /> : <ValidationPanel />}
+            {activeTab === 'query' ? (
+              <QueryPanel />
+            ) : activeTab === 'validate' ? (
+              <ValidationPanel />
+            ) : (
+              <ExperimentsPanel />
+            )}
           </div>
         </div>
       </div>

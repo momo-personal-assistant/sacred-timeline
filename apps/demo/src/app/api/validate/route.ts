@@ -17,6 +17,30 @@ interface ValidationMetrics {
   inferred_total: number;
 }
 
+/**
+ * Average multiple embedding vectors
+ */
+function averageEmbeddings(embeddings: number[][]): number[] {
+  if (embeddings.length === 0) {
+    throw new Error('Cannot average zero embeddings');
+  }
+
+  const dimension = embeddings[0].length;
+  const result = new Array(dimension).fill(0);
+
+  for (const embedding of embeddings) {
+    for (let i = 0; i < dimension; i++) {
+      result[i] += embedding[i];
+    }
+  }
+
+  for (let i = 0; i < dimension; i++) {
+    result[i] /= embeddings.length;
+  }
+
+  return result;
+}
+
 function normalizeRelation(rel: Relation): string {
   return `${rel.from_id}|${rel.to_id}|${rel.type}`;
 }
@@ -74,10 +98,16 @@ export async function GET(request: NextRequest) {
 
     await db.initialize();
 
+    // Check if we should use semantic similarity (query parameter)
+    const useSemanticSimilarity = searchParams.get('semantic') === 'true';
+
     // Initialize relation inferrer
     const inferrer = new RelationInferrer({
-      similarityThreshold: 0.85,
+      similarityThreshold: 0.35, // Lower threshold for combined similarity
+      keywordOverlapThreshold: 0.65,
       includeInferred: true,
+      useSemanticSimilarity,
+      semanticWeight: 0.7, // 70% semantic, 30% keyword
     });
 
     // Load ground truth relations
@@ -102,8 +132,39 @@ export async function GET(request: NextRequest) {
     // Get all canonical objects
     const objects = await db.searchCanonicalObjects({}, 1000);
 
-    // Infer relations
-    const inferred = inferrer.inferAll(objects);
+    let inferred: Relation[];
+
+    if (useSemanticSimilarity) {
+      // Get embeddings for each object by averaging chunk embeddings
+      const embeddings = new Map<string, number[]>();
+
+      for (const obj of objects) {
+        // Get chunks for this object
+        const chunksResult = await pool.query(
+          `
+          SELECT embedding
+          FROM chunks
+          WHERE canonical_object_id = $1
+          AND embedding IS NOT NULL
+          LIMIT 5
+          `,
+          [obj.id]
+        );
+
+        if (chunksResult.rows.length > 0) {
+          // Average the embeddings from all chunks
+          const chunkEmbeddings = chunksResult.rows.map((row: any) => row.embedding);
+          const avgEmbedding = averageEmbeddings(chunkEmbeddings);
+          embeddings.set(obj.id, avgEmbedding);
+        }
+      }
+
+      // Infer relations with semantic similarity
+      inferred = inferrer.inferAllWithEmbeddings(objects, embeddings);
+    } else {
+      // Infer relations (keyword-only, baseline)
+      inferred = inferrer.inferAll(objects);
+    }
 
     // Calculate metrics
     const metrics = calculateMetrics(groundTruth, inferred, scenario);
