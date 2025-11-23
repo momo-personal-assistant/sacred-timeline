@@ -135,7 +135,7 @@ export const CanonicalObjectSchema = z.object({
 
   // Metadata
   visibility: z.enum(['private', 'team', 'public']).default('team'),
-  schema_version: z.string().default('v1.0'),
+  schema_version: z.string().optional(),
   deleted_at: z.string().datetime().nullable().optional(),
   indexed_at: z.string().datetime().optional(),
 
