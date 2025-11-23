@@ -66,7 +66,7 @@ async function ingestScenario(
   console.log(`   Linear issues: ${dataset.linear_issues.length}`);
   console.log(`   Ground truth relations: ${dataset.relations.length}`);
 
-  const workspace = 'acme-corp'; // Default workspace for synthetic data
+  const workspace = 'momo'; // Must match workspace in ground truth relations
   const canonicalObjects: CanonicalObject[] = [];
   const stats: IngestStats = {
     scenario,
@@ -82,14 +82,82 @@ async function ingestScenario(
   };
 
   // ==========================================================================
-  // 1. Transform and insert Slack threads
+  // 1. Transform and insert Linear issues FIRST (to build ID mapping)
+  // ==========================================================================
+  console.log('\n🔄 Transforming Linear issues...');
+
+  // Build mapping from internal ID to identifier
+  const issueIdToIdentifier = new Map<string, string>();
+
+  for (const issue of dataset.linear_issues) {
+    try {
+      const canonical: CanonicalObject = {
+        id: createCanonicalId('linear', workspace, 'issue', issue.identifier), // Use identifier (e.g., "DES-100") not id
+        platform: 'linear',
+        object_type: 'issue',
+        title: issue.title,
+        body: issue.description,
+        actors: {
+          created_by: `user|${workspace}|user|${issue.creator.id}`, // Use creator.id
+          assignees: issue.assignee
+            ? [`user|${workspace}|user|${issue.assignee.id}`] // Use assignee.id
+            : undefined,
+        },
+        timestamps: {
+          created_at: issue.createdAt,
+          updated_at: issue.updatedAt,
+        },
+        relations: {
+          parent_id: issue.parent
+            ? createCanonicalId('linear', workspace, 'issue', issue.parent)
+            : undefined,
+        },
+        properties: {
+          status: issue.state?.name,
+          priority: issue.priority,
+          labels: issue.labels?.nodes?.map((l: any) => l.name) || [],
+        },
+        visibility: 'team',
+        raw: issue as any,
+      };
+
+      await db.createCanonicalObject(canonical);
+      canonicalObjects.push(canonical);
+      stats.canonical_objects.linear_issues++;
+
+      // Save mapping for later
+      issueIdToIdentifier.set(issue.id, issue.identifier);
+    } catch (error) {
+      console.error(`   ❌ Failed to insert Linear issue ${issue.identifier}:`, error);
+    }
+  }
+
+  console.log(`   ✅ Inserted ${stats.canonical_objects.linear_issues} Linear issues`);
+
+  // ==========================================================================
+  // 2. Transform and insert Slack threads (using ID mapping)
   // ==========================================================================
   console.log('\n🔄 Transforming Slack threads...');
-  const slackTransformer = new SlackTransformer(workspace);
+  const slackTransformer = new SlackTransformer({ workspace });
 
   for (const thread of dataset.slack_threads) {
     try {
       const canonical = slackTransformer.transform(thread);
+
+      // Resolve Linear issue ID to identifier if present
+      if (thread.resulted_in_issue) {
+        const resolvedIdentifier = issueIdToIdentifier.get(thread.resulted_in_issue);
+        if (resolvedIdentifier) {
+          canonical.relations = canonical.relations || {};
+          canonical.relations.resulted_in_issue = createCanonicalId(
+            'linear',
+            workspace,
+            'issue',
+            resolvedIdentifier
+          );
+        }
+      }
+
       await db.createCanonicalObject(canonical);
       canonicalObjects.push(canonical);
       stats.canonical_objects.slack_threads++;
@@ -141,53 +209,6 @@ async function ingestScenario(
   }
 
   console.log(`   ✅ Inserted ${stats.canonical_objects.zendesk_tickets} Zendesk tickets`);
-
-  // ==========================================================================
-  // 3. Transform and insert Linear issues
-  // ==========================================================================
-  console.log('\n🔄 Transforming Linear issues...');
-
-  for (const issue of dataset.linear_issues) {
-    try {
-      const canonical: CanonicalObject = {
-        id: createCanonicalId('linear', workspace, 'issue', issue.id),
-        platform: 'linear',
-        object_type: 'issue',
-        title: issue.title,
-        body: issue.description,
-        actors: {
-          created_by: `user|${workspace}|user|${issue.created_by}`,
-          assignees: issue.assignee_id
-            ? [`user|${workspace}|user|${issue.assignee_id}`]
-            : undefined,
-        },
-        timestamps: {
-          created_at: issue.created_at,
-          updated_at: issue.updated_at,
-        },
-        relations: {
-          parent_id: issue.parent_id
-            ? createCanonicalId('linear', workspace, 'issue', issue.parent_id)
-            : undefined,
-        },
-        properties: {
-          status: issue.status,
-          priority: issue.priority,
-          labels: issue.labels || [],
-        },
-        visibility: 'team',
-        raw: issue as any,
-      };
-
-      await db.createCanonicalObject(canonical);
-      canonicalObjects.push(canonical);
-      stats.canonical_objects.linear_issues++;
-    } catch (error) {
-      console.error(`   ❌ Failed to insert Linear issue ${issue.id}:`, error);
-    }
-  }
-
-  console.log(`   ✅ Inserted ${stats.canonical_objects.linear_issues} Linear issues`);
 
   stats.canonical_objects.total =
     stats.canonical_objects.slack_threads +

@@ -38,6 +38,13 @@ export interface RelationInferrerOptions {
 
   // Include inferred relations (vs only explicit)
   includeInferred?: boolean;
+
+  // Use semantic similarity from embeddings (requires embeddings map)
+  useSemanticSimilarity?: boolean;
+
+  // Weight for combining keyword and semantic similarity (0-1)
+  // 0 = only keywords, 1 = only semantic, 0.5 = equal weight
+  semanticWeight?: number;
 }
 
 export class RelationInferrer {
@@ -48,6 +55,8 @@ export class RelationInferrer {
       similarityThreshold: options.similarityThreshold ?? 0.85,
       keywordOverlapThreshold: options.keywordOverlapThreshold ?? 0.65, // Raised from 0.5 to 0.65 to reduce false positives
       includeInferred: options.includeInferred ?? true,
+      useSemanticSimilarity: options.useSemanticSimilarity ?? false,
+      semanticWeight: options.semanticWeight ?? 0.7, // Default: 70% semantic, 30% keyword
     };
   }
 
@@ -109,11 +118,11 @@ export class RelationInferrer {
         }
       }
 
-      // 5. decided_by (Slack thread → User who made decision)
+      // 5. decided_by (User who made decision → Slack thread)
       if (obj.actors.decided_by) {
         relations.push({
-          from_id: obj.id,
-          to_id: obj.actors.decided_by,
+          from_id: obj.actors.decided_by,
+          to_id: obj.id,
           type: 'decided_by',
           source: 'explicit',
           confidence: 1.0,
@@ -176,6 +185,29 @@ export class RelationInferrer {
     }
 
     return relations;
+  }
+
+  /**
+   * Calculate cosine similarity between two embedding vectors
+   */
+  private cosineSimilarity(vec1: number[], vec2: number[]): number {
+    if (vec1.length !== vec2.length) {
+      console.warn(`Vector dimension mismatch: ${vec1.length} vs ${vec2.length}. Skipping.`);
+      return 0; // Return 0 similarity if dimensions don't match
+    }
+
+    let dotProduct = 0;
+    let mag1 = 0;
+    let mag2 = 0;
+
+    for (let i = 0; i < vec1.length; i++) {
+      dotProduct += vec1[i] * vec2[i];
+      mag1 += vec1[i] * vec1[i];
+      mag2 += vec2[i] * vec2[i];
+    }
+
+    const magnitude = Math.sqrt(mag1) * Math.sqrt(mag2);
+    return magnitude === 0 ? 0 : dotProduct / magnitude;
   }
 
   /**
@@ -279,11 +311,153 @@ export class RelationInferrer {
   }
 
   /**
+   * Infer similarity relations using both keywords and semantic embeddings
+   * @param objects - Canonical objects to compare
+   * @param embeddings - Map of object ID to embedding vector
+   */
+  inferSimilarityWithEmbeddings(
+    objects: CanonicalObject[],
+    embeddings: Map<string, number[]>
+  ): Relation[] {
+    if (!this.options.includeInferred) {
+      return [];
+    }
+
+    const relations: Relation[] = [];
+
+    // Build keyword index (same as before)
+    const objectKeywords = new Map<string, Set<string>>();
+
+    for (const obj of objects) {
+      const keywords = new Set<string>();
+
+      if (obj.properties?.keywords && Array.isArray(obj.properties.keywords)) {
+        for (const keyword of obj.properties.keywords) {
+          keywords.add(keyword.toLowerCase());
+        }
+      }
+
+      if (obj.properties?.labels && Array.isArray(obj.properties.labels)) {
+        for (const label of obj.properties.labels) {
+          keywords.add(label.toLowerCase());
+        }
+      }
+
+      if (obj.title) {
+        const words = obj.title
+          .toLowerCase()
+          .split(/\s+/)
+          .filter((w) => w.length > 3);
+
+        for (const word of words) {
+          keywords.add(word);
+        }
+      }
+
+      objectKeywords.set(obj.id, keywords);
+    }
+
+    // Compare all pairs with combined similarity
+    for (let i = 0; i < objects.length; i++) {
+      for (let j = i + 1; j < objects.length; j++) {
+        const obj1 = objects[i];
+        const obj2 = objects[j];
+
+        // Calculate keyword similarity
+        const keywords1 = objectKeywords.get(obj1.id);
+        const keywords2 = objectKeywords.get(obj2.id);
+
+        let keywordSim = 0;
+        if (keywords1 && keywords2 && keywords1.size > 0 && keywords2.size > 0) {
+          const intersection = new Set([...keywords1].filter((k) => keywords2.has(k)));
+          const union = new Set([...keywords1, ...keywords2]);
+          keywordSim = intersection.size / union.size;
+        }
+
+        // Calculate semantic similarity if embeddings are available
+        let semanticSim = 0;
+        const emb1 = embeddings.get(obj1.id);
+        const emb2 = embeddings.get(obj2.id);
+
+        if (this.options.useSemanticSimilarity && emb1 && emb2) {
+          semanticSim = this.cosineSimilarity(emb1, emb2);
+        }
+
+        // Combine similarities based on weight
+        const combinedSim =
+          this.options.useSemanticSimilarity && emb1 && emb2
+            ? this.options.semanticWeight * semanticSim +
+              (1 - this.options.semanticWeight) * keywordSim
+            : keywordSim;
+
+        // Use lower threshold when combining semantic + keyword
+        const threshold =
+          this.options.useSemanticSimilarity && emb1 && emb2
+            ? this.options.similarityThreshold
+            : this.options.keywordOverlapThreshold;
+
+        if (combinedSim >= threshold) {
+          const metadata: Record<string, any> = {
+            combined_similarity: combinedSim,
+          };
+
+          if (keywordSim > 0 && keywords1 && keywords2) {
+            metadata.keyword_similarity = keywordSim;
+            metadata.shared_keywords = Array.from(
+              new Set([...keywords1].filter((k) => keywords2.has(k)))
+            );
+          }
+
+          if (semanticSim > 0) {
+            metadata.semantic_similarity = semanticSim;
+          }
+
+          // Create bidirectional relations
+          relations.push({
+            from_id: obj1.id,
+            to_id: obj2.id,
+            type: 'similar_to',
+            source: 'computed',
+            confidence: combinedSim,
+            metadata,
+            created_at: new Date().toISOString(),
+          });
+
+          relations.push({
+            from_id: obj2.id,
+            to_id: obj1.id,
+            type: 'similar_to',
+            source: 'computed',
+            confidence: combinedSim,
+            metadata,
+            created_at: new Date().toISOString(),
+          });
+        }
+      }
+    }
+
+    return relations;
+  }
+
+  /**
    * Infer all relations (explicit + similarity)
    */
   inferAll(objects: CanonicalObject[]): Relation[] {
     const explicit = this.extractExplicit(objects);
     const similarity = this.inferSimilarity(objects);
+
+    return [...explicit, ...similarity];
+  }
+
+  /**
+   * Infer all relations with semantic embeddings (explicit + similarity with embeddings)
+   */
+  inferAllWithEmbeddings(
+    objects: CanonicalObject[],
+    embeddings: Map<string, number[]>
+  ): Relation[] {
+    const explicit = this.extractExplicit(objects);
+    const similarity = this.inferSimilarityWithEmbeddings(objects, embeddings);
 
     return [...explicit, ...similarity];
   }

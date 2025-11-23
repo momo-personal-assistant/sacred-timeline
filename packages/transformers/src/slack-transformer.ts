@@ -167,13 +167,13 @@ export class SlackTransformer {
    * Format user ID to canonical format
    */
   private formatUserId(userId: string): string {
-    // If already in canonical format (user:xxx), return as is
-    if (userId.startsWith('user:')) {
+    // If already in canonical format (user|...), return as is
+    if (userId.includes('|')) {
       return userId;
     }
 
-    // Otherwise, format it
-    return `user:${userId}`;
+    // Otherwise, format it with workspace
+    return `user|${this.workspace}|user|${userId}`;
   }
 
   /**
