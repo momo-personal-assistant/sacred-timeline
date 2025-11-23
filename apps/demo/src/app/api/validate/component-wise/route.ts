@@ -219,7 +219,8 @@ export async function GET(request: NextRequest) {
     const objects = await db.searchCanonicalObjects({}, 1000);
 
     // Infer relations separately by stage
-    const inferredExplicit = inferrer.extractExplicit(objects);
+    // Type assertion needed due to incompatible type definitions between DB and shared packages
+    const inferredExplicit = inferrer.extractExplicit(objects as any);
 
     let inferredSimilarity: Relation[];
 
@@ -246,9 +247,9 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      inferredSimilarity = inferrer.inferSimilarityWithEmbeddings(objects, embeddings);
+      inferredSimilarity = inferrer.inferSimilarityWithEmbeddings(objects as any, embeddings);
     } else {
-      inferredSimilarity = inferrer.inferSimilarity(objects);
+      inferredSimilarity = inferrer.inferSimilarity(objects as any);
     }
 
     // Calculate component-wise metrics

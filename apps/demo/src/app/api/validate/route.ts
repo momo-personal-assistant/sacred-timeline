@@ -160,10 +160,11 @@ export async function GET(request: NextRequest) {
       }
 
       // Infer relations with semantic similarity
-      inferred = inferrer.inferAllWithEmbeddings(objects, embeddings);
+      // Type assertion needed due to incompatible type definitions between DB and shared packages
+      inferred = inferrer.inferAllWithEmbeddings(objects as any, embeddings);
     } else {
       // Infer relations (keyword-only, baseline)
-      inferred = inferrer.inferAll(objects);
+      inferred = inferrer.inferAll(objects as any);
     }
 
     // Calculate metrics
