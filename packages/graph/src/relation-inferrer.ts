@@ -192,8 +192,8 @@ export class RelationInferrer {
    */
   private cosineSimilarity(vec1: number[], vec2: number[]): number {
     if (vec1.length !== vec2.length) {
-      console.warn(`Vector dimension mismatch: ${vec1.length} vs ${vec2.length}. Skipping.`);
-      return 0; // Return 0 similarity if dimensions don't match
+      // Silently skip mismatched dimensions
+      return 0;
     }
 
     let dotProduct = 0;
