@@ -1,0 +1,31 @@
+{
+  "generated_at": "2025-11-23T05:48:37.956Z",
+  "config": {
+    "linearCount": 100,
+    "zendeskCount": 100,
+    "includeSubIssues": true,
+    "outputDir": "/Users/williamjung/conductor/sacred-timeline/.conductor/rome/data"
+  },
+  "linear": {
+    "total_issues": 110,
+    "total_comments": 776,
+    "avg_comments_per_issue": 7.1,
+    "with_sub_issues": 10
+  },
+  "zendesk": {
+    "total_tickets": 100,
+    "total_comments": 946,
+    "avg_comments_per_ticket": 9.5,
+    "with_attachments": 61
+  },
+  "worst_cases": {
+    "total_cases": 20,
+    "by_category": {
+      "long_thread": 4,
+      "large_code_block": 4,
+      "deep_nesting": 3,
+      "many_attachments": 3,
+      "mixed_content": 6
+    }
+  }
+}

@@ -7,6 +7,7 @@
 // Types
 export * from './types/memory';
 export * from './types/platform';
+export * from './types/canonical';
 
 // Utils
 export * from './utils/logger';

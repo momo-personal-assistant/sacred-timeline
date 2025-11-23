@@ -170,7 +170,7 @@ export class UnifiedMemoryDB {
    * Search memories by vector similarity
    * TODO: Implement proper embeddings-based search
    */
-  async searchMemories(query: string, limit: number = 10): Promise<Memory[]> {
+  async searchMemories(_query: string, limit: number = 10): Promise<Memory[]> {
     if (!this.isInitialized) {
       await this.initialize();
     }

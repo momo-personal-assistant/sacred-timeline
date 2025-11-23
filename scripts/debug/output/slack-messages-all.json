@@ -1,0 +1,748 @@
+[
+  {
+    "subtype": "channel_join",
+    "user": "U0A05KYRUP2",
+    "text": "<@U0A05KYRUP2> 님이 채널에 참여함",
+    "inviter": "U09U9P9T6LF",
+    "type": "message",
+    "ts": "1763895344.585089"
+  },
+  {
+    "subtype": "thread_broadcast",
+    "bot_id": "B09UMQGC2PP",
+    "thread_ts": "1763894186.976009",
+    "root": {
+      "user": "U09U9QDLLQP",
+      "type": "message",
+      "ts": "1763894186.976009",
+      "bot_id": "B09UMQGC2PP",
+      "app_id": "A0221L31T4P",
+      "text": "",
+      "team": "T06UNSE0RMW",
+      "bot_profile": {
+        "id": "B09UMQGC2PP",
+        "app_id": "A0221L31T4P",
+        "user_id": "U09U9QDLLQP",
+        "name": "Zendesk",
+        "icons": {
+          "image_36": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_36.png",
+          "image_48": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_48.png",
+          "image_72": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_72.png"
+        },
+        "deleted": false,
+        "updated": 1763893107,
+        "team_id": "T06UNSE0RMW"
+      },
+      "thread_ts": "1763894186.976009",
+      "reply_count": 2,
+      "reply_users_count": 1,
+      "latest_reply": "1763894541.198119",
+      "reply_users": ["U09U9QDLLQP"],
+      "is_locked": false,
+      "subscribed": false,
+      "attachments": [
+        {
+          "id": 1,
+          "ts": 1763894185,
+          "color": "F5CA00",
+          "fallback": "This ticket needs attention",
+          "text": "This ticket needs attention",
+          "footer": "<https://momo-5932.zendesk.com/agent/tickets/2|*티켓 #2*> | 상태: 신규 | 우선 순위: 보통 | 계정: Momo",
+          "fields": [
+            {
+              "value": "<https://momo-5932.zendesk.com/agent/tickets/2|*Test ticket from William*>\n\n*Priority*:  :large_yellow_square:  Normal\n\n*Requester*: William Jung\n*Assignee*: /\n*Description*:\ntest",
+              "title": "",
+              "short": false
+            }
+          ],
+          "mrkdwn_in": ["text", "value"]
+        }
+      ]
+    },
+    "user": "U09U9QDLLQP",
+    "type": "message",
+    "ts": "1763894541.198119",
+    "app_id": "A0221L31T4P",
+    "text": "",
+    "attachments": [
+      {
+        "id": 1,
+        "ts": 1763894538,
+        "color": "F5CA00",
+        "fallback": "This ticket needs attention",
+        "text": "This ticket needs attention",
+        "footer": "<https://momo-5932.zendesk.com/agent/tickets/2|*티켓 #2*> | 상태: 신규 | 우선 순위: 보통 | 계정: Momo",
+        "fields": [
+          {
+            "value": "<https://momo-5932.zendesk.com/agent/tickets/2|*Test ticket from William*>\n\n*Priority*:  :large_yellow_square:  Normal\n\n*Requester*: William Jung\n*Assignee*: /\n*Description*:\ntest-2",
+            "title": "",
+            "short": false
+          }
+        ],
+        "mrkdwn_in": ["text", "value"]
+      }
+    ]
+  },
+  {
+    "subtype": "thread_broadcast",
+    "bot_id": "B09UMQGC2PP",
+    "thread_ts": "1763894186.976009",
+    "root": {
+      "user": "U09U9QDLLQP",
+      "type": "message",
+      "ts": "1763894186.976009",
+      "bot_id": "B09UMQGC2PP",
+      "app_id": "A0221L31T4P",
+      "text": "",
+      "team": "T06UNSE0RMW",
+      "bot_profile": {
+        "id": "B09UMQGC2PP",
+        "app_id": "A0221L31T4P",
+        "user_id": "U09U9QDLLQP",
+        "name": "Zendesk",
+        "icons": {
+          "image_36": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_36.png",
+          "image_48": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_48.png",
+          "image_72": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_72.png"
+        },
+        "deleted": false,
+        "updated": 1763893107,
+        "team_id": "T06UNSE0RMW"
+      },
+      "thread_ts": "1763894186.976009",
+      "reply_count": 2,
+      "reply_users_count": 1,
+      "latest_reply": "1763894541.198119",
+      "reply_users": ["U09U9QDLLQP"],
+      "is_locked": false,
+      "subscribed": false,
+      "attachments": [
+        {
+          "id": 1,
+          "ts": 1763894185,
+          "color": "F5CA00",
+          "fallback": "This ticket needs attention",
+          "text": "This ticket needs attention",
+          "footer": "<https://momo-5932.zendesk.com/agent/tickets/2|*티켓 #2*> | 상태: 신규 | 우선 순위: 보통 | 계정: Momo",
+          "fields": [
+            {
+              "value": "<https://momo-5932.zendesk.com/agent/tickets/2|*Test ticket from William*>\n\n*Priority*:  :large_yellow_square:  Normal\n\n*Requester*: William Jung\n*Assignee*: /\n*Description*:\ntest",
+              "title": "",
+              "short": false
+            }
+          ],
+          "mrkdwn_in": ["text", "value"]
+        }
+      ]
+    },
+    "user": "U09U9QDLLQP",
+    "type": "message",
+    "ts": "1763894190.858689",
+    "app_id": "A0221L31T4P",
+    "text": "",
+    "attachments": [
+      {
+        "id": 1,
+        "ts": 1763894189,
+        "color": "F5CA00",
+        "fallback": "This ticket needs attention",
+        "text": "This ticket needs attention",
+        "footer": "<https://momo-5932.zendesk.com/agent/tickets/2|*티켓 #2*> | 상태: 신규 | 우선 순위: 보통 | 계정: Momo",
+        "fields": [
+          {
+            "value": "<https://momo-5932.zendesk.com/agent/tickets/2|*Test ticket from William*>\n\n*Priority*:  :large_yellow_square:  Normal\n\n*Requester*: William Jung\n*Assignee*: /\n*Description*:\ntest",
+            "title": "",
+            "short": false
+          }
+        ],
+        "mrkdwn_in": ["text", "value"]
+      }
+    ]
+  },
+  {
+    "user": "U09U9QDLLQP",
+    "type": "message",
+    "ts": "1763894186.976009",
+    "bot_id": "B09UMQGC2PP",
+    "app_id": "A0221L31T4P",
+    "text": "",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09UMQGC2PP",
+      "deleted": false,
+      "name": "Zendesk",
+      "updated": 1763893107,
+      "app_id": "A0221L31T4P",
+      "user_id": "U09U9QDLLQP",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_36.png",
+        "image_48": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_48.png",
+        "image_72": "https://avatars.slack-edge.com/2021-05-19/2090618498164_72adc1b36522bcaf0734_72.png"
+      },
+      "team_id": "T06UNSE0RMW"
+    },
+    "thread_ts": "1763894186.976009",
+    "reply_count": 2,
+    "reply_users_count": 1,
+    "latest_reply": "1763894541.198119",
+    "reply_users": ["U09U9QDLLQP"],
+    "is_locked": false,
+    "subscribed": false,
+    "attachments": [
+      {
+        "id": 1,
+        "ts": 1763894185,
+        "color": "F5CA00",
+        "fallback": "This ticket needs attention",
+        "text": "This ticket needs attention",
+        "footer": "<https://momo-5932.zendesk.com/agent/tickets/2|*티켓 #2*> | 상태: 신규 | 우선 순위: 보통 | 계정: Momo",
+        "fields": [
+          {
+            "value": "<https://momo-5932.zendesk.com/agent/tickets/2|*Test ticket from William*>\n\n*Priority*:  :large_yellow_square:  Normal\n\n*Requester*: William Jung\n*Assignee*: /\n*Description*:\ntest",
+            "title": "",
+            "short": false
+          }
+        ],
+        "mrkdwn_in": ["text", "value"]
+      }
+    ]
+  },
+  {
+    "subtype": "channel_join",
+    "user": "U09U9QDLLQP",
+    "text": "<@U09U9QDLLQP> 님이 채널에 참여함",
+    "type": "message",
+    "ts": "1763893362.659099"
+  },
+  {
+    "subtype": "channel_join",
+    "user": "U09U9P9T6LF",
+    "text": "<@U09U9P9T6LF> 님이 채널에 참여함",
+    "type": "message",
+    "ts": "1763891254.599419"
+  },
+  {
+    "user": "U06TX5MJLP7",
+    "type": "message",
+    "ts": "1760337736.856619",
+    "bot_id": "B09FNS82448",
+    "app_id": "A09EVG3KBRU",
+    "text": "<@U09KESDH6P7> 모모에서 보냄 하이루",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09FNS82448",
+      "deleted": false,
+      "name": "Momo",
+      "updated": 1758877030,
+      "app_id": "A09EVG3KBRU",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_36.png",
+        "image_48": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_48.png",
+        "image_72": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_72.png"
+      },
+      "team_id": "T06UNSE0RMW"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "dwXg",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U09KESDH6P7"
+              },
+              {
+                "type": "text",
+                "text": " 모모에서 보냄 하이루"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U06TX5MJLP7",
+    "type": "message",
+    "ts": "1760337715.396209",
+    "bot_id": "B09FNS82448",
+    "app_id": "A09EVG3KBRU",
+    "text": "<@U09JTTVN9PY> <@U06TX5MJLP7> hehehe",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09FNS82448",
+      "app_id": "A09EVG3KBRU",
+      "name": "Momo",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_36.png",
+        "image_48": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_48.png",
+        "image_72": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_72.png"
+      },
+      "deleted": false,
+      "updated": 1758877030,
+      "team_id": "T06UNSE0RMW"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "1cm",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U09JTTVN9PY"
+              },
+              {
+                "type": "text",
+                "text": " "
+              },
+              {
+                "type": "user",
+                "user_id": "U06TX5MJLP7"
+              },
+              {
+                "type": "text",
+                "text": " hehehe"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U06TX5MJLP7",
+    "type": "message",
+    "ts": "1760337344.273379",
+    "bot_id": "B09FNS82448",
+    "app_id": "A09EVG3KBRU",
+    "text": "<@U06TX5MJLP7> testing here",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09FNS82448",
+      "app_id": "A09EVG3KBRU",
+      "name": "Momo",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_36.png",
+        "image_48": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_48.png",
+        "image_72": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_72.png"
+      },
+      "deleted": false,
+      "updated": 1758877030,
+      "team_id": "T06UNSE0RMW"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "88Vp",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U06TX5MJLP7"
+              },
+              {
+                "type": "text",
+                "text": " testing here"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U06TX5MJLP7",
+    "type": "message",
+    "ts": "1760330458.877829",
+    "bot_id": "B09FNS82448",
+    "app_id": "A09EVG3KBRU",
+    "text": "@Cailyn Yong tesing",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09FNS82448",
+      "app_id": "A09EVG3KBRU",
+      "name": "Momo",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_36.png",
+        "image_48": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_48.png",
+        "image_72": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_72.png"
+      },
+      "deleted": false,
+      "updated": 1758877030,
+      "team_id": "T06UNSE0RMW"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "XXC",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "@Cailyn Yong tesing"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U06TX5MJLP7",
+    "type": "message",
+    "ts": "1760330435.316819",
+    "bot_id": "B09FNS82448",
+    "app_id": "A09EVG3KBRU",
+    "text": "<@U06TX5MJLP7> @Jongmin Park (Gzu) testing message",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09FNS82448",
+      "app_id": "A09EVG3KBRU",
+      "name": "Momo",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_36.png",
+        "image_48": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_48.png",
+        "image_72": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_72.png"
+      },
+      "deleted": false,
+      "updated": 1758877030,
+      "team_id": "T06UNSE0RMW"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "n/L",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U06TX5MJLP7"
+              },
+              {
+                "type": "text",
+                "text": " @Jongmin Park (Gzu) testing message"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U06TX5MJLP7",
+    "type": "message",
+    "ts": "1760330419.150029",
+    "bot_id": "B09FNS82448",
+    "app_id": "A09EVG3KBRU",
+    "text": "@Jongmin Park (Gzu) test",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09FNS82448",
+      "app_id": "A09EVG3KBRU",
+      "name": "Momo",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_36.png",
+        "image_48": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_48.png",
+        "image_72": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_72.png"
+      },
+      "deleted": false,
+      "updated": 1758877030,
+      "team_id": "T06UNSE0RMW"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "/Wl",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "@Jongmin Park (Gzu) test"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U06TX5MJLP7",
+    "type": "message",
+    "ts": "1760330380.116179",
+    "bot_id": "B09FNS82448",
+    "app_id": "A09EVG3KBRU",
+    "text": "@Cailyn Yong testing!",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09FNS82448",
+      "app_id": "A09EVG3KBRU",
+      "name": "Momo",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_36.png",
+        "image_48": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_48.png",
+        "image_72": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_72.png"
+      },
+      "deleted": false,
+      "updated": 1758877030,
+      "team_id": "T06UNSE0RMW"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "bjQ",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "@Cailyn Yong testing!"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U09JTTVN9PY",
+    "type": "message",
+    "ts": "1760252293.975419",
+    "client_msg_id": "41C31BB6-69B2-4D50-80D1-737B1593A25A",
+    "text": "<@U09H9FRC08Y> 3",
+    "team": "T06UNSE0RMW",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "hlucx",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U09H9FRC08Y"
+              },
+              {
+                "type": "text",
+                "text": " 3"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U09JTTVN9PY",
+    "type": "message",
+    "ts": "1760252282.274089",
+    "client_msg_id": "1A5160E3-5132-4223-B1D6-95E12121BC1C",
+    "text": "<@U09H9FRC08Y> 2",
+    "team": "T06UNSE0RMW",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "r3LOW",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U09H9FRC08Y"
+              },
+              {
+                "type": "text",
+                "text": " 2"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U09JTTVN9PY",
+    "type": "message",
+    "ts": "1760252242.462349",
+    "client_msg_id": "DD6452A5-D6D4-435D-87A4-5BBA574AE849",
+    "text": "<@U09H9FRC08Y> hello",
+    "team": "T06UNSE0RMW",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "8m/G6",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U09H9FRC08Y"
+              },
+              {
+                "type": "text",
+                "text": " hello"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U09H9FRC08Y",
+    "type": "message",
+    "ts": "1760251971.200029",
+    "client_msg_id": "324f11d5-d0bd-4757-9329-ea390362eab9",
+    "text": "<@U09H9FRC08Y> notification test 2",
+    "team": "T06UNSE0RMW",
+    "thread_ts": "1760251971.200029",
+    "reply_count": 6,
+    "reply_users_count": 1,
+    "latest_reply": "1761366605.489409",
+    "reply_users": ["U09H9FRC08Y"],
+    "is_locked": false,
+    "subscribed": false,
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "wPtEV",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U09H9FRC08Y"
+              },
+              {
+                "type": "text",
+                "text": " notification test 2"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U09H9FRC08Y",
+    "type": "message",
+    "ts": "1760250671.627229",
+    "client_msg_id": "3032fc7e-354a-41f7-8468-740a87e53f6e",
+    "text": "<@U09H9FRC08Y> notification test",
+    "team": "T06UNSE0RMW",
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "clQYs",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U09H9FRC08Y"
+              },
+              {
+                "type": "text",
+                "text": " notification test"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U06TX5MJLP7",
+    "type": "message",
+    "ts": "1760249951.130609",
+    "bot_id": "B09FNS82448",
+    "app_id": "A09EVG3KBRU",
+    "text": "QkfmsQkfms paeg",
+    "team": "T06UNSE0RMW",
+    "bot_profile": {
+      "id": "B09FNS82448",
+      "app_id": "A09EVG3KBRU",
+      "name": "Momo",
+      "icons": {
+        "image_36": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_36.png",
+        "image_48": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_48.png",
+        "image_72": "https://avatars.slack-edge.com/2025-09-26/9584895622389_bb6d190a38b14d968fbe_72.png"
+      },
+      "deleted": false,
+      "updated": 1758877030,
+      "team_id": "T06UNSE0RMW"
+    },
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "6nv7",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "text",
+                "text": "QkfmsQkfms paeg"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "user": "U09JTTVN9PY",
+    "type": "message",
+    "ts": "1760249933.621569",
+    "client_msg_id": "DB5268E4-8F94-44A1-9468-75AFA3883612",
+    "text": "<@U06TX5MJLP7> 1",
+    "team": "T06UNSE0RMW",
+    "thread_ts": "1760249933.621569",
+    "reply_count": 6,
+    "reply_users_count": 2,
+    "latest_reply": "1760333167.530239",
+    "reply_users": ["U09H9FRC08Y", "U06TX5MJLP7"],
+    "is_locked": false,
+    "subscribed": false,
+    "blocks": [
+      {
+        "type": "rich_text",
+        "block_id": "jz5JK",
+        "elements": [
+          {
+            "type": "rich_text_section",
+            "elements": [
+              {
+                "type": "user",
+                "user_id": "U06TX5MJLP7"
+              },
+              {
+                "type": "text",
+                "text": " 1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

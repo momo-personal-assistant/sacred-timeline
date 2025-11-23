@@ -127,6 +127,7 @@ export interface CanonicalObject {
   search_text?: string | null;
   semantic_hash?: string | null;
   visibility: Visibility;
+  schema_version?: string;
   deleted_at?: Date | null;
   indexed_at?: Date | null;
   raw?: Record<string, unknown> | null; // Original API response
