@@ -1,0 +1,189 @@
+[
+  {
+    "scenario": "normal",
+    "precision": 0.09539473684210527,
+    "recall": 0.13615023474178403,
+    "f1_score": 0.11218568665377175,
+    "true_positives": 29,
+    "false_positives": 275,
+    "false_negatives": 184,
+    "ground_truth_total": 213,
+    "inferred_total": 304,
+    "matched_relations": [
+      {
+        "from_id": "slack|momo|thread|1763530961.801699",
+        "to_id": "zendesk|momo|ticket|10025",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1763454445.598431",
+        "to_id": "zendesk|momo|ticket|10012",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1763449912.480648",
+        "to_id": "zendesk|momo|ticket|10044",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1763449579.968299",
+        "to_id": "zendesk|momo|ticket|10001",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1762882082.307795",
+        "to_id": "zendesk|momo|ticket|10005",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1761220156.445079",
+        "to_id": "zendesk|momo|ticket|10017",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1760303523.991231",
+        "to_id": "zendesk|momo|ticket|10018",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1757731850.256782",
+        "to_id": "zendesk|momo|ticket|10019",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1756397728.968521",
+        "to_id": "zendesk|momo|ticket|10031",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1756262867.519241",
+        "to_id": "zendesk|momo|ticket|10040",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1754471800.595587",
+        "to_id": "zendesk|momo|ticket|10024",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1754424200.435750",
+        "to_id": "zendesk|momo|ticket|10026",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1750713895.989766",
+        "to_id": "zendesk|momo|ticket|10049",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1750199949.775584",
+        "to_id": "zendesk|momo|ticket|10039",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1748579015.460026",
+        "to_id": "zendesk|momo|ticket|10016",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1747981918.225434",
+        "to_id": "zendesk|momo|ticket|10011",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1747974888.278422",
+        "to_id": "zendesk|momo|ticket|10010",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1747806529.248760",
+        "to_id": "zendesk|momo|ticket|10027",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1744944654.389254",
+        "to_id": "zendesk|momo|ticket|10000",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1744489320.124536",
+        "to_id": "zendesk|momo|ticket|10034",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1743135373.620063",
+        "to_id": "zendesk|momo|ticket|10023",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1740683118.137321",
+        "to_id": "zendesk|momo|ticket|10022",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1739529578.215989",
+        "to_id": "zendesk|momo|ticket|10007",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1737545165.257726",
+        "to_id": "zendesk|momo|ticket|10046",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1736331019.298466",
+        "to_id": "zendesk|momo|ticket|10014",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1736231745.401878",
+        "to_id": "zendesk|momo|ticket|10008",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1734258389.658978",
+        "to_id": "zendesk|momo|ticket|10032",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1734092007.252780",
+        "to_id": "zendesk|momo|ticket|10006",
+        "type": "triggered_by",
+        "confidence": 1
+      },
+      {
+        "from_id": "slack|momo|thread|1732462334.523225",
+        "to_id": "zendesk|momo|ticket|10047",
+        "type": "triggered_by",
+        "confidence": 1
+      }
+    ]
+  }
+]

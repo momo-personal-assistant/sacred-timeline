@@ -29,12 +29,24 @@
     "declarationMap": true,
     "sourceMap": true,
     "incremental": true,
-    "composite": true
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@unified-memory/shared": ["./packages/shared/src"],
+      "@unified-memory/shared/*": ["./packages/shared/src/*"],
+      "@unified-memory/db": ["./packages/db/src"],
+      "@unified-memory/db/*": ["./packages/db/src/*"],
+      "@momo/ingestion": ["./packages/ingestion/src"],
+      "@momo/ingestion/*": ["./packages/ingestion/src/*"],
+      "@momo/transformers": ["./packages/transformers/src"],
+      "@momo/transformers/*": ["./packages/transformers/src/*"],
+      "@momo/graph": ["./packages/graph/src"],
+      "@momo/graph/*": ["./packages/graph/src/*"],
+      "@momo/embedding": ["./packages/embedding/src"],
+      "@momo/embedding/*": ["./packages/embedding/src/*"],
+      "@momo/query": ["./packages/query/src"],
+      "@momo/query/*": ["./packages/query/src/*"]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    ".next",
-    "build"
-  ]
+  "exclude": ["node_modules", "dist", ".next", "build"]
 }

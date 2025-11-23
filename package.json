@@ -21,6 +21,11 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
+    "generate:samples": "tsx scripts/generate-samples/index.ts",
+    "validate:samples": "tsx scripts/generate-samples/validate.ts",
+    "generate:graph": "tsx scripts/generate-graph-dataset/index.ts",
+    "generate:graph:all": "tsx scripts/generate-graph-dataset/index.ts --all",
+    "validate:graph": "tsx scripts/generate-graph-dataset/validate.ts",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -41,5 +46,9 @@
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@8.11.0"
+  "packageManager": "pnpm@8.11.0",
+  "dependencies": {
+    "@slack/web-api": "^7.12.0",
+    "dotenv": "^16.4.7"
+  }
 }
