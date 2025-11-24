@@ -65,11 +65,17 @@ export default function ExperimentComparisonChart({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Experiments Comparison</CardTitle>
-          <CardDescription>No experiment data available</CardDescription>
+          <CardTitle className="text-sm font-semibold leading-tight">
+            Experiments Comparison
+          </CardTitle>
+          <CardDescription className="text-xs leading-[1.5] mt-1">
+            No experiment data available
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-[300px]">
-          <p className="text-muted-foreground">Run experiments to compare performance</p>
+          <p className="text-muted-foreground text-xs leading-[1.5]">
+            Run experiments to compare performance
+          </p>
         </CardContent>
       </Card>
     );
@@ -107,23 +113,27 @@ export default function ExperimentComparisonChart({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="inline-flex items-center justify-between w-full">
           <div>
-            <CardTitle>Experiments Comparison</CardTitle>
-            <CardDescription>Sorted by F1 Score • {barData.length} experiments</CardDescription>
+            <CardTitle className="text-sm font-semibold leading-tight">
+              Experiments Comparison
+            </CardTitle>
+            <CardDescription className="text-xs leading-[1.5] mt-1">
+              Sorted by F1 Score • {barData.length} experiments
+            </CardDescription>
           </div>
-          <div className="flex gap-2 text-xs">
-            <div className="flex items-center gap-1">
+          <div className="inline-flex gap-2 text-xs">
+            <div className="inline-flex items-center gap-1">
               <div className="w-3 h-3 rounded bg-[hsl(142,76%,36%)]" />
-              <span className="text-muted-foreground">Best</span>
+              <span className="text-muted-foreground leading-[1.5]">Best</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="inline-flex items-center gap-1">
               <div className="w-3 h-3 rounded bg-[hsl(173,58%,39%)]" />
-              <span className="text-muted-foreground">Baseline</span>
+              <span className="text-muted-foreground leading-[1.5]">Baseline</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="inline-flex items-center gap-1">
               <div className="w-3 h-3 rounded bg-[hsl(0,84%,60%)]" />
-              <span className="text-muted-foreground">&lt;60%</span>
+              <span className="text-muted-foreground leading-[1.5]">&lt;60%</span>
             </div>
           </div>
         </div>
@@ -175,30 +185,43 @@ export default function ExperimentComparisonChart({
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-lg">
                       <div className="grid gap-2">
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-xs font-medium">{data.fullName}</span>
+                        <div className="inline-flex items-center justify-between gap-4 w-full">
+                          <span className="text-xs font-medium leading-[1.5]">{data.fullName}</span>
                           {data.isBaseline && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge
+                              variant="outline"
+                              className="text-xs h-[18px] inline-flex items-center font-medium"
+                            >
                               BASE
                             </Badge>
                           )}
                         </div>
                         <div className="grid gap-1">
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-xs">F1 Score:</span>
-                            <span className="text-xs font-mono font-medium">{data.f1}%</span>
+                          <div className="inline-flex items-center justify-between gap-4 w-full">
+                            <span className="text-xs leading-[1.5]">F1 Score:</span>
+                            <span className="text-xs font-mono font-medium leading-[1.5]">
+                              {data.f1}%
+                            </span>
                           </div>
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-xs text-muted-foreground">Precision:</span>
-                            <span className="text-xs font-mono">{data.precision}%</span>
+                          <div className="inline-flex items-center justify-between gap-4 w-full">
+                            <span className="text-xs text-muted-foreground leading-[1.5]">
+                              Precision:
+                            </span>
+                            <span className="text-xs font-mono leading-[1.5]">
+                              {data.precision}%
+                            </span>
                           </div>
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-xs text-muted-foreground">Recall:</span>
-                            <span className="text-xs font-mono">{data.recall}%</span>
+                          <div className="inline-flex items-center justify-between gap-4 w-full">
+                            <span className="text-xs text-muted-foreground leading-[1.5]">
+                              Recall:
+                            </span>
+                            <span className="text-xs font-mono leading-[1.5]">{data.recall}%</span>
                           </div>
                         </div>
                         {data.f1 === bestF1 && data.f1 >= 60 && (
-                          <Badge className="bg-green-600 text-white text-xs">BEST PERFORMER</Badge>
+                          <Badge className="bg-green-600 text-white text-xs h-[18px] inline-flex items-center font-medium">
+                            BEST PERFORMER
+                          </Badge>
                         )}
                       </div>
                     </div>

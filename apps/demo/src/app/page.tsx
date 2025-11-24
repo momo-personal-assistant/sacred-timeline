@@ -13,10 +13,17 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'query' | 'validate' | 'experiments' | 'activity'>(
     'query'
   );
+  const [selectedExperimentId, setSelectedExperimentId] = useState<number | undefined>();
 
   return (
     <SidebarProvider>
-      <AppSidebar variant="inset" activeTab={activeTab} onTabChange={setActiveTab} />
+      <AppSidebar
+        variant="inset"
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        selectedExperimentId={selectedExperimentId}
+        onExperimentSelect={setSelectedExperimentId}
+      />
       <SidebarInset>
         <div className="flex flex-1 flex-col">
           <div className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
@@ -25,7 +32,10 @@ export default function Home() {
             ) : activeTab === 'validate' ? (
               <ValidationPanel />
             ) : activeTab === 'experiments' ? (
-              <ExperimentsPanel />
+              <ExperimentsPanel
+                selectedExperimentId={selectedExperimentId}
+                onExperimentSelect={setSelectedExperimentId}
+              />
             ) : (
               <ActivityFeed onNavigateToExperiment={() => setActiveTab('experiments')} />
             )}

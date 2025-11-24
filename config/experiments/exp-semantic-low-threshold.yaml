@@ -1,0 +1,32 @@
+name: "Semantic Similarity - Very Low Threshold"
+description: "Enable semantic similarity with very low threshold (0.45 to match actual semantic sim scores)"
+
+# Embedding configuration
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+
+# Chunking configuration
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+
+# Relation inference configuration
+relationInference:
+  similarityThreshold: 0.45         # ← MUCH LOWER: Based on debug output (0.4-0.6 range)
+  keywordOverlapThreshold: 0.65
+  includeInferred: true
+  useSemanticSimilarity: true       # ← ENABLED
+  semanticWeight: 0.7               # 70% semantic, 30% keyword
+
+# Validation settings
+validation:
+  runOnSave: true
+  autoSaveExperiment: true
+  scenarios:
+    - "normal"
+
+metadata:
+  baseline: false
+  tags: ["semantic", "low-threshold"]

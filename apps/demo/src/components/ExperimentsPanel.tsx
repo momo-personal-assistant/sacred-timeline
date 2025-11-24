@@ -1,14 +1,15 @@
 'use client';
 
-import { Trophy, GitCommit, Clock, BarChart3 } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 import ExperimentComparisonChart from '@/components/charts/ExperimentComparisonChart';
 import ExperimentTimelineChart from '@/components/charts/ExperimentTimelineChart';
 import PrecisionRecallScatter from '@/components/charts/PrecisionRecallScatter';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import ExperimentDetailPanel from '@/components/ExperimentDetailPanel';
+import SystemStatusPanel from '@/components/SystemStatusPanel';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ExperimentConfig {
   name: string;
@@ -55,18 +56,18 @@ interface Experiment {
   results: ExperimentResults | null;
 }
 
-function getScoreVariant(score: number): 'default' | 'secondary' | 'destructive' {
-  if (score >= 0.6) return 'default';
-  if (score >= 0.4) return 'secondary';
-  return 'destructive';
+interface ExperimentsPanelProps {
+  selectedExperimentId?: number;
+  onExperimentSelect?: (experimentId: number) => void;
 }
 
-export default function ExperimentsPanel() {
+export default function ExperimentsPanel({
+  selectedExperimentId,
+  onExperimentSelect,
+}: ExperimentsPanelProps) {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
-  const [selectedExperiment, setSelectedExperiment] = useState<Experiment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     fetchExperiments();
@@ -78,14 +79,21 @@ export default function ExperimentsPanel() {
       if (!response.ok) throw new Error('Failed to fetch experiments');
       const data = await response.json();
       setExperiments(data.experiments);
-      if (data.experiments.length > 0 && !selectedExperiment) {
-        setSelectedExperiment(data.experiments[0]);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Derive selected experiment from prop
+  const selectedExperiment = selectedExperimentId
+    ? experiments.find((exp) => exp.id === selectedExperimentId) || null
+    : null;
+
+  // Handler for chart clicks - convert experiment object to ID
+  const handleExperimentClick = (experiment: Experiment) => {
+    onExperimentSelect?.(experiment.id);
   };
 
   if (loading) {
@@ -124,265 +132,64 @@ export default function ExperimentsPanel() {
     );
   }
 
-  const experimentsWithResults = experiments.filter(
-    (exp): exp is Experiment & { results: ExperimentResults } => exp.results !== null
-  );
-  const bestExperiment =
-    experimentsWithResults.length > 0
-      ? experimentsWithResults.reduce((best, exp) =>
-          exp.results.f1_score > best.results.f1_score ? exp : best
-        )
-      : null;
+  const baselineExperiment = experiments.find((exp) => exp.is_baseline) || null;
 
   return (
-    <div className="space-y-6">
-      {/* Analytics Toggle */}
+    <Tabs defaultValue="experiments" className="space-y-3">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Experiments</h2>
-          <p className="text-muted-foreground">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold leading-tight">Experiments</h2>
+          <p className="text-xs text-muted-foreground leading-[1.5]">
             Track and compare different configurations • {experiments.length} total
           </p>
         </div>
-        <Button
-          variant={showAnalytics ? 'default' : 'outline'}
-          onClick={() => setShowAnalytics(!showAnalytics)}
-          className="gap-2"
-        >
-          <BarChart3 className="h-4 w-4" />
-          {showAnalytics ? 'Hide' : 'Show'} Analytics
-        </Button>
       </div>
 
-      {/* Analytics Section */}
-      {showAnalytics && (
-        <div className="space-y-4">
-          {/* Timeline Chart - Full Width */}
-          <ExperimentTimelineChart
-            experiments={experiments}
-            onExperimentClick={setSelectedExperiment}
-          />
+      {/* Tabs Navigation */}
+      <TabsList>
+        <TabsTrigger value="experiments" className="gap-2">
+          <BarChart3 className="h-4 w-4" />
+          Experiments
+        </TabsTrigger>
+        <TabsTrigger value="system" className="gap-2">
+          System Status
+        </TabsTrigger>
+      </TabsList>
 
-          {/* Comparison and Scatter - Side by Side */}
-          <div className="grid gap-4 md:grid-cols-2">
+      {/* Experiments Tab - 2 Column Layout */}
+      <TabsContent value="experiments" className="space-y-0">
+        <div className="grid grid-cols-[1fr_35%] gap-3 h-[calc(100vh-220px)]">
+          {/* Left Column: Charts (65%) */}
+          <section className="overflow-y-auto space-y-3 pr-1">
+            <ExperimentTimelineChart
+              experiments={experiments}
+              onExperimentClick={handleExperimentClick}
+            />
             <ExperimentComparisonChart
               experiments={experiments}
-              onExperimentClick={setSelectedExperiment}
+              onExperimentClick={handleExperimentClick}
             />
             <PrecisionRecallScatter
               experiments={experiments}
-              onExperimentClick={setSelectedExperiment}
+              onExperimentClick={handleExperimentClick}
             />
-          </div>
+          </section>
+
+          {/* Right Column: Detail Panel (35%) */}
+          <aside className="overflow-y-auto pr-1">
+            <ExperimentDetailPanel
+              experiment={selectedExperiment}
+              baselineExperiment={baselineExperiment}
+            />
+          </aside>
         </div>
-      )}
+      </TabsContent>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>All Experiments ({experiments.length})</CardTitle>
-          <CardDescription>Click on any experiment to see details</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {bestExperiment && bestExperiment.results && (
-            <Card className="border-green-500 bg-green-50">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-green-600" />
-                    <Badge className="bg-green-600">BEST</Badge>
-                    {bestExperiment.is_baseline && <Badge variant="secondary">BASELINE</Badge>}
-                    <span className="font-semibold">{bestExperiment.name}</span>
-                  </div>
-                  <div className="text-2xl font-bold text-green-600">
-                    {(bestExperiment.results.f1_score * 100).toFixed(1)}%
-                  </div>
-                </div>
-                {bestExperiment.config?.embedding && bestExperiment.config?.chunking && (
-                  <p className="text-sm text-green-700 mt-2">
-                    {bestExperiment.config.embedding.model} •{' '}
-                    {bestExperiment.config.chunking.strategy}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          <div className="grid gap-4 md:grid-cols-2">
-            {experiments.map((exp) => (
-              <Card
-                key={exp.id}
-                className={`cursor-pointer transition-colors ${
-                  selectedExperiment?.id === exp.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'hover:border-gray-400'
-                }`}
-                onClick={() => setSelectedExperiment(exp)}
-              >
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-base">{exp.name}</CardTitle>
-                      {exp.is_baseline && (
-                        <Badge variant="outline" className="text-xs">
-                          BASE
-                        </Badge>
-                      )}
-                    </div>
-                    {exp.results && (
-                      <Badge variant={getScoreVariant(exp.results.f1_score)} className="text-lg">
-                        {(exp.results.f1_score * 100).toFixed(1)}%
-                      </Badge>
-                    )}
-                  </div>
-                  <CardDescription className="text-xs">
-                    {new Date(exp.created_at).toLocaleDateString()}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {exp.config?.embedding && exp.config?.chunking && (
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {exp.config.embedding.model} • {exp.config.chunking.strategy}
-                    </p>
-                  )}
-                  {exp.paper_ids && exp.paper_ids.length > 0 && (
-                    <div className="flex gap-1 flex-wrap">
-                      {exp.paper_ids.map((paperId) => (
-                        <Badge key={paperId} variant="secondary" className="text-xs">
-                          Paper {paperId}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {selectedExperiment && selectedExperiment.results && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Experiment Details: {selectedExperiment.name}</CardTitle>
-            <CardDescription>{selectedExperiment.description}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {selectedExperiment.config && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Configuration</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {selectedExperiment.config.embedding && (
-                      <div>
-                        <p className="text-sm text-muted-foreground">Embedding</p>
-                        <p className="font-medium">
-                          {selectedExperiment.config.embedding.model}
-                          {selectedExperiment.config.embedding.dimensions &&
-                            ` (${selectedExperiment.config.embedding.dimensions}d)`}
-                        </p>
-                      </div>
-                    )}
-                    {selectedExperiment.config.chunking && (
-                      <div>
-                        <p className="text-sm text-muted-foreground">Chunking</p>
-                        <p className="font-medium">
-                          {selectedExperiment.config.chunking.strategy}
-                          {selectedExperiment.config.chunking.maxChunkSize &&
-                            ` (${selectedExperiment.config.chunking.maxChunkSize})`}
-                        </p>
-                      </div>
-                    )}
-                    {selectedExperiment.config.retrieval && (
-                      <>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Similarity Threshold</p>
-                          <p className="font-medium">
-                            {selectedExperiment.config.retrieval.similarityThreshold}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Chunk Limit</p>
-                          <p className="font-medium">
-                            {selectedExperiment.config.retrieval.chunkLimit}
-                          </p>
-                        </div>
-                      </>
-                    )}
-                    {selectedExperiment.git_commit && (
-                      <div>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1">
-                          <GitCommit className="h-3 w-3" />
-                          Git Commit
-                        </p>
-                        <p className="font-mono text-sm">
-                          {selectedExperiment.git_commit.substring(0, 8)}
-                        </p>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        Retrieval Time
-                      </p>
-                      <p className="font-medium">
-                        {selectedExperiment.results.retrieval_time_ms}ms
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Performance Metrics</CardTitle>
-                <CardDescription className="text-xs">
-                  TP: {selectedExperiment.results.true_positives} | FP:{' '}
-                  {selectedExperiment.results.false_positives} | FN:{' '}
-                  {selectedExperiment.results.false_negatives}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-8 justify-center">
-                  <MetricDisplay label="Precision" value={selectedExperiment.results.precision} />
-                  <MetricDisplay label="Recall" value={selectedExperiment.results.recall} />
-                  <MetricDisplay
-                    label="F1 Score"
-                    value={selectedExperiment.results.f1_score}
-                    highlight
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-}
-
-function MetricDisplay({
-  label,
-  value,
-  highlight,
-}: {
-  label: string;
-  value: number;
-  highlight?: boolean;
-}) {
-  const variant = getScoreVariant(value);
-
-  return (
-    <div className="text-center">
-      <p className="text-xs text-muted-foreground mb-1">{label}</p>
-      <div className={`text-3xl font-bold ${highlight ? 'text-primary' : ''}`}>
-        {(value * 100).toFixed(0)}%
-      </div>
-      <Badge variant={variant} className="mt-1 text-xs">
-        {(value * 100).toFixed(1)}%
-      </Badge>
-    </div>
+      {/* System Status Tab */}
+      <TabsContent value="system">
+        <SystemStatusPanel />
+      </TabsContent>
+    </Tabs>
   );
 }

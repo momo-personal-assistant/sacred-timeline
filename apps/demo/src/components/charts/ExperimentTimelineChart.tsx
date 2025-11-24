@@ -67,11 +67,17 @@ export default function ExperimentTimelineChart({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Performance Timeline</CardTitle>
-          <CardDescription>No experiment data available</CardDescription>
+          <CardTitle className="text-sm font-semibold leading-tight">
+            Performance Timeline
+          </CardTitle>
+          <CardDescription className="text-xs leading-[1.5] mt-1">
+            No experiment data available
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-[300px]">
-          <p className="text-muted-foreground">Run experiments to see performance trends</p>
+          <p className="text-muted-foreground text-xs leading-[1.5]">
+            Run experiments to see performance trends
+          </p>
         </CardContent>
       </Card>
     );
@@ -101,8 +107,8 @@ export default function ExperimentTimelineChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Performance Timeline</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-sm font-semibold leading-tight">Performance Timeline</CardTitle>
+        <CardDescription className="text-xs leading-[1.5] mt-1">
           F1 Score progression over time • {timelineData.length} experiments
         </CardDescription>
       </CardHeader>
@@ -150,25 +156,37 @@ export default function ExperimentTimelineChart({
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-lg">
                       <div className="grid gap-2">
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-xs font-medium">{data.name}</span>
+                        <div className="inline-flex items-center justify-between gap-4 w-full">
+                          <span className="text-xs font-medium leading-[1.5]">{data.name}</span>
                           {data.isBaseline && (
-                            <span className="text-xs text-muted-foreground">BASELINE</span>
+                            <span className="text-xs text-muted-foreground leading-[1.5]">
+                              BASELINE
+                            </span>
                           )}
                         </div>
-                        <div className="text-xs text-muted-foreground">{data.date}</div>
+                        <div className="text-xs text-muted-foreground leading-[1.5]">
+                          {data.date}
+                        </div>
                         <div className="grid gap-1">
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-xs">F1 Score:</span>
-                            <span className="text-xs font-mono font-medium">{data.f1}%</span>
+                          <div className="inline-flex items-center justify-between gap-4 w-full">
+                            <span className="text-xs leading-[1.5]">F1 Score:</span>
+                            <span className="text-xs font-mono font-medium leading-[1.5]">
+                              {data.f1}%
+                            </span>
                           </div>
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-xs text-muted-foreground">Precision:</span>
-                            <span className="text-xs font-mono">{data.precision}%</span>
+                          <div className="inline-flex items-center justify-between gap-4 w-full">
+                            <span className="text-xs text-muted-foreground leading-[1.5]">
+                              Precision:
+                            </span>
+                            <span className="text-xs font-mono leading-[1.5]">
+                              {data.precision}%
+                            </span>
                           </div>
-                          <div className="flex items-center justify-between gap-4">
-                            <span className="text-xs text-muted-foreground">Recall:</span>
-                            <span className="text-xs font-mono">{data.recall}%</span>
+                          <div className="inline-flex items-center justify-between gap-4 w-full">
+                            <span className="text-xs text-muted-foreground leading-[1.5]">
+                              Recall:
+                            </span>
+                            <span className="text-xs font-mono leading-[1.5]">{data.recall}%</span>
                           </div>
                         </div>
                       </div>
