@@ -34,6 +34,40 @@ dotenv.config();
 const DEFAULT_CONFIG_PATH = 'config/default.yaml';
 
 /**
+ * Log activity to research_activity_log table
+ */
+async function logActivity(
+  pool: any,
+  operationType: string,
+  operationName: string,
+  description: string,
+  details: Record<string, any>,
+  status: 'started' | 'completed' | 'failed' = 'completed',
+  experimentId?: number
+): Promise<number> {
+  const gitCommit = getGitCommit();
+
+  const result = await pool.query(
+    `INSERT INTO research_activity_log (
+      operation_type, operation_name, description, status, triggered_by, details, git_commit, experiment_id
+    ) VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8)
+    RETURNING id`,
+    [
+      operationType,
+      operationName,
+      description,
+      status,
+      'script',
+      JSON.stringify(details),
+      gitCommit,
+      experimentId || null,
+    ]
+  );
+
+  return result.rows[0].id;
+}
+
+/**
  * Get git commit hash
  */
 function getGitCommit(): string | null {
@@ -95,7 +129,7 @@ async function validateRelations(
 
   // Fetch ground truth
   const groundTruthResult = await pool.query(
-    'SELECT from_id, to_id, type FROM ground_truth_relations'
+    'SELECT from_id, to_id, relation_type as type FROM ground_truth_relations'
   );
   const groundTruth = groundTruthResult.rows as Relation[];
 
@@ -170,6 +204,7 @@ async function saveExperiment(
   await pool.query(
     `INSERT INTO experiment_results (
       experiment_id,
+      scenario,
       f1_score,
       precision,
       recall,
@@ -178,9 +213,10 @@ async function saveExperiment(
       false_negatives,
       retrieval_time_ms,
       created_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
     [
       experimentId,
+      'normal', // Default scenario
       result.metrics.f1_score,
       result.metrics.precision,
       result.metrics.recall,
@@ -229,9 +265,29 @@ async function main() {
     vectorDimensions: parseInt(process.env.VECTOR_DIMENSIONS || '1536', 10),
   });
 
+  let experimentId: number | null = null;
+
   try {
     await db.initialize();
     console.log('✅ Database connected');
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pool = (db as any).pool;
+
+    // Log experiment start
+    const _activityLogId = await logActivity(
+      pool,
+      'experiment_run',
+      'run-experiment',
+      `Started experiment: ${config.name}`,
+      {
+        action: 'start',
+        config_name: config.name,
+        config_description: config.description,
+        config: config,
+      },
+      'started'
+    );
 
     // Initialize embedder
     if (!process.env.OPENAI_API_KEY) {
@@ -287,6 +343,21 @@ async function main() {
     console.log(`   Min/Max: ${chunkStats.min_chunk_size} / ${chunkStats.max_chunk_size} chars`);
     console.log();
 
+    // Log chunking completion
+    await logActivity(
+      pool,
+      'experiment_run',
+      'chunking',
+      `Chunked ${objects.length} objects into ${allChunks.length} chunks`,
+      {
+        action: 'chunking',
+        objects_count: objects.length,
+        chunks_count: allChunks.length,
+        chunking_stats: chunkStats,
+        chunking_config: config.chunking,
+      }
+    );
+
     // ============================================
     // STEP 2: Generate embeddings
     // ============================================
@@ -303,6 +374,21 @@ async function main() {
     console.log(`   Estimated cost: $${cost.toFixed(4)}`);
     console.log();
 
+    // Log embedding generation
+    await logActivity(
+      pool,
+      'experiment_run',
+      'embedding',
+      `Generated ${embedResult.results.length} embeddings (${embedResult.totalTokens.toLocaleString()} tokens, $${cost.toFixed(4)})`,
+      {
+        action: 'embedding',
+        embeddings_count: embedResult.results.length,
+        total_tokens: embedResult.totalTokens,
+        estimated_cost_usd: cost,
+        embedding_config: config.embedding,
+      }
+    );
+
     // ============================================
     // STEP 3: Save to database
     // ============================================
@@ -310,13 +396,32 @@ async function main() {
     console.log('STEP 3: Saving Embeddings');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pool = (db as any).pool;
-
     // Clear existing chunks for these objects
+    const beforeDelete = await pool.query(
+      'SELECT COUNT(*) as count FROM chunks WHERE canonical_object_id = ANY($1)',
+      [objects.map((o) => o.id)]
+    );
+    const deletedCount = parseInt(beforeDelete.rows[0].count);
+
     await pool.query('DELETE FROM chunks WHERE canonical_object_id = ANY($1)', [
       objects.map((o) => o.id),
     ]);
+
+    // Log chunk deletion
+    if (deletedCount > 0) {
+      await logActivity(
+        pool,
+        'data_delete',
+        'DELETE chunks',
+        `Deleted ${deletedCount} existing chunks before inserting new ones`,
+        {
+          action: 'DELETE',
+          table: 'chunks',
+          rows_affected: deletedCount,
+          object_ids: objects.map((o) => o.id),
+        }
+      );
+    }
 
     // Insert new chunks with embeddings
     for (let i = 0; i < allChunks.length; i++) {
@@ -342,6 +447,20 @@ async function main() {
     console.log(`   ✅ Saved ${allChunks.length} chunks to database`);
     console.log();
 
+    // Log chunk insertion
+    await logActivity(
+      pool,
+      'data_insert',
+      'INSERT chunks',
+      `Saved ${allChunks.length} chunks with embeddings to database`,
+      {
+        action: 'INSERT',
+        table: 'chunks',
+        rows_affected: allChunks.length,
+        method: config.chunking.strategy,
+      }
+    );
+
     // ============================================
     // STEP 4: Run validation (if enabled)
     // ============================================
@@ -361,6 +480,19 @@ async function main() {
 
       metrics = await validateRelations(db, inferrer, config.validation.scenarios);
       console.log();
+
+      // Log validation results
+      await logActivity(
+        pool,
+        'experiment_run',
+        'validation',
+        `Validation complete: F1=${(metrics.f1_score * 100).toFixed(1)}%, Precision=${(metrics.precision * 100).toFixed(1)}%, Recall=${(metrics.recall * 100).toFixed(1)}%`,
+        {
+          action: 'validation',
+          metrics: metrics,
+          relation_inference_config: config.relationInference,
+        }
+      );
     }
 
     // ============================================
@@ -383,9 +515,24 @@ async function main() {
         timestamp: new Date().toISOString(),
       };
 
-      const experimentId = await saveExperiment(db, config, result);
+      experimentId = await saveExperiment(db, config, result);
       console.log(`   ✅ Saved experiment #${experimentId}`);
       console.log();
+
+      // Log experiment save
+      await logActivity(
+        pool,
+        'experiment_run',
+        'save_experiment',
+        `Saved experiment #${experimentId}: ${config.name}`,
+        {
+          action: 'save_experiment',
+          experiment_id: experimentId,
+          experiment_name: config.name,
+        },
+        'completed',
+        experimentId
+      );
     }
 
     // ============================================
@@ -413,8 +560,47 @@ async function main() {
       console.log('   To save manually, update config.validation.autoSaveExperiment = true');
     }
     console.log();
+
+    // Log experiment completion
+    await logActivity(
+      pool,
+      'experiment_run',
+      'run-experiment',
+      `Completed experiment: ${config.name} (F1=${(metrics.f1_score * 100).toFixed(1)}%, ${duration}s)`,
+      {
+        action: 'complete',
+        config_name: config.name,
+        duration_s: parseFloat(duration),
+        final_metrics: metrics,
+      },
+      'completed',
+      experimentId || undefined
+    );
   } catch (error) {
     console.error('❌ Error running experiment:', error);
+
+    // Try to log the error
+    try {
+      const pool = (db as any).pool;
+      if (pool) {
+        await logActivity(
+          pool,
+          'error',
+          'run-experiment',
+          `Failed to run experiment: ${error instanceof Error ? error.message : String(error)}`,
+          {
+            error_message: error instanceof Error ? error.message : String(error),
+            error_stack: error instanceof Error ? error.stack : undefined,
+            config_name: config?.name,
+          },
+          'failed',
+          experimentId || undefined
+        );
+      }
+    } catch {
+      // Ignore logging errors
+    }
+
     process.exit(1);
   } finally {
     await db.close();

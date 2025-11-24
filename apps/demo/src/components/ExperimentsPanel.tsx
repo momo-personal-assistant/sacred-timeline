@@ -1,6 +1,10 @@
 'use client';
 
+import { Trophy, GitCommit, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ExperimentConfig {
   name: string;
@@ -40,18 +44,17 @@ interface Experiment {
   name: string;
   description: string;
   config: ExperimentConfig;
-  baseline: boolean;
+  is_baseline: boolean;
   paper_ids: string[];
   git_commit: string | null;
   created_at: string;
   results: ExperimentResults | null;
 }
 
-function getScoreColor(score: number): string {
-  if (score >= 0.6) return '#22c55e'; // green
-  if (score >= 0.4) return '#eab308'; // yellow
-  if (score >= 0.2) return '#f97316'; // orange
-  return '#ef4444'; // red
+function getScoreVariant(score: number): 'default' | 'secondary' | 'destructive' {
+  if (score >= 0.6) return 'default';
+  if (score >= 0.4) return 'secondary';
+  return 'destructive';
 }
 
 export default function ExperimentsPanel() {
@@ -82,43 +85,37 @@ export default function ExperimentsPanel() {
 
   if (loading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
-        Loading experiments...
-      </div>
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Loading experiments...</p>
+        </CardContent>
+      </Card>
     );
   }
 
   if (error) {
     return (
-      <div
-        style={{
-          padding: '1rem',
-          backgroundColor: '#fee2e2',
-          border: '1px solid #ef4444',
-          borderRadius: '4px',
-          color: '#991b1b',
-        }}
-      >
-        Error: {error}
-      </div>
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle className="text-destructive">Error</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-destructive">{error}</p>
+        </CardContent>
+      </Card>
     );
   }
 
   if (experiments.length === 0) {
     return (
-      <div
-        style={{
-          padding: '2rem',
-          textAlign: 'center',
-          backgroundColor: '#f9fafb',
-          borderRadius: '8px',
-        }}
-      >
-        <p style={{ color: '#6b7280', marginBottom: '1rem' }}>No experiments yet</p>
-        <p style={{ fontSize: '0.9rem', color: '#9ca3af' }}>
-          Run `pnpm run experiment` to create your first experiment
-        </p>
-      </div>
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <p className="text-muted-foreground mb-2">No experiments yet</p>
+          <p className="text-sm text-muted-foreground">
+            Run `pnpm run experiment` to create your first experiment
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -131,293 +128,213 @@ export default function ExperimentsPanel() {
       : null;
 
   return (
-    <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-          All Experiments ({experiments.length})
-        </h3>
-        <p style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '1rem' }}>
-          Track and compare different configurations
-        </p>
-
-        {bestExperiment && bestExperiment.results && (
-          <div
-            style={{
-              padding: '1rem',
-              backgroundColor: '#ecfdf5',
-              border: '2px solid #10b981',
-              borderRadius: '8px',
-              marginBottom: '1rem',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div
-                style={{
-                  padding: '0.25rem 0.75rem',
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                }}
-              >
-                BEST
-              </div>
-              {bestExperiment.baseline && (
-                <div
-                  style={{
-                    padding: '0.25rem 0.75rem',
-                    backgroundColor: '#6366f1',
-                    color: 'white',
-                    borderRadius: '12px',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  BASELINE
-                </div>
-              )}
-              <div style={{ fontWeight: 600 }}>{bestExperiment.name}</div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: '#10b981',
-                  marginLeft: 'auto',
-                }}
-              >
-                {(bestExperiment.results.f1_score * 100).toFixed(1)}%
-              </div>
-            </div>
-            {bestExperiment.config &&
-              bestExperiment.config.embedding &&
-              bestExperiment.config.chunking && (
-                <div style={{ fontSize: '0.85rem', color: '#065f46', marginTop: '0.5rem' }}>
-                  {bestExperiment.config.embedding.model} •{' '}
-                  {bestExperiment.config.chunking.strategy}
-                </div>
-              )}
-          </div>
-        )}
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-          {experiments.map((exp) => (
-            <div
-              key={exp.id}
-              onClick={() => setSelectedExperiment(exp)}
-              style={{
-                padding: '1rem',
-                backgroundColor: selectedExperiment?.id === exp.id ? '#eff6ff' : 'white',
-                border: `2px solid ${selectedExperiment?.id === exp.id ? '#3b82f6' : '#e5e7eb'}`,
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}
-              >
-                <div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      marginBottom: '0.25rem',
-                    }}
-                  >
-                    <div style={{ fontWeight: 600 }}>{exp.name}</div>
-                    {exp.baseline && (
-                      <div
-                        style={{
-                          padding: '0.1rem 0.4rem',
-                          backgroundColor: '#6366f1',
-                          color: 'white',
-                          borderRadius: '8px',
-                          fontSize: '0.65rem',
-                          fontWeight: 600,
-                        }}
-                      >
-                        BASE
-                      </div>
-                    )}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>All Experiments ({experiments.length})</CardTitle>
+          <CardDescription>Track and compare different configurations</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {bestExperiment && bestExperiment.results && (
+            <Card className="border-green-500 bg-green-50">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-green-600" />
+                    <Badge className="bg-green-600">BEST</Badge>
+                    {bestExperiment.is_baseline && <Badge variant="secondary">BASELINE</Badge>}
+                    <span className="font-semibold">{bestExperiment.name}</span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                    {new Date(exp.created_at).toLocaleDateString()}
+                  <div className="text-2xl font-bold text-green-600">
+                    {(bestExperiment.results.f1_score * 100).toFixed(1)}%
                   </div>
                 </div>
-                {exp.results && (
-                  <div
-                    style={{
-                      fontSize: '1.5rem',
-                      fontWeight: 700,
-                      color: getScoreColor(exp.results.f1_score),
-                    }}
-                  >
-                    {(exp.results.f1_score * 100).toFixed(1)}%
-                  </div>
+                {bestExperiment.config?.embedding && bestExperiment.config?.chunking && (
+                  <p className="text-sm text-green-700 mt-2">
+                    {bestExperiment.config.embedding.model} •{' '}
+                    {bestExperiment.config.chunking.strategy}
+                  </p>
                 )}
-              </div>
-
-              {exp.config && exp.config.embedding && exp.config.chunking && (
-                <div
-                  style={{
-                    marginTop: '0.5rem',
-                    fontSize: '0.8rem',
-                    color: '#6b7280',
-                  }}
-                >
-                  {exp.config.embedding.model} • {exp.config.chunking.strategy}
-                </div>
-              )}
-
-              {exp.paper_ids && exp.paper_ids.length > 0 && (
-                <div
-                  style={{ marginTop: '0.5rem', display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}
-                >
-                  {exp.paper_ids.map((paperId) => (
-                    <span
-                      key={paperId}
-                      style={{
-                        padding: '0.15rem 0.5rem',
-                        backgroundColor: '#fef3c7',
-                        color: '#92400e',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                      }}
-                    >
-                      Paper {paperId}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {selectedExperiment && selectedExperiment.results && (
-        <div>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>
-            Experiment Details: {selectedExperiment.name}
-          </h3>
-
-          {/* Configuration Summary */}
-          {selectedExperiment.config && (
-            <div
-              style={{
-                padding: '1rem',
-                backgroundColor: '#f9fafb',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                marginBottom: '1rem',
-              }}
-            >
-              <div style={{ fontWeight: 600, marginBottom: '0.75rem' }}>Configuration</div>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: '0.75rem',
-                  fontSize: '0.85rem',
-                }}
-              >
-                {selectedExperiment.config.embedding && (
-                  <div>
-                    <span style={{ color: '#6b7280' }}>Embedding:</span>{' '}
-                    <span style={{ fontWeight: 500 }}>
-                      {selectedExperiment.config.embedding.model} (
-                      {selectedExperiment.config.embedding.dimensions}d)
-                    </span>
-                  </div>
-                )}
-                {selectedExperiment.config.chunking && (
-                  <div>
-                    <span style={{ color: '#6b7280' }}>Chunking:</span>{' '}
-                    <span style={{ fontWeight: 500 }}>
-                      {selectedExperiment.config.chunking.strategy} (
-                      {selectedExperiment.config.chunking.maxChunkSize})
-                    </span>
-                  </div>
-                )}
-                {selectedExperiment.config.retrieval && (
-                  <>
-                    <div>
-                      <span style={{ color: '#6b7280' }}>Similarity Threshold:</span>{' '}
-                      <span style={{ fontWeight: 500 }}>
-                        {selectedExperiment.config.retrieval.similarityThreshold}
-                      </span>
-                    </div>
-                    <div>
-                      <span style={{ color: '#6b7280' }}>Chunk Limit:</span>{' '}
-                      <span style={{ fontWeight: 500 }}>
-                        {selectedExperiment.config.retrieval.chunkLimit}
-                      </span>
-                    </div>
-                  </>
-                )}
-                {selectedExperiment.git_commit && (
-                  <div>
-                    <span style={{ color: '#6b7280' }}>Git Commit:</span>{' '}
-                    <span style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
-                      {selectedExperiment.git_commit.substring(0, 8)}
-                    </span>
-                  </div>
-                )}
-                <div>
-                  <span style={{ color: '#6b7280' }}>Retrieval Time:</span>{' '}
-                  <span style={{ fontWeight: 500 }}>
-                    {selectedExperiment.results.retrieval_time_ms}ms
-                  </span>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           )}
 
-          {/* Results */}
-          <div
-            style={{
-              padding: '1rem',
-              backgroundColor: 'white',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>Performance Metrics</div>
-                <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+          <div className="grid gap-4 md:grid-cols-2">
+            {experiments.map((exp) => (
+              <Card
+                key={exp.id}
+                className={`cursor-pointer transition-colors ${
+                  selectedExperiment?.id === exp.id
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'hover:border-gray-400'
+                }`}
+                onClick={() => setSelectedExperiment(exp)}
+              >
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-base">{exp.name}</CardTitle>
+                      {exp.is_baseline && (
+                        <Badge variant="outline" className="text-xs">
+                          BASE
+                        </Badge>
+                      )}
+                    </div>
+                    {exp.results && (
+                      <Badge variant={getScoreVariant(exp.results.f1_score)} className="text-lg">
+                        {(exp.results.f1_score * 100).toFixed(1)}%
+                      </Badge>
+                    )}
+                  </div>
+                  <CardDescription className="text-xs">
+                    {new Date(exp.created_at).toLocaleDateString()}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {exp.config?.embedding && exp.config?.chunking && (
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {exp.config.embedding.model} • {exp.config.chunking.strategy}
+                    </p>
+                  )}
+                  {exp.paper_ids && exp.paper_ids.length > 0 && (
+                    <div className="flex gap-1 flex-wrap">
+                      {exp.paper_ids.map((paperId) => (
+                        <Badge key={paperId} variant="secondary" className="text-xs">
+                          Paper {paperId}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {selectedExperiment && selectedExperiment.results && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Experiment Details: {selectedExperiment.name}</CardTitle>
+            <CardDescription>{selectedExperiment.description}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {selectedExperiment.config && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Configuration</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {selectedExperiment.config.embedding && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Embedding</p>
+                        <p className="font-medium">
+                          {selectedExperiment.config.embedding.model}
+                          {selectedExperiment.config.embedding.dimensions &&
+                            ` (${selectedExperiment.config.embedding.dimensions}d)`}
+                        </p>
+                      </div>
+                    )}
+                    {selectedExperiment.config.chunking && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Chunking</p>
+                        <p className="font-medium">
+                          {selectedExperiment.config.chunking.strategy}
+                          {selectedExperiment.config.chunking.maxChunkSize &&
+                            ` (${selectedExperiment.config.chunking.maxChunkSize})`}
+                        </p>
+                      </div>
+                    )}
+                    {selectedExperiment.config.retrieval && (
+                      <>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Similarity Threshold</p>
+                          <p className="font-medium">
+                            {selectedExperiment.config.retrieval.similarityThreshold}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Chunk Limit</p>
+                          <p className="font-medium">
+                            {selectedExperiment.config.retrieval.chunkLimit}
+                          </p>
+                        </div>
+                      </>
+                    )}
+                    {selectedExperiment.git_commit && (
+                      <div>
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <GitCommit className="h-3 w-3" />
+                          Git Commit
+                        </p>
+                        <p className="font-mono text-sm">
+                          {selectedExperiment.git_commit.substring(0, 8)}
+                        </p>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        Retrieval Time
+                      </p>
+                      <p className="font-medium">
+                        {selectedExperiment.results.retrieval_time_ms}ms
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Performance Metrics</CardTitle>
+                <CardDescription className="text-xs">
                   TP: {selectedExperiment.results.true_positives} | FP:{' '}
                   {selectedExperiment.results.false_positives} | FN:{' '}
                   {selectedExperiment.results.false_negatives}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-8 justify-center">
+                  <MetricDisplay label="Precision" value={selectedExperiment.results.precision} />
+                  <MetricDisplay label="Recall" value={selectedExperiment.results.recall} />
+                  <MetricDisplay
+                    label="F1 Score"
+                    value={selectedExperiment.results.f1_score}
+                    highlight
+                  />
                 </div>
-              </div>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <MetricBadge label="Precision" value={selectedExperiment.results.precision} />
-                <MetricBadge label="Recall" value={selectedExperiment.results.recall} />
-                <MetricBadge label="F1" value={selectedExperiment.results.f1_score} />
-              </div>
-            </div>
-          </div>
-        </div>
+              </CardContent>
+            </Card>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
 }
 
-function MetricBadge({ label, value }: { label: string; value: number }) {
+function MetricDisplay({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: number;
+  highlight?: boolean;
+}) {
+  const variant = getScoreVariant(value);
+
   return (
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ fontSize: '0.7rem', color: '#6b7280', marginBottom: '0.1rem' }}>{label}</div>
-      <div
-        style={{
-          fontSize: '1.1rem',
-          fontWeight: 700,
-          color: getScoreColor(value),
-        }}
-      >
+    <div className="text-center">
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <div className={`text-3xl font-bold ${highlight ? 'text-primary' : ''}`}>
         {(value * 100).toFixed(0)}%
       </div>
+      <Badge variant={variant} className="mt-1 text-xs">
+        {(value * 100).toFixed(1)}%
+      </Badge>
     </div>
   );
 }

@@ -4,29 +4,20 @@ import { NextResponse } from 'next/server';
 
 dotenv.config();
 
-interface ActivityEvent {
-  id: string;
-  type:
-    | 'paper_added'
-    | 'paper_analyzed'
-    | 'experiment_created'
-    | 'paper_validated'
-    | 'paper_rejected';
-  timestamp: Date;
-  title: string;
+interface ResearchActivity {
+  id: number;
+  operation_type: string;
+  operation_name: string;
   description: string;
-  metadata?: {
-    paper_id?: string;
-    paper_title?: string;
-    experiment_id?: number;
-    experiment_name?: string;
-    f1_before?: number;
-    f1_after?: number;
-    f1_delta?: number;
-    priority?: string;
-    tags?: string[];
-    expected_f1_gain?: number;
-  };
+  status: 'started' | 'completed' | 'failed';
+  triggered_by: string;
+  details: Record<string, any>;
+  git_commit: string | null;
+  parent_log_id: number | null;
+  experiment_id: number | null;
+  duration_ms: number | null;
+  started_at: string;
+  completed_at: string | null;
 }
 
 export async function GET(request: Request) {
@@ -46,152 +37,57 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
-    const days = parseInt(searchParams.get('days') || '7');
+    const operation_type = searchParams.get('operation_type');
 
-    const activities: ActivityEvent[] = [];
-
-    // 1. Paper Added Events
-    const papersAdded = await pool.query(
-      `SELECT
+    let query = `
+      SELECT
         id,
-        filename,
-        title,
-        priority,
-        created_at
-      FROM papers
-      WHERE created_at >= NOW() - INTERVAL '${days} days'
-      ORDER BY created_at DESC
-      LIMIT $1`,
-      [limit]
-    );
-
-    for (const paper of papersAdded.rows) {
-      activities.push({
-        id: `paper_added_${paper.id}`,
-        type: 'paper_added',
-        timestamp: paper.created_at,
-        title: 'Paper Added',
-        description: `${paper.title || paper.filename} (${paper.id})`,
-        metadata: {
-          paper_id: paper.id,
-          paper_title: paper.title,
-          priority: paper.priority,
-        },
-      });
-    }
-
-    // 2. Paper Analyzed Events
-    const papersAnalyzed = await pool.query(
-      `SELECT
-        id,
-        title,
-        filename,
-        tags,
-        expected_f1_gain,
-        priority,
-        analyzed_at
-      FROM papers
-      WHERE analyzed_at IS NOT NULL
-        AND analyzed_at >= NOW() - INTERVAL '${days} days'
-      ORDER BY analyzed_at DESC
-      LIMIT $1`,
-      [limit]
-    );
-
-    for (const paper of papersAnalyzed.rows) {
-      activities.push({
-        id: `paper_analyzed_${paper.id}`,
-        type: 'paper_analyzed',
-        timestamp: paper.analyzed_at,
-        title: 'Paper Analyzed',
-        description: `${paper.title} (${paper.id})`,
-        metadata: {
-          paper_id: paper.id,
-          paper_title: paper.title,
-          tags: paper.tags,
-          expected_f1_gain: paper.expected_f1_gain,
-          priority: paper.priority,
-        },
-      });
-    }
-
-    // 3. Experiment Created Events
-    const experiments = await pool.query(
-      `SELECT
-        e.id,
-        e.name,
-        e.created_at,
-        e.paper_ids,
-        AVG(er.f1_score) as avg_f1_score,
-        STRING_AGG(DISTINCT p.title, ', ') as paper_titles
-      FROM experiments e
-      LEFT JOIN experiment_results er ON e.id = er.experiment_id
-      LEFT JOIN LATERAL unnest(e.paper_ids) AS paper_id ON true
-      LEFT JOIN papers p ON p.id = paper_id
-      WHERE e.created_at >= NOW() - INTERVAL '${days} days'
-      GROUP BY e.id, e.name, e.created_at, e.paper_ids
-      ORDER BY e.created_at DESC
-      LIMIT $1`,
-      [limit]
-    );
-
-    for (const exp of experiments.rows) {
-      activities.push({
-        id: `experiment_${exp.id}`,
-        type: 'experiment_created',
-        timestamp: exp.created_at,
-        title: 'Experiment Created',
-        description: exp.name,
-        metadata: {
-          experiment_id: exp.id,
-          experiment_name: exp.name,
-          f1_after: exp.avg_f1_score,
-          paper_title: exp.paper_titles,
-          paper_id: exp.paper_ids?.[0],
-        },
-      });
-    }
-
-    // 4. Paper Status Changes (Validated/Rejected)
-    const statusChanges = await pool.query(
-      `SELECT
-        id,
-        title,
-        filename,
+        operation_type,
+        operation_name,
+        description,
         status,
-        updated_at
-      FROM papers
-      WHERE status IN ('✅ Validated', '❌ Rejected')
-        AND updated_at >= NOW() - INTERVAL '${days} days'
-      ORDER BY updated_at DESC
-      LIMIT $1`,
-      [limit]
-    );
+        triggered_by,
+        details,
+        git_commit,
+        parent_log_id,
+        experiment_id,
+        duration_ms,
+        started_at,
+        completed_at
+      FROM research_activity_log
+    `;
 
-    for (const paper of statusChanges.rows) {
-      activities.push({
-        id: `paper_status_${paper.id}`,
-        type: paper.status === '✅ Validated' ? 'paper_validated' : 'paper_rejected',
-        timestamp: paper.updated_at,
-        title: paper.status === '✅ Validated' ? 'Paper Validated' : 'Paper Rejected',
-        description: `${paper.title || paper.filename} (${paper.id})`,
-        metadata: {
-          paper_id: paper.id,
-          paper_title: paper.title,
-        },
-      });
+    const params: any[] = [];
+
+    if (operation_type && operation_type !== 'all') {
+      query += ` WHERE operation_type = $1`;
+      params.push(operation_type);
+      query += ` ORDER BY started_at DESC LIMIT $2`;
+      params.push(limit);
+    } else {
+      query += ` ORDER BY started_at DESC LIMIT $1`;
+      params.push(limit);
     }
 
-    // Sort all activities by timestamp
-    activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    const result = await pool.query(query, params);
 
-    // Limit to requested number
-    const limitedActivities = activities.slice(0, limit);
+    const activities: ResearchActivity[] = result.rows.map((row: any) => ({
+      ...row,
+      details: row.details || {},
+    }));
+
+    // Get unique operation types for filter
+    const typesResult = await pool.query(`
+      SELECT DISTINCT operation_type
+      FROM research_activity_log
+      ORDER BY operation_type
+    `);
+    const operationTypes: string[] = typesResult.rows.map((row: any) => row.operation_type);
 
     return NextResponse.json({
-      activities: limitedActivities,
-      total: limitedActivities.length,
-      days,
+      activities,
+      total: activities.length,
+      operationTypes,
     });
   } catch (error: any) {
     console.error('Activity feed error:', error);

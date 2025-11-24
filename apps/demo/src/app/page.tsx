@@ -3,8 +3,10 @@
 import { useState } from 'react';
 
 import ActivityFeed from '@/components/ActivityFeed';
+import { AppSidebar } from '@/components/app-sidebar';
 import ExperimentsPanel from '@/components/ExperimentsPanel';
 import QueryPanel from '@/components/QueryPanel';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import ValidationPanel from '@/components/ValidationPanel';
 
 export default function Home() {
@@ -13,102 +15,11 @@ export default function Home() {
   );
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-      <header
-        style={{
-          backgroundColor: 'white',
-          borderBottom: '1px solid #e0e0e0',
-          padding: '1rem 2rem',
-        }}
-      >
-        <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>
-          Persistent Memory RAG - Demo
-        </h1>
-        <p style={{ margin: '0.5rem 0 0 0', color: '#666', fontSize: '0.9rem' }}>
-          Week 2: Embedding & Retrieval Layer
-        </p>
-      </header>
-
-      <div style={{ padding: '2rem' }}>
-        <div
-          style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            maxWidth: '1200px',
-            margin: '0 auto',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              borderBottom: '1px solid #e0e0e0',
-            }}
-          >
-            <button
-              onClick={() => setActiveTab('query')}
-              style={{
-                flex: 1,
-                padding: '1rem',
-                border: 'none',
-                backgroundColor: activeTab === 'query' ? 'white' : '#f5f5f5',
-                borderBottom: activeTab === 'query' ? '2px solid #2563eb' : 'none',
-                fontWeight: activeTab === 'query' ? 600 : 400,
-                cursor: 'pointer',
-                fontSize: '1rem',
-              }}
-            >
-              Query Interface
-            </button>
-            <button
-              onClick={() => setActiveTab('validate')}
-              style={{
-                flex: 1,
-                padding: '1rem',
-                border: 'none',
-                backgroundColor: activeTab === 'validate' ? 'white' : '#f5f5f5',
-                borderBottom: activeTab === 'validate' ? '2px solid #2563eb' : 'none',
-                fontWeight: activeTab === 'validate' ? 600 : 400,
-                cursor: 'pointer',
-                fontSize: '1rem',
-              }}
-            >
-              Validation Metrics
-            </button>
-            <button
-              onClick={() => setActiveTab('experiments')}
-              style={{
-                flex: 1,
-                padding: '1rem',
-                border: 'none',
-                backgroundColor: activeTab === 'experiments' ? 'white' : '#f5f5f5',
-                borderBottom: activeTab === 'experiments' ? '2px solid #2563eb' : 'none',
-                fontWeight: activeTab === 'experiments' ? 600 : 400,
-                cursor: 'pointer',
-                fontSize: '1rem',
-              }}
-            >
-              Experiments
-            </button>
-            <button
-              onClick={() => setActiveTab('activity')}
-              style={{
-                flex: 1,
-                padding: '1rem',
-                border: 'none',
-                backgroundColor: activeTab === 'activity' ? 'white' : '#f5f5f5',
-                borderBottom: activeTab === 'activity' ? '2px solid #2563eb' : 'none',
-                fontWeight: activeTab === 'activity' ? 600 : 400,
-                cursor: 'pointer',
-                fontSize: '1rem',
-              }}
-            >
-              Activity
-            </button>
-          </div>
-
-          <div style={{ padding: '2rem' }}>
+    <SidebarProvider>
+      <AppSidebar variant="inset" activeTab={activeTab} onTabChange={setActiveTab} />
+      <SidebarInset>
+        <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
             {activeTab === 'query' ? (
               <QueryPanel />
             ) : activeTab === 'validate' ? (
@@ -116,11 +27,11 @@ export default function Home() {
             ) : activeTab === 'experiments' ? (
               <ExperimentsPanel />
             ) : (
-              <ActivityFeed />
+              <ActivityFeed onNavigateToExperiment={() => setActiveTab('experiments')} />
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
