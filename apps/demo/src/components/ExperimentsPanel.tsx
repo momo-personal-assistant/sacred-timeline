@@ -1,9 +1,13 @@
 'use client';
 
-import { Trophy, GitCommit, Clock } from 'lucide-react';
+import { Trophy, GitCommit, Clock, BarChart3 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+import ExperimentComparisonChart from '@/components/charts/ExperimentComparisonChart';
+import ExperimentTimelineChart from '@/components/charts/ExperimentTimelineChart';
+import PrecisionRecallScatter from '@/components/charts/PrecisionRecallScatter';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ExperimentConfig {
@@ -62,6 +66,7 @@ export default function ExperimentsPanel() {
   const [selectedExperiment, setSelectedExperiment] = useState<Experiment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   useEffect(() => {
     fetchExperiments();
@@ -76,8 +81,8 @@ export default function ExperimentsPanel() {
       if (data.experiments.length > 0 && !selectedExperiment) {
         setSelectedExperiment(data.experiments[0]);
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -119,20 +124,63 @@ export default function ExperimentsPanel() {
     );
   }
 
-  const experimentsWithResults = experiments.filter((exp) => exp.results !== null);
+  const experimentsWithResults = experiments.filter(
+    (exp): exp is Experiment & { results: ExperimentResults } => exp.results !== null
+  );
   const bestExperiment =
     experimentsWithResults.length > 0
       ? experimentsWithResults.reduce((best, exp) =>
-          exp.results!.f1_score > best.results!.f1_score ? exp : best
+          exp.results.f1_score > best.results.f1_score ? exp : best
         )
       : null;
 
   return (
     <div className="space-y-6">
+      {/* Analytics Toggle */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Experiments</h2>
+          <p className="text-muted-foreground">
+            Track and compare different configurations • {experiments.length} total
+          </p>
+        </div>
+        <Button
+          variant={showAnalytics ? 'default' : 'outline'}
+          onClick={() => setShowAnalytics(!showAnalytics)}
+          className="gap-2"
+        >
+          <BarChart3 className="h-4 w-4" />
+          {showAnalytics ? 'Hide' : 'Show'} Analytics
+        </Button>
+      </div>
+
+      {/* Analytics Section */}
+      {showAnalytics && (
+        <div className="space-y-4">
+          {/* Timeline Chart - Full Width */}
+          <ExperimentTimelineChart
+            experiments={experiments}
+            onExperimentClick={setSelectedExperiment}
+          />
+
+          {/* Comparison and Scatter - Side by Side */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <ExperimentComparisonChart
+              experiments={experiments}
+              onExperimentClick={setSelectedExperiment}
+            />
+            <PrecisionRecallScatter
+              experiments={experiments}
+              onExperimentClick={setSelectedExperiment}
+            />
+          </div>
+        </div>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>All Experiments ({experiments.length})</CardTitle>
-          <CardDescription>Track and compare different configurations</CardDescription>
+          <CardDescription>Click on any experiment to see details</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {bestExperiment && bestExperiment.results && (
