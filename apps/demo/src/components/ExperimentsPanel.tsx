@@ -2,30 +2,49 @@
 
 import { useState, useEffect } from 'react';
 
-interface Experiment {
-  id: number;
+interface ExperimentConfig {
   name: string;
-  description?: string;
-  created_at: string;
-  embedding_model?: string;
-  chunking_strategy?: string;
-  similarity_threshold?: number;
-  keyword_overlap_threshold?: number;
-  chunk_limit?: number;
-  tags?: string[];
-  is_baseline?: boolean;
-  avg_f1_score: number;
-  result_count: number;
+  description: string;
+  embedding: {
+    model: string;
+    dimensions?: number;
+    batchSize?: number;
+  };
+  chunking: {
+    strategy: string;
+    maxChunkSize?: number;
+    overlap?: number;
+  };
+  retrieval: {
+    similarityThreshold?: number;
+    chunkLimit?: number;
+  };
+  relationInference: {
+    keywordOverlapThreshold?: number;
+    useSemanticSimilarity?: boolean;
+  };
 }
 
-interface ExperimentResult {
-  scenario: string;
+interface ExperimentResults {
+  f1_score: number;
   precision: number;
   recall: number;
-  f1_score: number;
   true_positives: number;
   false_positives: number;
   false_negatives: number;
+  retrieval_time_ms: number;
+}
+
+interface Experiment {
+  id: number;
+  name: string;
+  description: string;
+  config: ExperimentConfig;
+  baseline: boolean;
+  paper_ids: string[];
+  git_commit: string | null;
+  created_at: string;
+  results: ExperimentResults | null;
 }
 
 function getScoreColor(score: number): string {
@@ -37,11 +56,7 @@ function getScoreColor(score: number): string {
 
 export default function ExperimentsPanel() {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
-  const [selectedExperiment, setSelectedExperiment] = useState<number | null>(null);
-  const [experimentDetails, setExperimentDetails] = useState<{
-    experiment: Experiment;
-    results: ExperimentResult[];
-  } | null>(null);
+  const [selectedExperiment, setSelectedExperiment] = useState<Experiment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,36 +64,19 @@ export default function ExperimentsPanel() {
     fetchExperiments();
   }, []);
 
-  useEffect(() => {
-    if (selectedExperiment) {
-      fetchExperimentDetails(selectedExperiment);
-    }
-  }, [selectedExperiment]);
-
   const fetchExperiments = async () => {
     try {
       const response = await fetch('/api/experiments');
       if (!response.ok) throw new Error('Failed to fetch experiments');
       const data = await response.json();
-      setExperiments(data);
-      if (data.length > 0 && !selectedExperiment) {
-        setSelectedExperiment(data[0].id);
+      setExperiments(data.experiments);
+      if (data.experiments.length > 0 && !selectedExperiment) {
+        setSelectedExperiment(data.experiments[0]);
       }
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchExperimentDetails = async (id: number) => {
-    try {
-      const response = await fetch(`/api/experiments/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch experiment details');
-      const data = await response.json();
-      setExperimentDetails(data);
-    } catch (err: any) {
-      setError(err.message);
     }
   };
 
@@ -118,15 +116,19 @@ export default function ExperimentsPanel() {
       >
         <p style={{ color: '#6b7280', marginBottom: '1rem' }}>No experiments yet</p>
         <p style={{ fontSize: '0.9rem', color: '#9ca3af' }}>
-          Run a validation test to create your first experiment
+          Run `pnpm run experiment` to create your first experiment
         </p>
       </div>
     );
   }
 
-  const bestExperiment = experiments.reduce((best, exp) =>
-    exp.avg_f1_score > best.avg_f1_score ? exp : best
-  );
+  const experimentsWithResults = experiments.filter((exp) => exp.results !== null);
+  const bestExperiment =
+    experimentsWithResults.length > 0
+      ? experimentsWithResults.reduce((best, exp) =>
+          exp.results!.f1_score > best.results!.f1_score ? exp : best
+        )
+      : null;
 
   return (
     <div>
@@ -138,7 +140,7 @@ export default function ExperimentsPanel() {
           Track and compare different configurations
         </p>
 
-        {bestExperiment && (
+        {bestExperiment && bestExperiment.results && (
           <div
             style={{
               padding: '1rem',
@@ -161,14 +163,40 @@ export default function ExperimentsPanel() {
               >
                 BEST
               </div>
+              {bestExperiment.baseline && (
+                <div
+                  style={{
+                    padding: '0.25rem 0.75rem',
+                    backgroundColor: '#6366f1',
+                    color: 'white',
+                    borderRadius: '12px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  BASELINE
+                </div>
+              )}
               <div style={{ fontWeight: 600 }}>{bestExperiment.name}</div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10b981', marginLeft: 'auto' }}>
-                {(bestExperiment.avg_f1_score * 100).toFixed(1)}%
+              <div
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#10b981',
+                  marginLeft: 'auto',
+                }}
+              >
+                {(bestExperiment.results.f1_score * 100).toFixed(1)}%
               </div>
             </div>
-            <div style={{ fontSize: '0.85rem', color: '#065f46', marginTop: '0.5rem' }}>
-              {bestExperiment.embedding_model} + {bestExperiment.chunking_strategy}
-            </div>
+            {bestExperiment.config &&
+              bestExperiment.config.embedding &&
+              bestExperiment.config.chunking && (
+                <div style={{ fontSize: '0.85rem', color: '#065f46', marginTop: '0.5rem' }}>
+                  {bestExperiment.config.embedding.model} •{' '}
+                  {bestExperiment.config.chunking.strategy}
+                </div>
+              )}
           </div>
         )}
 
@@ -176,35 +204,62 @@ export default function ExperimentsPanel() {
           {experiments.map((exp) => (
             <div
               key={exp.id}
-              onClick={() => setSelectedExperiment(exp.id)}
+              onClick={() => setSelectedExperiment(exp)}
               style={{
                 padding: '1rem',
-                backgroundColor: selectedExperiment === exp.id ? '#eff6ff' : 'white',
-                border: `2px solid ${selectedExperiment === exp.id ? '#3b82f6' : '#e5e7eb'}`,
+                backgroundColor: selectedExperiment?.id === exp.id ? '#eff6ff' : 'white',
+                border: `2px solid ${selectedExperiment?.id === exp.id ? '#3b82f6' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}
+              >
                 <div>
-                  <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{exp.name}</div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    <div style={{ fontWeight: 600 }}>{exp.name}</div>
+                    {exp.baseline && (
+                      <div
+                        style={{
+                          padding: '0.1rem 0.4rem',
+                          backgroundColor: '#6366f1',
+                          color: 'white',
+                          borderRadius: '8px',
+                          fontSize: '0.65rem',
+                          fontWeight: 600,
+                        }}
+                      >
+                        BASE
+                      </div>
+                    )}
+                  </div>
                   <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                     {new Date(exp.created_at).toLocaleDateString()}
                   </div>
                 </div>
-                <div
-                  style={{
-                    fontSize: '1.5rem',
-                    fontWeight: 700,
-                    color: getScoreColor(exp.avg_f1_score),
-                  }}
-                >
-                  {(exp.avg_f1_score * 100).toFixed(1)}%
-                </div>
+                {exp.results && (
+                  <div
+                    style={{
+                      fontSize: '1.5rem',
+                      fontWeight: 700,
+                      color: getScoreColor(exp.results.f1_score),
+                    }}
+                  >
+                    {(exp.results.f1_score * 100).toFixed(1)}%
+                  </div>
+                )}
               </div>
 
-              {exp.embedding_model && (
+              {exp.config && exp.config.embedding && exp.config.chunking && (
                 <div
                   style={{
                     marginTop: '0.5rem',
@@ -212,24 +267,26 @@ export default function ExperimentsPanel() {
                     color: '#6b7280',
                   }}
                 >
-                  {exp.embedding_model} • {exp.chunking_strategy}
+                  {exp.config.embedding.model} • {exp.config.chunking.strategy}
                 </div>
               )}
 
-              {exp.tags && exp.tags.length > 0 && (
-                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                  {exp.tags.map((tag) => (
+              {exp.paper_ids && exp.paper_ids.length > 0 && (
+                <div
+                  style={{ marginTop: '0.5rem', display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}
+                >
+                  {exp.paper_ids.map((paperId) => (
                     <span
-                      key={tag}
+                      key={paperId}
                       style={{
                         padding: '0.15rem 0.5rem',
-                        backgroundColor: '#f3f4f6',
-                        color: '#6b7280',
+                        backgroundColor: '#fef3c7',
+                        color: '#92400e',
                         borderRadius: '4px',
                         fontSize: '0.7rem',
                       }}
                     >
-                      {tag}
+                      Paper {paperId}
                     </span>
                   ))}
                 </div>
@@ -239,40 +296,108 @@ export default function ExperimentsPanel() {
         </div>
       </div>
 
-      {experimentDetails && (
+      {selectedExperiment && selectedExperiment.results && (
         <div>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>
-            Results by Scenario
+            Experiment Details: {selectedExperiment.name}
           </h3>
 
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {experimentDetails.results.map((result) => (
+          {/* Configuration Summary */}
+          {selectedExperiment.config && (
+            <div
+              style={{
+                padding: '1rem',
+                backgroundColor: '#f9fafb',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                marginBottom: '1rem',
+              }}
+            >
+              <div style={{ fontWeight: 600, marginBottom: '0.75rem' }}>Configuration</div>
               <div
-                key={result.scenario}
                 style={{
-                  padding: '1rem',
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '0.75rem',
+                  fontSize: '0.85rem',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {selectedExperiment.config.embedding && (
                   <div>
-                    <div style={{ fontWeight: 600, marginBottom: '0.25rem', textTransform: 'capitalize' }}>
-                      {result.scenario.replace(/_/g, ' ')}
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-                      TP: {result.true_positives} | FP: {result.false_positives} | FN: {result.false_negatives}
-                    </div>
+                    <span style={{ color: '#6b7280' }}>Embedding:</span>{' '}
+                    <span style={{ fontWeight: 500 }}>
+                      {selectedExperiment.config.embedding.model} (
+                      {selectedExperiment.config.embedding.dimensions}d)
+                    </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <MetricBadge label="P" value={result.precision} />
-                    <MetricBadge label="R" value={result.recall} />
-                    <MetricBadge label="F1" value={result.f1_score} />
+                )}
+                {selectedExperiment.config.chunking && (
+                  <div>
+                    <span style={{ color: '#6b7280' }}>Chunking:</span>{' '}
+                    <span style={{ fontWeight: 500 }}>
+                      {selectedExperiment.config.chunking.strategy} (
+                      {selectedExperiment.config.chunking.maxChunkSize})
+                    </span>
                   </div>
+                )}
+                {selectedExperiment.config.retrieval && (
+                  <>
+                    <div>
+                      <span style={{ color: '#6b7280' }}>Similarity Threshold:</span>{' '}
+                      <span style={{ fontWeight: 500 }}>
+                        {selectedExperiment.config.retrieval.similarityThreshold}
+                      </span>
+                    </div>
+                    <div>
+                      <span style={{ color: '#6b7280' }}>Chunk Limit:</span>{' '}
+                      <span style={{ fontWeight: 500 }}>
+                        {selectedExperiment.config.retrieval.chunkLimit}
+                      </span>
+                    </div>
+                  </>
+                )}
+                {selectedExperiment.git_commit && (
+                  <div>
+                    <span style={{ color: '#6b7280' }}>Git Commit:</span>{' '}
+                    <span style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                      {selectedExperiment.git_commit.substring(0, 8)}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <span style={{ color: '#6b7280' }}>Retrieval Time:</span>{' '}
+                  <span style={{ fontWeight: 500 }}>
+                    {selectedExperiment.results.retrieval_time_ms}ms
+                  </span>
                 </div>
               </div>
-            ))}
+            </div>
+          )}
+
+          {/* Results */}
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>Performance Metrics</div>
+                <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                  TP: {selectedExperiment.results.true_positives} | FP:{' '}
+                  {selectedExperiment.results.false_positives} | FN:{' '}
+                  {selectedExperiment.results.false_negatives}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <MetricBadge label="Precision" value={selectedExperiment.results.precision} />
+                <MetricBadge label="Recall" value={selectedExperiment.results.recall} />
+                <MetricBadge label="F1" value={selectedExperiment.results.f1_score} />
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -1,22 +1,22 @@
 {
-  "generated_at": "2025-11-23T05:48:37.956Z",
+  "generated_at": "2025-11-24T06:22:32.349Z",
   "config": {
     "linearCount": 100,
     "zendeskCount": 100,
     "includeSubIssues": true,
-    "outputDir": "/Users/williamjung/conductor/sacred-timeline/.conductor/rome/data"
+    "outputDir": "/Users/williamjung/conductor/sacred-timeline/.conductor/harare/data"
   },
   "linear": {
     "total_issues": 110,
-    "total_comments": 776,
-    "avg_comments_per_issue": 7.1,
+    "total_comments": 892,
+    "avg_comments_per_issue": 8.1,
     "with_sub_issues": 10
   },
   "zendesk": {
     "total_tickets": 100,
-    "total_comments": 946,
-    "avg_comments_per_ticket": 9.5,
-    "with_attachments": 61
+    "total_comments": 823,
+    "avg_comments_per_ticket": 8.2,
+    "with_attachments": 57
   },
   "worst_cases": {
     "total_cases": 20,
