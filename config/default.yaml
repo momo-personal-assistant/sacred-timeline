@@ -1,0 +1,52 @@
+# Baseline Configuration
+# This represents the current production setup
+# Current F1 Score: 65.9%
+
+name: "baseline"
+description: "Current production configuration"
+created_at: "2025-11-24"
+
+# Embedding Configuration
+embedding:
+  model: "text-embedding-3-small"      # OpenAI embedding model
+  dimensions: 1536                      # Vector dimensions (1536 for small, 3072 for large)
+  batchSize: 100                        # Batch size for embedding generation
+
+# Chunking Configuration
+chunking:
+  strategy: "semantic"                  # fixed-size | semantic | relational
+  maxChunkSize: 500                     # Maximum characters per chunk
+  overlap: 50                           # Character overlap between chunks
+  preserveMetadata: true                # Include metadata in chunks
+
+# Retrieval Configuration
+retrieval:
+  similarityThreshold: 0.35             # Cosine similarity threshold (0-1)
+  chunkLimit: 20                        # Maximum chunks to retrieve
+  includeRelations: true                # Enable relation-based expansion
+  relationDepth: 1                      # Graph traversal depth
+
+# Relation Inference Configuration
+relationInference:
+  similarityThreshold: 0.85             # Threshold for semantic similarity (0-1)
+  keywordOverlapThreshold: 0.65         # Threshold for keyword-based Jaccard similarity (0-1)
+  includeInferred: true                 # Include computed relations (vs only explicit)
+  useSemanticSimilarity: false          # Use embedding-based similarity (requires embeddings)
+  semanticWeight: 0.7                   # Weight for semantic vs keyword (0=keyword only, 1=semantic only)
+
+# Validation Configuration
+validation:
+  runOnSave: true                       # Automatically run validation after embedding
+  autoSaveExperiment: false             # Automatically save to experiments table (usually false for manual review)
+  scenarios:                            # Validation scenarios to run
+    - "normal"
+    - "sales_heavy"
+    - "dev_heavy"
+    - "pattern"
+    - "stress"
+
+# Metadata
+metadata:
+  baseline: true                        # Mark as baseline configuration
+  git_commit: null                      # Auto-populated by run-experiment script
+  paper_ids: []                         # Link to research papers (if any)

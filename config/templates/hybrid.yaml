@@ -1,0 +1,49 @@
+# Hybrid Search Experiment Template
+# Use this to enable combined semantic + keyword search
+
+name: "hybrid-search-experiment"
+description: "Experiment with hybrid search (semantic embeddings + keyword matching)"
+
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.35
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+relationInference:
+  similarityThreshold: 0.80             # Slightly lower for hybrid approach
+  keywordOverlapThreshold: 0.60         # Slightly lower for hybrid approach
+  includeInferred: true
+  useSemanticSimilarity: true           # ENABLE semantic similarity
+  semanticWeight: 0.7                   # Try: 0.5 (balanced), 0.7 (semantic-heavy), 0.3 (keyword-heavy)
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: false
+  scenarios:
+    - "normal"
+    - "sales_heavy"
+    - "dev_heavy"
+
+metadata:
+  baseline: false
+  git_commit: null
+  paper_ids: []
+
+# Expected Impact:
+# - useSemanticSimilarity: true enables hybrid approach
+# - semanticWeight: 0.7 means 70% semantic + 30% keyword
+# - Can catch both semantic matches AND exact keyword matches
+# - Anthropic's research shows 5.7% improvement for hybrid vs vector-only
+# - Expected F1 improvement: +5-8%

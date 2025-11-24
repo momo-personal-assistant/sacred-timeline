@@ -1,0 +1,48 @@
+# Chunking Experiment Template
+# Use this to experiment with chunk size and overlap parameters
+
+name: "chunking-experiment"
+description: "Experiment with different chunking strategies and parameters"
+
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"                  # Try: fixed-size | semantic | relational
+  maxChunkSize: 768                     # Try: 256, 512, 768, 1024
+  overlap: 75                           # Try: 25, 50, 75, 100
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.35
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+relationInference:
+  similarityThreshold: 0.85
+  keywordOverlapThreshold: 0.65
+  includeInferred: true
+  useSemanticSimilarity: false
+  semanticWeight: 0.7
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: false
+  scenarios:
+    - "normal"
+    - "sales_heavy"
+    - "dev_heavy"
+
+metadata:
+  baseline: false
+  git_commit: null
+  paper_ids: []
+
+# Expected Impact:
+# - Larger chunks (768-1024): Better context, fewer chunks, may lose precision
+# - Smaller chunks (256-512): More granular, more chunks, better precision
+# - Higher overlap (75-100): Better continuity, more redundancy
+# - Lower overlap (25-50): Less redundancy, faster embedding
