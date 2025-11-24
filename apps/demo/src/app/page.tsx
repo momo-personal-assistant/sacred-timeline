@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 
+import ActivityFeed from '@/components/ActivityFeed';
 import ExperimentsPanel from '@/components/ExperimentsPanel';
 import QueryPanel from '@/components/QueryPanel';
 import ValidationPanel from '@/components/ValidationPanel';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'query' | 'validate' | 'experiments'>('query');
+  const [activeTab, setActiveTab] = useState<'query' | 'validate' | 'experiments' | 'activity'>(
+    'query'
+  );
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
@@ -33,6 +36,8 @@ export default function Home() {
             borderRadius: '8px',
             overflow: 'hidden',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            maxWidth: '1200px',
+            margin: '0 auto',
           }}
         >
           <div
@@ -86,6 +91,21 @@ export default function Home() {
             >
               Experiments
             </button>
+            <button
+              onClick={() => setActiveTab('activity')}
+              style={{
+                flex: 1,
+                padding: '1rem',
+                border: 'none',
+                backgroundColor: activeTab === 'activity' ? 'white' : '#f5f5f5',
+                borderBottom: activeTab === 'activity' ? '2px solid #2563eb' : 'none',
+                fontWeight: activeTab === 'activity' ? 600 : 400,
+                cursor: 'pointer',
+                fontSize: '1rem',
+              }}
+            >
+              Activity
+            </button>
           </div>
 
           <div style={{ padding: '2rem' }}>
@@ -93,8 +113,10 @@ export default function Home() {
               <QueryPanel />
             ) : activeTab === 'validate' ? (
               <ValidationPanel />
-            ) : (
+            ) : activeTab === 'experiments' ? (
               <ExperimentsPanel />
+            ) : (
+              <ActivityFeed />
             )}
           </div>
         </div>
