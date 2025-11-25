@@ -78,7 +78,7 @@ export function AppRightSidebar({
 
   return (
     <Sidebar side="right" collapsible="none" {...props}>
-      <SidebarHeader className="px-2">
+      <SidebarHeader className="px-3 border-b">
         <div className="flex gap-1">
           <SidebarMenuButton
             isActive={sidebarTab === 'experiment'}
@@ -102,7 +102,7 @@ export function AppRightSidebar({
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup className="p-0">
-          <SidebarGroupContent className="p-2">
+          <SidebarGroupContent className="px-4 py-3">
             {sidebarTab === 'experiment' ? (
               <ExperimentDetailPanel
                 experiment={selectedExperiment}

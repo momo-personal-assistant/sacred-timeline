@@ -323,6 +323,15 @@ export class RelationInferrer {
       return [];
     }
 
+    // Debug logging
+    console.log(`\n[RelationInferrer] inferSimilarityWithEmbeddings called:`);
+    console.log(`  - Objects: ${objects.length}`);
+    console.log(`  - Embeddings available: ${embeddings.size}`);
+    console.log(`  - useSemanticSimilarity: ${this.options.useSemanticSimilarity}`);
+    console.log(`  - semanticWeight: ${this.options.semanticWeight}`);
+    console.log(`  - similarityThreshold: ${this.options.similarityThreshold}`);
+    console.log(`  - keywordOverlapThreshold: ${this.options.keywordOverlapThreshold}`);
+
     const relations: Relation[] = [];
 
     // Build keyword index (same as before)
@@ -358,10 +367,15 @@ export class RelationInferrer {
     }
 
     // Compare all pairs with combined similarity
+    let pairCount = 0;
+    let semanticPairCount = 0;
+    let passedThresholdCount = 0;
+
     for (let i = 0; i < objects.length; i++) {
       for (let j = i + 1; j < objects.length; j++) {
         const obj1 = objects[i];
         const obj2 = objects[j];
+        pairCount++;
 
         // Calculate keyword similarity
         const keywords1 = objectKeywords.get(obj1.id);
@@ -381,6 +395,14 @@ export class RelationInferrer {
 
         if (this.options.useSemanticSimilarity && emb1 && emb2) {
           semanticSim = this.cosineSimilarity(emb1, emb2);
+          semanticPairCount++;
+
+          // Log first few semantic comparisons for debugging
+          if (semanticPairCount <= 3) {
+            console.log(`    Pair ${semanticPairCount}: ${obj1.title} <-> ${obj2.title}`);
+            console.log(`      Keyword sim: ${keywordSim.toFixed(3)}`);
+            console.log(`      Semantic sim: ${semanticSim.toFixed(3)}`);
+          }
         }
 
         // Combine similarities based on weight
@@ -396,7 +418,15 @@ export class RelationInferrer {
             ? this.options.similarityThreshold
             : this.options.keywordOverlapThreshold;
 
+        // Log first few comparisons with combined similarity
+        if (pairCount <= 3) {
+          console.log(`      Combined sim: ${combinedSim.toFixed(3)}`);
+          console.log(`      Threshold: ${threshold.toFixed(3)}`);
+          console.log(`      Passed: ${combinedSim >= threshold ? 'YES' : 'NO'}`);
+        }
+
         if (combinedSim >= threshold) {
+          passedThresholdCount++;
           const metadata: Record<string, any> = {
             combined_similarity: combinedSim,
           };
@@ -435,6 +465,12 @@ export class RelationInferrer {
         }
       }
     }
+
+    console.log(`\n[RelationInferrer] Summary:`);
+    console.log(`  - Total pairs compared: ${pairCount}`);
+    console.log(`  - Pairs with semantic similarity: ${semanticPairCount}`);
+    console.log(`  - Pairs that passed threshold: ${passedThresholdCount}`);
+    console.log(`  - Relations created: ${relations.length}`);
 
     return relations;
   }

@@ -76,7 +76,7 @@ function PropertyRow({
 
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide pt-3 pb-1.5 first:pt-0">
+    <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide pt-4 pb-2 mt-3 border-t first:border-t-0 first:mt-0 first:pt-0">
       {children}
     </div>
   );

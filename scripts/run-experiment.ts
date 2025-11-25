@@ -124,8 +124,43 @@ async function validateRelations(
   // Fetch all canonical objects
   const objects = await db.searchCanonicalObjects({}, 1000);
 
-  // Infer relations
-  const inferred = inferrer.inferAll(objects);
+  // Fetch embeddings for each canonical object (average of chunk embeddings)
+  console.log('Fetching embeddings for canonical objects...');
+  const embeddingsMap = new Map<string, number[]>();
+  for (const obj of objects) {
+    // Get chunks for this object
+    const chunks = await pool.query(
+      'SELECT embedding FROM chunks WHERE canonical_object_id = $1 AND embedding IS NOT NULL',
+      [obj.id]
+    );
+
+    if (chunks.rows.length > 0) {
+      // Average the embeddings
+      const embeddings = chunks.rows.map((row) => {
+        // pgvector returns embeddings as arrays directly
+        const emb = row.embedding;
+        // If it's a string (e.g., "[0.1, 0.2, ...]"), parse it
+        if (typeof emb === 'string') {
+          return JSON.parse(emb);
+        }
+        return emb;
+      });
+
+      // Calculate average embedding
+      const dimensions = embeddings[0].length;
+      const avgEmbedding = new Array(dimensions);
+      for (let i = 0; i < dimensions; i++) {
+        avgEmbedding[i] =
+          embeddings.reduce((sum: number, emb: number[]) => sum + emb[i], 0) / embeddings.length;
+      }
+
+      embeddingsMap.set(obj.id, avgEmbedding);
+    }
+  }
+  console.log(`   Loaded embeddings for ${embeddingsMap.size}/${objects.length} objects`);
+
+  // Infer relations WITH EMBEDDINGS
+  const inferred = inferrer.inferAllWithEmbeddings(objects, embeddingsMap);
 
   // Fetch ground truth
   const groundTruthResult = await pool.query(
