@@ -1,20 +1,11 @@
 'use client';
 
-import { BarChart3, LayoutGrid, GitCompare } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 import ConfigDiffView from '@/components/charts/ConfigDiffView';
-import ExperimentComparisonChart from '@/components/charts/ExperimentComparisonChart';
 import ExperimentTimelineChart from '@/components/charts/ExperimentTimelineChart';
-import PrecisionRecallScatter from '@/components/charts/PrecisionRecallScatter';
 import RelationGraphView from '@/components/charts/RelationGraphView';
-import SimilarExperimentsTable from '@/components/charts/SimilarExperimentsTable';
-import ExperimentDetailPanel from '@/components/ExperimentDetailPanel';
-import SystemStatusPanel from '@/components/SystemStatusPanel';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ExperimentConfig {
   name: string;
@@ -93,23 +84,21 @@ export default function ExperimentsPanel({
     }
   };
 
-  // Derive selected experiment from prop
   const selectedExperiment = selectedExperimentId
     ? experiments.find((exp) => exp.id === selectedExperimentId) || null
     : null;
 
-  // Handler for chart clicks - convert experiment object to ID
   const handleExperimentClick = (experiment: Experiment) => {
     onExperimentSelect?.(experiment.id);
   };
 
+  const baselineExperiment = experiments.find((exp) => exp.is_baseline) || null;
+
   if (loading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading experiments...</p>
-        </CardContent>
-      </Card>
+      <div className="h-full flex items-center justify-center">
+        <p className="text-muted-foreground">Loading experiments...</p>
+      </div>
     );
   }
 
@@ -139,125 +128,40 @@ export default function ExperimentsPanel({
     );
   }
 
-  const baselineExperiment = experiments.find((exp) => exp.is_baseline) || null;
-
   return (
-    <Tabs defaultValue="experiments" className="space-y-3">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold leading-tight">Experiments</h2>
-          <p className="text-xs text-muted-foreground leading-[1.5]">
-            Track and compare different configurations • {experiments.length} total
-          </p>
-        </div>
+    <div className="flex flex-col h-[calc(100vh-180px)]">
+      {/* Central Graph Visualization - Always Visible */}
+      <div className="flex-1 min-h-0">
+        <RelationGraphView
+          experimentConfig={selectedExperiment?.config?.relationInference}
+          experiments={experiments.map((e) => ({ id: e.id, name: e.name }))}
+          selectedExperimentId={selectedExperimentId}
+          onExperimentChange={onExperimentSelect}
+          className="h-full"
+        />
       </div>
 
-      {/* Tabs Navigation */}
-      <TabsList>
-        <TabsTrigger value="experiments" className="gap-2">
-          <BarChart3 className="h-4 w-4" />
-          Experiments
-        </TabsTrigger>
-        <TabsTrigger value="system" className="gap-2">
-          System Status
-        </TabsTrigger>
-      </TabsList>
-
-      {/* Experiments Tab - Dynamic Layout based on selection */}
-      <TabsContent value="experiments" className="space-y-0">
-        {/* Mode Indicator */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="inline-flex items-center gap-2">
-            {selectedExperiment ? (
-              <>
-                <GitCompare className="h-4 w-4 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Analysis Mode:</span>
-                <Badge variant="secondary" className="text-xs h-[18px] font-medium">
-                  {selectedExperiment.name}
-                </Badge>
-              </>
-            ) : (
-              <>
-                <LayoutGrid className="h-4 w-4 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">
-                  Overview Mode - Select an experiment from the sidebar to analyze
-                </span>
-              </>
-            )}
-          </div>
-          {selectedExperiment && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs h-[28px]"
-              onClick={() => onExperimentSelect?.(undefined as unknown as number)}
-            >
-              Back to Overview
-            </Button>
-          )}
+      {/* Bottom Section: Config Diff + Timeline */}
+      <div className="grid grid-cols-2 gap-3 mt-3 h-[180px]">
+        {/* Config Diff */}
+        <div className="overflow-hidden">
+          <ConfigDiffView
+            experiment={selectedExperiment}
+            baselineExperiment={baselineExperiment}
+            compact
+          />
         </div>
 
-        <div className="grid grid-cols-[1fr_35%] gap-3 h-[calc(100vh-260px)]">
-          {/* Left Column: Dynamic Content (65%) */}
-          <section className="overflow-y-auto space-y-3 pr-1">
-            {selectedExperiment ? (
-              /* Analysis Mode: Config-aware comparison */
-              <>
-                {/* Relation Graph: Visual TP/FP/FN analysis */}
-                <RelationGraphView
-                  experimentConfig={selectedExperiment.config?.relationInference}
-                />
-                <ConfigDiffView
-                  experiment={selectedExperiment}
-                  baselineExperiment={baselineExperiment}
-                />
-                <SimilarExperimentsTable
-                  selectedExperiment={selectedExperiment}
-                  experiments={experiments}
-                  onExperimentClick={handleExperimentClick}
-                />
-                {/* Mini Timeline for context */}
-                <ExperimentTimelineChart
-                  experiments={experiments}
-                  onExperimentClick={handleExperimentClick}
-                  selectedExperimentId={selectedExperimentId}
-                  compact
-                />
-              </>
-            ) : (
-              /* Overview Mode: Full charts */
-              <>
-                <ExperimentTimelineChart
-                  experiments={experiments}
-                  onExperimentClick={handleExperimentClick}
-                />
-                <ExperimentComparisonChart
-                  experiments={experiments}
-                  onExperimentClick={handleExperimentClick}
-                />
-                <PrecisionRecallScatter
-                  experiments={experiments}
-                  onExperimentClick={handleExperimentClick}
-                />
-              </>
-            )}
-          </section>
-
-          {/* Right Column: Detail Panel (35%) */}
-          <aside className="overflow-y-auto pr-1">
-            <ExperimentDetailPanel
-              experiment={selectedExperiment}
-              baselineExperiment={baselineExperiment}
-            />
-          </aside>
+        {/* Timeline */}
+        <div className="overflow-hidden">
+          <ExperimentTimelineChart
+            experiments={experiments}
+            onExperimentClick={handleExperimentClick}
+            selectedExperimentId={selectedExperimentId}
+            compact
+          />
         </div>
-      </TabsContent>
-
-      {/* System Status Tab */}
-      <TabsContent value="system">
-        <SystemStatusPanel />
-      </TabsContent>
-    </Tabs>
+      </div>
+    </div>
   );
 }

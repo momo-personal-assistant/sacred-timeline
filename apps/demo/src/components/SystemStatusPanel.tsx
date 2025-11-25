@@ -1,11 +1,10 @@
 'use client';
 
-import { RefreshCw, CheckCircle2, AlertCircle, XCircle, Database, Key, Box } from 'lucide-react';
+import { RefreshCw, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface SystemStatus {
   status: string;
@@ -58,7 +57,47 @@ interface SystemStatus {
   };
 }
 
-export default function SystemStatusPanel() {
+interface SystemStatusPanelProps {
+  compact?: boolean;
+}
+
+function PropertyRow({
+  label,
+  value,
+  mono = false,
+}: {
+  label: string;
+  value: React.ReactNode;
+  mono?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between py-1">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className={`text-xs ${mono ? 'font-mono' : ''}`}>{value}</span>
+    </div>
+  );
+}
+
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide pt-3 pb-1.5 first:pt-0">
+      {children}
+    </div>
+  );
+}
+
+function StatusIndicator({ status }: { status: string }) {
+  const isGood = ['connected', 'configured', 'complete'].includes(status);
+  const isWarning = status === 'partial';
+  const isBad = ['missing', 'error'].includes(status);
+
+  if (isGood) return <CheckCircle2 className="h-3 w-3 text-green-600" />;
+  if (isWarning) return <AlertCircle className="h-3 w-3 text-yellow-600" />;
+  if (isBad) return <XCircle className="h-3 w-3 text-red-600" />;
+  return <AlertCircle className="h-3 w-3 text-gray-400" />;
+}
+
+export default function SystemStatusPanel({ compact: _compact = false }: SystemStatusPanelProps) {
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,276 +123,117 @@ export default function SystemStatusPanel() {
     fetchStatus();
   }, []);
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'connected':
-      case 'configured':
-      case 'complete':
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
-      case 'partial':
-        return <AlertCircle className="h-4 w-4 text-yellow-600" />;
-      case 'missing':
-      case 'error':
-        return <XCircle className="h-4 w-4 text-red-600" />;
-      default:
-        return <AlertCircle className="h-4 w-4 text-gray-400" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'connected':
-      case 'configured':
-      case 'complete':
-        return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-            {status.toUpperCase()}
-          </Badge>
-        );
-      case 'partial':
-        return (
-          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-            {status.toUpperCase()}
-          </Badge>
-        );
-      case 'missing':
-      case 'error':
-        return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-            {status.toUpperCase()}
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">{status.toUpperCase()}</Badge>;
-    }
-  };
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center h-32">
+        <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   if (error || !status) {
     return (
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-red-600 text-sm font-semibold leading-tight">
-            Error Loading System Status
-          </CardTitle>
-          <CardDescription className="text-xs leading-[1.5] mt-1">
-            {error || 'Failed to load system status'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <Button
-            onClick={fetchStatus}
-            variant="outline"
-            className="inline-flex items-center gap-1.5 h-[28px] text-xs font-medium"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            Retry
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="space-y-2">
+        <p className="text-xs text-red-600">{error || 'Failed to load'}</p>
+        <Button onClick={fetchStatus} variant="outline" size="sm" className="h-6 text-xs">
+          <RefreshCw className="h-3 w-3 mr-1" />
+          Retry
+        </Button>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-3">
-      {/* Header with Refresh Button */}
-      <div className="inline-flex items-center justify-between w-full">
-        <div>
-          <h2 className="text-lg font-semibold leading-tight">System Status</h2>
-          <p className="text-xs text-muted-foreground leading-[1.5] mt-1">
-            Last updated: {new Date(status.timestamp).toLocaleString()}
-          </p>
-        </div>
-        <Button
-          onClick={fetchStatus}
-          variant="outline"
-          size="sm"
-          className="inline-flex items-center gap-1.5 h-[28px] text-xs font-medium"
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-          Refresh
+    <div className="h-full overflow-y-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-2">
+        <span className="text-sm font-medium">System Status</span>
+        <Button onClick={fetchStatus} variant="ghost" size="sm" className="h-6 w-6 p-0">
+          <RefreshCw className="h-3 w-3" />
         </Button>
       </div>
 
-      {/* System Health */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="inline-flex items-center gap-2 text-sm font-semibold leading-tight">
-            <Database className="h-4 w-4" />
-            System Health
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 pt-0">
-          {/* Database */}
-          <div className="inline-flex items-center justify-between w-full">
-            <div className="inline-flex items-center gap-2">
-              {getStatusIcon(status.health.database.status)}
-              <div>
-                <p className="text-sm font-semibold leading-tight">PostgreSQL Database</p>
-                <p className="text-xs text-muted-foreground leading-[1.5]">
-                  {status.health.database.host}:{status.health.database.port}
-                </p>
-              </div>
-            </div>
-            {getStatusBadge(status.health.database.status)}
-          </div>
+      <PropertyRow label="Updated" value={new Date(status.timestamp).toLocaleTimeString()} />
 
-          {/* OpenAI */}
-          <div className="inline-flex items-center justify-between w-full">
-            <div className="inline-flex items-center gap-2">
-              {getStatusIcon(status.health.openai.status)}
-              <div>
-                <p className="text-sm font-semibold leading-tight">OpenAI API</p>
-                <p className="text-xs text-muted-foreground leading-[1.5]">
-                  {status.health.openai.model}
-                </p>
-              </div>
-            </div>
-            {getStatusBadge(status.health.openai.status)}
-          </div>
+      {/* Health */}
+      <SectionHeader>Health</SectionHeader>
+      <PropertyRow
+        label="Database"
+        value={
+          <span className="flex items-center gap-1.5">
+            <StatusIndicator status={status.health.database.status} />
+            <span className="font-mono">{status.health.database.host}</span>
+          </span>
+        }
+      />
+      <PropertyRow
+        label="OpenAI"
+        value={
+          <span className="flex items-center gap-1.5">
+            <StatusIndicator status={status.health.openai.status} />
+            <span className="font-mono">{status.health.openai.model}</span>
+          </span>
+        }
+      />
+      <PropertyRow
+        label="Embeddings"
+        value={
+          <span className="flex items-center gap-1.5">
+            <StatusIndicator status={status.health.embeddings.status} />
+            <span className="font-mono">{status.health.embeddings.coverage.toFixed(0)}%</span>
+          </span>
+        }
+      />
 
-          {/* Embeddings */}
-          <div className="inline-flex items-center justify-between w-full">
-            <div className="inline-flex items-center gap-2">
-              {getStatusIcon(status.health.embeddings.status)}
-              <div>
-                <p className="text-sm font-semibold leading-tight">Embeddings</p>
-                <p className="text-xs text-muted-foreground leading-[1.5]">
-                  {status.health.embeddings.chunksWithEmbeddings} /{' '}
-                  {status.health.embeddings.totalChunks} chunks (
-                  {status.health.embeddings.coverage.toFixed(0)}%)
-                </p>
-              </div>
-            </div>
-            {getStatusBadge(status.health.embeddings.status)}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Data Counts */}
+      <SectionHeader>Data</SectionHeader>
+      <PropertyRow label="Papers" value={status.data.papers} mono />
+      <PropertyRow label="Chunks" value={status.data.chunks} mono />
+      <PropertyRow label="Objects" value={status.data.canonicalObjects} mono />
+      <PropertyRow label="Relations" value={status.data.groundTruthRelations} mono />
+      <PropertyRow label="Experiments" value={status.data.experiments} mono />
 
-      {/* Current Configuration */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="inline-flex items-center gap-2 text-sm font-semibold leading-tight">
-            <Key className="h-4 w-4" />
-            Current Configuration
-          </CardTitle>
-          <CardDescription className="text-xs leading-[1.5] mt-1">
-            Settings from latest experiment
-            {status.configuration.lastUpdated &&
-              ` (${new Date(status.configuration.lastUpdated).toLocaleString()})`}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 pt-0">
-          {/* Embedding Config */}
-          <div>
-            <h3 className="text-sm font-semibold leading-tight mb-2">Embedding</h3>
-            <div className="grid grid-cols-2 gap-1.5 text-xs leading-[1.5]">
-              <div className="text-muted-foreground">Provider:</div>
-              <div className="font-mono">{status.configuration.embedding.provider}</div>
-              <div className="text-muted-foreground">Model:</div>
-              <div className="font-mono">{status.configuration.embedding.model}</div>
-              <div className="text-muted-foreground">Dimensions:</div>
-              <div className="font-mono">{status.configuration.embedding.dimensions}</div>
-            </div>
-          </div>
+      {/* Embedding Config */}
+      <SectionHeader>Embedding</SectionHeader>
+      <PropertyRow label="Provider" value={status.configuration.embedding.provider} mono />
+      <PropertyRow label="Model" value={status.configuration.embedding.model} mono />
+      <PropertyRow label="Dimensions" value={status.configuration.embedding.dimensions} mono />
 
-          {/* Chunking Config */}
-          <div>
-            <h3 className="text-sm font-semibold leading-tight mb-2">Chunking</h3>
-            <div className="grid grid-cols-2 gap-1.5 text-xs leading-[1.5]">
-              <div className="text-muted-foreground">Strategy:</div>
-              <div className="font-mono">{status.configuration.chunking.strategy}</div>
-              <div className="text-muted-foreground">Max Chunk Size:</div>
-              <div className="font-mono">{status.configuration.chunking.maxChunkSize} tokens</div>
-              <div className="text-muted-foreground">Overlap:</div>
-              <div className="font-mono">{status.configuration.chunking.overlap} tokens</div>
-            </div>
-          </div>
+      {/* Chunking Config */}
+      <SectionHeader>Chunking</SectionHeader>
+      <PropertyRow label="Strategy" value={status.configuration.chunking.strategy} mono />
+      <PropertyRow label="Max Size" value={status.configuration.chunking.maxChunkSize} mono />
+      <PropertyRow label="Overlap" value={status.configuration.chunking.overlap} mono />
 
-          {/* Retrieval Config */}
-          <div>
-            <h3 className="text-sm font-semibold leading-tight mb-2">Retrieval</h3>
-            <div className="grid grid-cols-2 gap-1.5 text-xs leading-[1.5]">
-              <div className="text-muted-foreground">Similarity Threshold:</div>
-              <div className="font-mono">{status.configuration.retrieval.similarityThreshold}</div>
-              <div className="text-muted-foreground">Chunk Limit:</div>
-              <div className="font-mono">{status.configuration.retrieval.chunkLimit}</div>
-            </div>
-          </div>
+      {/* Retrieval Config */}
+      <SectionHeader>Retrieval</SectionHeader>
+      <PropertyRow
+        label="Threshold"
+        value={status.configuration.retrieval.similarityThreshold}
+        mono
+      />
+      <PropertyRow label="Chunk Limit" value={status.configuration.retrieval.chunkLimit} mono />
 
-          {/* Relation Inference Config - CRITICAL */}
-          <div className="border-l-4 border-yellow-500 pl-3">
-            <h3 className="text-sm font-semibold leading-tight mb-2">Relation Inference</h3>
-            <div className="grid grid-cols-2 gap-1.5 text-xs leading-[1.5]">
-              <div className="text-muted-foreground">Keyword Overlap Threshold:</div>
-              <div className="font-mono">
-                {status.configuration.relationInference.keywordOverlapThreshold}
-              </div>
-              <div className="text-muted-foreground">Use Semantic Similarity:</div>
-              <div className="inline-flex items-center gap-2">
-                <span className="font-mono">
-                  {status.configuration.relationInference.useSemanticSimilarity ? 'ON' : 'OFF'}
-                </span>
-                {!status.configuration.relationInference.useSemanticSimilarity && (
-                  <Badge
-                    variant="outline"
-                    className="bg-red-50 text-red-700 border-red-200 text-xs h-[18px] inline-flex items-center font-medium"
-                  >
-                    DISABLED
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Data Status */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="inline-flex items-center gap-2 text-sm font-semibold leading-tight">
-            <Box className="h-4 w-4" />
-            Data Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div className="text-center p-3 bg-muted rounded-lg">
-              <div className="text-lg font-semibold leading-tight">{status.data.papers}</div>
-              <div className="text-xs text-muted-foreground leading-[1.5]">Papers</div>
-            </div>
-            <div className="text-center p-3 bg-muted rounded-lg">
-              <div className="text-lg font-semibold leading-tight">{status.data.chunks}</div>
-              <div className="text-xs text-muted-foreground leading-[1.5]">Chunks</div>
-            </div>
-            <div className="text-center p-3 bg-muted rounded-lg">
-              <div className="text-lg font-semibold leading-tight">
-                {status.data.canonicalObjects}
-              </div>
-              <div className="text-xs text-muted-foreground leading-[1.5]">Canonical Objects</div>
-            </div>
-            <div className="text-center p-3 bg-muted rounded-lg">
-              <div className="text-lg font-semibold leading-tight">
-                {status.data.groundTruthRelations}
-              </div>
-              <div className="text-xs text-muted-foreground leading-[1.5]">
-                Ground Truth Relations
-              </div>
-            </div>
-            <div className="text-center p-3 bg-muted rounded-lg">
-              <div className="text-lg font-semibold leading-tight">{status.data.experiments}</div>
-              <div className="text-xs text-muted-foreground leading-[1.5]">Experiments</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Relation Inference */}
+      <SectionHeader>Relation Inference</SectionHeader>
+      <PropertyRow
+        label="Keyword Overlap"
+        value={status.configuration.relationInference.keywordOverlapThreshold}
+        mono
+      />
+      <PropertyRow
+        label="Semantic"
+        value={
+          <Badge
+            variant={
+              status.configuration.relationInference.useSemanticSimilarity ? 'default' : 'secondary'
+            }
+            className="text-[10px] h-4 px-1.5"
+          >
+            {status.configuration.relationInference.useSemanticSimilarity ? 'ON' : 'OFF'}
+          </Badge>
+        }
+      />
     </div>
   );
 }

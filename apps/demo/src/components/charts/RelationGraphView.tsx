@@ -3,14 +3,19 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // Dynamic import to avoid SSR issues with canvas
 const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-[400px]">
+    <div className="flex items-center justify-center h-full">
       <span className="text-muted-foreground text-sm">Loading graph...</span>
     </div>
   ),
@@ -72,6 +77,11 @@ interface GraphData {
   links: GraphLink[];
 }
 
+interface ExperimentOption {
+  id: number;
+  name: string;
+}
+
 interface RelationGraphViewProps {
   experimentConfig?: {
     useSemanticSimilarity?: boolean;
@@ -79,6 +89,10 @@ interface RelationGraphViewProps {
     keywordOverlapThreshold?: number;
     semanticWeight?: number;
   };
+  experiments?: ExperimentOption[];
+  selectedExperimentId?: number;
+  onExperimentChange?: (experimentId: number | undefined) => void;
+  className?: string;
 }
 
 const STATUS_COLORS = {
@@ -87,13 +101,13 @@ const STATUS_COLORS = {
   fn: '#9ca3af', // gray-400 - False Negative (missed)
 };
 
-const STATUS_LABELS = {
-  tp: 'True Positive',
-  fp: 'False Positive',
-  fn: 'False Negative',
-};
-
-export default function RelationGraphView({ experimentConfig }: RelationGraphViewProps) {
+export default function RelationGraphView({
+  experimentConfig,
+  experiments,
+  selectedExperimentId,
+  onExperimentChange,
+  className,
+}: RelationGraphViewProps) {
   const [data, setData] = useState<RelationsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +116,7 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(null);
-  const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
+  const [dimensions, setDimensions] = useState({ width: 600, height: 500 });
 
   // Fetch relation data
   useEffect(() => {
@@ -141,19 +155,39 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
     fetchData();
   }, [experimentConfig]);
 
-  // Handle container resize
+  // Handle container resize - now uses full container height
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        // Subtract border (2px) and extra padding to prevent node overflow
-        setDimensions({ width: Math.max(0, rect.width - 4), height: 400 });
+        // Only update if we have valid dimensions
+        if (rect.width > 0 && rect.height > 0) {
+          setDimensions({
+            width: Math.max(0, rect.width - 4),
+            height: Math.max(300, rect.height - 4),
+          });
+        }
       }
     };
 
-    updateDimensions();
+    // Delay initial calculation to ensure layout is complete
+    // Using double RAF to ensure paint has occurred
+    requestAnimationFrame(() => {
+      requestAnimationFrame(updateDimensions);
+    });
+
     window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+
+    // Use ResizeObserver for more accurate container size tracking
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      resizeObserver.disconnect();
+    };
   }, []);
 
   // Transform data for force graph
@@ -181,12 +215,12 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
       connectionCount.set(rel.to_id, (connectionCount.get(rel.to_id) || 0) + 1);
     });
 
-    // Create nodes - color is handled in nodeCanvasObject to avoid re-renders on hover
+    // Create nodes
     const nodes: GraphNode[] = Array.from(nodeIds).map((id) => ({
       id,
       name: paperMap.get(id) || id.slice(0, 8),
       val: Math.max(1, connectionCount.get(id) || 1),
-      color: '#64748b', // Default color, hover highlighting done in canvas render
+      color: '#64748b',
     }));
 
     // Create links with curvature for multi-edges
@@ -208,28 +242,25 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
     });
 
     return { nodes, links };
-  }, [data, selectedStatus]); // Removed hoveredNode to prevent re-renders on hover
+  }, [data, selectedStatus]);
 
   // Configure d3 forces after graph mounts for better centering
   useEffect(() => {
     if (!graphRef.current) return;
     const fg = graphRef.current;
 
-    // Center the graph in the middle of the container
     fg.d3Force('center')
       ?.x(dimensions.width / 2)
       .y(dimensions.height / 2);
-    // Reduce charge strength to keep nodes closer together
-    fg.d3Force('charge')?.strength(-100);
+    fg.d3Force('charge')?.strength(-120);
   }, [dimensions, graphData]);
 
   // Clamp node positions within bounds on each tick
   const handleEngineTick = useCallback(() => {
     if (!graphRef.current) return;
-    const padding = 50; // Keep nodes away from edges (accounts for labels)
+    const padding = 60;
     const w = dimensions.width;
     const h = dimensions.height;
-    // Access nodes via ref
     const graphDataFn = graphRef.current.graphData;
     if (!graphDataFn) return;
     const currentData = graphDataFn();
@@ -252,207 +283,201 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold leading-tight">Relation Graph</CardTitle>
-          <CardDescription className="text-xs leading-[1.5]">
-            Loading relation data...
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-[400px]">
-            <span className="text-muted-foreground text-sm">Loading...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className={`relative rounded-lg border bg-slate-50 dark:bg-slate-900 ${className}`}>
+        <div className="flex items-center justify-center h-full min-h-[400px]">
+          <span className="text-muted-foreground text-sm">Loading graph...</span>
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold leading-tight">Relation Graph</CardTitle>
-          <CardDescription className="text-xs leading-[1.5] text-red-500">
-            Error: {error}
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div className={`relative rounded-lg border bg-slate-50 dark:bg-slate-900 ${className}`}>
+        <div className="flex items-center justify-center h-full min-h-[400px]">
+          <span className="text-red-500 text-sm">Error: {error}</span>
+        </div>
+      </div>
     );
   }
 
   if (!data || data.relations.length === 0) {
     return (
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold leading-tight">Relation Graph</CardTitle>
-          <CardDescription className="text-xs leading-[1.5]">No relations found</CardDescription>
-        </CardHeader>
-      </Card>
+      <div className={`relative rounded-lg border bg-slate-50 dark:bg-slate-900 ${className}`}>
+        <div className="flex items-center justify-center h-full min-h-[400px]">
+          <span className="text-muted-foreground text-sm">No relations found</span>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-sm font-semibold leading-tight">Relation Graph</CardTitle>
-            <CardDescription className="text-xs leading-[1.5] mt-1">
-              Visual comparison: Inferred vs Ground Truth
-            </CardDescription>
-          </div>
-          <Badge variant="outline" className="text-xs h-[18px] font-medium">
-            F1: {(data.metrics.f1_score * 100).toFixed(1)}%
-          </Badge>
-        </div>
-      </CardHeader>
+    <div className={`relative rounded-lg border bg-slate-50 dark:bg-slate-900 ${className}`}>
+      {/* Graph Canvas */}
+      <div ref={containerRef} className="w-full h-full">
+        <ForceGraph2D
+          ref={graphRef}
+          graphData={graphData}
+          width={dimensions.width}
+          height={dimensions.height}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          nodeLabel={(node: any) => `${node.name}`}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          nodeColor={(node: any) => node.color}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          nodeVal={(node: any) => node.val}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+            const label = node.name?.length > 15 ? node.name.slice(0, 12) + '...' : node.name || '';
+            const fontSize = Math.max(10, 12 / globalScale);
+            ctx.font = `${fontSize}px Sans-Serif`;
 
-      <CardContent className="space-y-3">
-        {/* Legend and Filter */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSelectedStatus('all')}
-              className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-md transition-colors ${
-                selectedStatus === 'all' ? 'bg-muted font-medium' : 'hover:bg-muted/50'
-              }`}
-            >
-              <span className="w-3 h-0.5 bg-gray-500 rounded" />
-              All
-            </button>
-            <button
-              onClick={() => setSelectedStatus('tp')}
-              className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-md transition-colors ${
-                selectedStatus === 'tp'
-                  ? 'bg-green-100 dark:bg-green-900/30 font-medium'
-                  : 'hover:bg-muted/50'
-              }`}
-            >
-              <span className="w-3 h-0.5 rounded" style={{ backgroundColor: STATUS_COLORS.tp }} />
-              Correct ({data.metrics.true_positives})
-            </button>
-            <button
-              onClick={() => setSelectedStatus('fp')}
-              className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-md transition-colors ${
-                selectedStatus === 'fp'
-                  ? 'bg-red-100 dark:bg-red-900/30 font-medium'
-                  : 'hover:bg-muted/50'
-              }`}
-            >
-              <span className="w-3 h-0.5 rounded" style={{ backgroundColor: STATUS_COLORS.fp }} />
-              Wrong ({data.metrics.false_positives})
-            </button>
-            <button
-              onClick={() => setSelectedStatus('fn')}
-              className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded-md transition-colors ${
-                selectedStatus === 'fn'
-                  ? 'bg-gray-100 dark:bg-gray-800 font-medium'
-                  : 'hover:bg-muted/50'
-              }`}
-            >
-              <span
-                className="w-3 h-0.5 rounded border border-dashed"
-                style={{ borderColor: STATUS_COLORS.fn }}
-              />
-              Missed ({data.metrics.false_negatives})
-            </button>
-          </div>
-        </div>
+            const isHovered = hoveredNode === node.id;
+            const nodeColor = isHovered ? '#3b82f6' : '#64748b';
 
-        {/* Graph Container */}
-        <div
-          ref={containerRef}
-          className="border rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-900"
-        >
-          <ForceGraph2D
-            ref={graphRef}
-            graphData={graphData}
-            width={dimensions.width}
-            height={dimensions.height}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            nodeLabel={(node: any) => `${node.name}`}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            nodeColor={(node: any) => node.color}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            nodeVal={(node: any) => node.val}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
-              const label =
-                node.name?.length > 15 ? node.name.slice(0, 12) + '...' : node.name || '';
-              const fontSize = Math.max(10, 12 / globalScale);
-              ctx.font = `${fontSize}px Sans-Serif`;
+            const nodeSize = Math.sqrt(node.val || 1) * 4;
+            ctx.beginPath();
+            ctx.arc(node.x || 0, node.y || 0, nodeSize, 0, 2 * Math.PI);
+            ctx.fillStyle = nodeColor;
+            ctx.fill();
 
-              // Determine if this node is hovered
-              const isHovered = hoveredNode === node.id;
-              const nodeColor = isHovered ? '#3b82f6' : '#64748b';
-
-              // Draw node circle
-              const nodeSize = Math.sqrt(node.val || 1) * 4;
+            if (isHovered) {
               ctx.beginPath();
-              ctx.arc(node.x || 0, node.y || 0, nodeSize, 0, 2 * Math.PI);
+              ctx.arc(node.x || 0, node.y || 0, nodeSize + 3, 0, 2 * Math.PI);
+              ctx.strokeStyle = '#3b82f6';
+              ctx.lineWidth = 2;
+              ctx.stroke();
+            }
+
+            if (globalScale > 0.5) {
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'top';
               ctx.fillStyle = nodeColor;
-              ctx.fill();
+              ctx.fillText(label, node.x || 0, (node.y || 0) + nodeSize + 2);
+            }
+          }}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          linkColor={(link: any) => link.color}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          linkWidth={(link: any) => link.width}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          linkCurvature={(link: any) => link.curvature}
+          linkDirectionalArrowLength={4}
+          linkDirectionalArrowRelPos={1}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          linkLineDash={(link: any) => (link.status === 'fn' ? [4, 2] : null)}
+          onNodeHover={handleNodeHover}
+          onEngineTick={handleEngineTick}
+          cooldownTicks={100}
+          d3AlphaDecay={0.02}
+          d3VelocityDecay={0.3}
+        />
+      </div>
 
-              // Draw highlight ring on hover
-              if (isHovered) {
-                ctx.beginPath();
-                ctx.arc(node.x || 0, node.y || 0, nodeSize + 3, 0, 2 * Math.PI);
-                ctx.strokeStyle = '#3b82f6';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-              }
+      {/* Floating Dock - Top Left: Experiment Selector */}
+      <div className="absolute top-3 left-3">
+        {experiments && experiments.length > 0 ? (
+          <Select
+            value={selectedExperimentId?.toString() || 'none'}
+            onValueChange={(value) =>
+              onExperimentChange?.(value === 'none' ? undefined : parseInt(value))
+            }
+          >
+            <SelectTrigger className="w-[200px] bg-background/90 backdrop-blur-sm shadow-sm border h-[32px] text-xs">
+              <SelectValue placeholder="Select experiment" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none" className="text-xs">
+                All Experiments
+              </SelectItem>
+              {experiments.map((exp) => (
+                <SelectItem key={exp.id} value={exp.id.toString()} className="text-xs">
+                  {exp.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <div className="bg-background/90 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-sm border">
+            <span className="text-sm font-medium text-muted-foreground">No experiments</span>
+          </div>
+        )}
+      </div>
 
-              // Draw label below node
-              if (globalScale > 0.5) {
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                ctx.fillStyle = nodeColor;
-                ctx.fillText(label, node.x || 0, (node.y || 0) + nodeSize + 2);
-              }
-            }}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            linkColor={(link: any) => link.color}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            linkWidth={(link: any) => link.width}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            linkCurvature={(link: any) => link.curvature}
-            linkDirectionalArrowLength={4}
-            linkDirectionalArrowRelPos={1}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            linkLineDash={(link: any) => (link.status === 'fn' ? [4, 2] : null)}
-            onNodeHover={handleNodeHover}
-            onEngineTick={handleEngineTick}
-            cooldownTicks={100}
-            d3AlphaDecay={0.02}
-            d3VelocityDecay={0.3}
-          />
+      {/* Floating Dock - Bottom Center: Filter Controls */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
+        <div className="bg-background/95 backdrop-blur-sm rounded-lg px-2 py-1.5 shadow-md border flex items-center gap-1">
+          <button
+            onClick={() => setSelectedStatus('all')}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md transition-colors ${
+              selectedStatus === 'all' ? 'bg-muted font-medium' : 'hover:bg-muted/50'
+            }`}
+          >
+            <span className="w-3 h-0.5 bg-gray-500 rounded" />
+            All
+          </button>
+          <button
+            onClick={() => setSelectedStatus('tp')}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md transition-colors ${
+              selectedStatus === 'tp'
+                ? 'bg-green-100 dark:bg-green-900/30 font-medium'
+                : 'hover:bg-muted/50'
+            }`}
+          >
+            <span className="w-3 h-0.5 rounded" style={{ backgroundColor: STATUS_COLORS.tp }} />
+            Correct ({data.metrics.true_positives})
+          </button>
+          <button
+            onClick={() => setSelectedStatus('fp')}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md transition-colors ${
+              selectedStatus === 'fp'
+                ? 'bg-red-100 dark:bg-red-900/30 font-medium'
+                : 'hover:bg-muted/50'
+            }`}
+          >
+            <span className="w-3 h-0.5 rounded" style={{ backgroundColor: STATUS_COLORS.fp }} />
+            Wrong ({data.metrics.false_positives})
+          </button>
+          <button
+            onClick={() => setSelectedStatus('fn')}
+            className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md transition-colors ${
+              selectedStatus === 'fn'
+                ? 'bg-gray-100 dark:bg-gray-800 font-medium'
+                : 'hover:bg-muted/50'
+            }`}
+          >
+            <span
+              className="w-3 h-0.5 rounded border border-dashed"
+              style={{ borderColor: STATUS_COLORS.fn }}
+            />
+            Missed ({data.metrics.false_negatives})
+          </button>
         </div>
+      </div>
 
-        {/* Interpretation Guide */}
-        <div className="grid grid-cols-3 gap-2 text-xs">
-          <div className="p-2 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900">
-            <div className="font-semibold text-green-700 dark:text-green-400">
-              {STATUS_LABELS.tp}
+      {/* Floating Dock - Top Right: Metrics Summary (F1, Precision, Recall) */}
+      <div className="absolute top-3 right-3">
+        <div className="bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm border">
+          <div className="flex items-center gap-4 text-xs">
+            <div className="text-center">
+              <div className="text-muted-foreground">F1</div>
+              <div className="font-semibold text-blue-600">
+                {(data.metrics.f1_score * 100).toFixed(1)}%
+              </div>
             </div>
-            <div className="text-green-600 dark:text-green-500 leading-[1.5]">
-              Correctly predicted relation
+            <div className="w-px h-6 bg-border" />
+            <div className="text-center">
+              <div className="text-muted-foreground">Precision</div>
+              <div className="font-semibold">{(data.metrics.precision * 100).toFixed(1)}%</div>
             </div>
-          </div>
-          <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900">
-            <div className="font-semibold text-red-700 dark:text-red-400">{STATUS_LABELS.fp}</div>
-            <div className="text-red-600 dark:text-red-500 leading-[1.5]">
-              Wrongly predicted (not in truth)
-            </div>
-          </div>
-          <div className="p-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-            <div className="font-semibold text-gray-700 dark:text-gray-300">{STATUS_LABELS.fn}</div>
-            <div className="text-gray-600 dark:text-gray-400 leading-[1.5]">
-              Missed (should have found)
+            <div className="w-px h-6 bg-border" />
+            <div className="text-center">
+              <div className="text-muted-foreground">Recall</div>
+              <div className="font-semibold">{(data.metrics.recall * 100).toFixed(1)}%</div>
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

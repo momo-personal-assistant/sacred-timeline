@@ -53,8 +53,9 @@ interface Experiment {
 }
 
 interface ConfigDiffViewProps {
-  experiment: Experiment;
+  experiment: Experiment | null;
   baselineExperiment: Experiment | null;
+  compact?: boolean;
 }
 
 interface DiffRow {
@@ -184,10 +185,27 @@ function getConfigDiffs(
   return diffs;
 }
 
-export default function ConfigDiffView({ experiment, baselineExperiment }: ConfigDiffViewProps) {
+export default function ConfigDiffView({
+  experiment,
+  baselineExperiment,
+  compact = false,
+}: ConfigDiffViewProps) {
+  if (!experiment) {
+    return (
+      <Card className={compact ? 'h-full' : ''}>
+        <CardHeader className={compact ? 'pb-2' : 'pb-2'}>
+          <CardTitle className="text-sm font-semibold leading-tight">Configuration Diff</CardTitle>
+          <CardDescription className="text-xs leading-[1.5]">
+            Select an experiment to view configuration
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+
   if (!baselineExperiment) {
     return (
-      <Card>
+      <Card className={compact ? 'h-full' : ''}>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold leading-tight">Configuration Diff</CardTitle>
           <CardDescription className="text-xs leading-[1.5]">
@@ -200,7 +218,7 @@ export default function ConfigDiffView({ experiment, baselineExperiment }: Confi
 
   if (experiment.is_baseline) {
     return (
-      <Card>
+      <Card className={compact ? 'h-full' : ''}>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold leading-tight">Configuration Diff</CardTitle>
           <CardDescription className="text-xs leading-[1.5]">
@@ -228,17 +246,25 @@ export default function ConfigDiffView({ experiment, baselineExperiment }: Confi
   // Group by category
   const categories = [...new Set(diffs.map((d) => d.category))];
 
+  // In compact mode, only show changed parameters
+  const displayDiffs = compact ? changedParams : diffs;
+  const displayCategories = compact
+    ? [...new Set(changedParams.map((d) => d.category))]
+    : categories;
+
   return (
-    <Card>
+    <Card className={compact ? 'h-full flex flex-col' : ''}>
       <CardHeader className="pb-2">
         <div className="inline-flex items-center justify-between w-full">
           <div>
             <CardTitle className="text-sm font-semibold leading-tight">
-              Configuration Diff
+              {compact ? 'Config Changes' : 'Configuration Diff'}
             </CardTitle>
-            <CardDescription className="text-xs leading-[1.5] mt-1">
-              {experiment.name} vs {baselineExperiment.name}
-            </CardDescription>
+            {!compact && (
+              <CardDescription className="text-xs leading-[1.5] mt-1">
+                {experiment.name} vs {baselineExperiment.name}
+              </CardDescription>
+            )}
           </div>
           <Badge
             variant={changedParams.length > 0 ? 'secondary' : 'outline'}
@@ -249,7 +275,7 @@ export default function ConfigDiffView({ experiment, baselineExperiment }: Confi
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className={`space-y-3 ${compact ? 'flex-1 overflow-auto pt-0' : ''}`}>
         {/* Parameter Diff Table */}
         <div className="border rounded-lg overflow-hidden">
           <table className="w-full text-xs">
@@ -268,8 +294,8 @@ export default function ConfigDiffView({ experiment, baselineExperiment }: Confi
               </tr>
             </thead>
             <tbody>
-              {categories.map((category) => {
-                const categoryDiffs = diffs.filter((d) => d.category === category);
+              {displayCategories.map((category) => {
+                const categoryDiffs = displayDiffs.filter((d) => d.category === category);
 
                 return categoryDiffs.map((diff, idx) => (
                   <tr
@@ -307,8 +333,8 @@ export default function ConfigDiffView({ experiment, baselineExperiment }: Confi
           </table>
         </div>
 
-        {/* Performance Comparison */}
-        {hasResults && (
+        {/* Performance Comparison - hide in compact mode */}
+        {!compact && hasResults && (
           <div className="space-y-2 pt-2 border-t">
             <h4 className="text-xs font-semibold leading-tight">Performance Impact</h4>
             <div className="grid grid-cols-3 gap-2 text-xs">
@@ -364,8 +390,8 @@ export default function ConfigDiffView({ experiment, baselineExperiment }: Confi
           </div>
         )}
 
-        {/* Suggestion */}
-        {changedParams.length > 1 && (
+        {/* Suggestion - hide in compact mode */}
+        {!compact && changedParams.length > 1 && (
           <div className="flex items-start gap-2 p-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg text-xs">
             <Lightbulb className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
             <p className="text-blue-700 dark:text-blue-300 leading-[1.5]">
