@@ -129,9 +129,9 @@ export default function ExperimentsPanel({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-180px)]">
-      {/* Central Graph Visualization - Always Visible */}
-      <div className="flex-1 min-h-0">
+    <div className="flex flex-col h-full">
+      {/* Central Graph Visualization - Takes remaining space */}
+      <div className="flex-1 min-h-[300px]">
         <RelationGraphView
           experimentConfig={selectedExperiment?.config?.relationInference}
           experiments={experiments.map((e) => ({ id: e.id, name: e.name }))}
@@ -141,8 +141,8 @@ export default function ExperimentsPanel({
         />
       </div>
 
-      {/* Bottom Section: Config Diff + Timeline */}
-      <div className="grid grid-cols-2 gap-3 mt-3 h-[180px]">
+      {/* Bottom Section: Config Diff + Timeline - Fixed height */}
+      <div className="grid grid-cols-2 gap-3 mt-3 h-[200px] shrink-0">
         {/* Config Diff */}
         <div className="overflow-hidden">
           <ConfigDiffView

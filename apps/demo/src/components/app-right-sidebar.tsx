@@ -1,6 +1,5 @@
 'use client';
 
-import { Activity, FlaskConical } from 'lucide-react';
 import * as React from 'react';
 
 import ExperimentDetailPanel from '@/components/ExperimentDetailPanel';
@@ -11,7 +10,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarMenuButton,
 } from '@/components/ui/sidebar';
 
 interface Experiment {
@@ -78,26 +76,28 @@ export function AppRightSidebar({
 
   return (
     <Sidebar side="right" collapsible="none" {...props}>
-      <SidebarHeader className="px-3 border-b">
-        <div className="flex gap-1">
-          <SidebarMenuButton
-            isActive={sidebarTab === 'experiment'}
+      <SidebarHeader className="px-4 py-3 border-b">
+        <div className="flex p-0.5 bg-muted rounded-lg">
+          <button
             onClick={() => setSidebarTab('experiment')}
-            className="flex-1 justify-center"
-            size="sm"
+            className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+              sidebarTab === 'experiment'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
-            <FlaskConical className="h-4 w-4" />
-            <span>Experiment</span>
-          </SidebarMenuButton>
-          <SidebarMenuButton
-            isActive={sidebarTab === 'system'}
+            Experiment
+          </button>
+          <button
             onClick={() => setSidebarTab('system')}
-            className="flex-1 justify-center"
-            size="sm"
+            className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+              sidebarTab === 'system'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
-            <Activity className="h-4 w-4" />
-            <span>System</span>
-          </SidebarMenuButton>
+            System
+          </button>
         </div>
       </SidebarHeader>
       <SidebarContent>

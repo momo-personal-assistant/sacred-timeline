@@ -1,9 +1,8 @@
 'use client';
 
-import { GitCommit, Copy, Download } from 'lucide-react';
+import { GitCommit } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 interface ExperimentConfig {
   name: string;
@@ -104,26 +103,6 @@ export default function ExperimentDetailPanel({
 
   return (
     <div className="h-full overflow-y-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-2">
-        <div className="flex items-center gap-1.5 min-w-0">
-          {experiment.is_baseline && (
-            <Badge variant="secondary" className="text-[10px] h-4 px-1.5 shrink-0">
-              BASE
-            </Badge>
-          )}
-          <span className="text-sm font-medium truncate">{experiment.name}</span>
-        </div>
-        <div className="flex gap-0.5 shrink-0">
-          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-            <Copy className="h-3 w-3" />
-          </Button>
-          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-            <Download className="h-3 w-3" />
-          </Button>
-        </div>
-      </div>
-
       <PropertyRow label="Created" value={new Date(experiment.created_at).toLocaleDateString()} />
 
       {experiment.git_commit && (
