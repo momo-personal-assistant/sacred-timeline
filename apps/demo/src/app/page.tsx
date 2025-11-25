@@ -60,15 +60,22 @@ export default function Home() {
   const [selectedExperimentId, setSelectedExperimentId] = useState<number | undefined>();
   const [experiments, setExperiments] = useState<Experiment[]>([]);
 
-  // Fetch experiments for the right sidebar
+  // Fetch experiments for the right sidebar and auto-select most recent
   useEffect(() => {
     if (activeTab === 'experiments') {
       fetch('/api/experiments')
         .then((res) => res.json())
-        .then((data) => setExperiments(data.experiments || []))
+        .then((data) => {
+          const exps = data.experiments || [];
+          setExperiments(exps);
+          // Auto-select most recent experiment (first in list, sorted by created_at desc)
+          if (exps.length > 0 && !selectedExperimentId) {
+            setSelectedExperimentId(exps[0].id);
+          }
+        })
         .catch(console.error);
     }
-  }, [activeTab]);
+  }, [activeTab, selectedExperimentId]);
 
   const selectedExperiment = selectedExperimentId
     ? experiments.find((exp) => exp.id === selectedExperimentId) || null
@@ -78,13 +85,7 @@ export default function Home() {
 
   return (
     <SidebarProvider>
-      <AppSidebar
-        variant="inset"
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        selectedExperimentId={selectedExperimentId}
-        onExperimentSelect={setSelectedExperimentId}
-      />
+      <AppSidebar variant="inset" activeTab={activeTab} onTabChange={setActiveTab} />
       <SidebarInset className="bg-muted/50">
         <div className="flex flex-1 flex-col min-h-0">
           <div className="flex flex-1 flex-col min-h-0 p-4 md:p-6">

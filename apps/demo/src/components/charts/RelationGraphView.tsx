@@ -378,18 +378,13 @@ export default function RelationGraphView({
       <div className="absolute top-3 left-3">
         {experiments && experiments.length > 0 ? (
           <Select
-            value={selectedExperimentId?.toString() || 'none'}
-            onValueChange={(value) =>
-              onExperimentChange?.(value === 'none' ? undefined : parseInt(value))
-            }
+            value={selectedExperimentId?.toString() || ''}
+            onValueChange={(value) => onExperimentChange?.(parseInt(value))}
           >
             <SelectTrigger className="w-[200px] bg-background/90 backdrop-blur-sm shadow-sm border h-[32px] text-xs">
               <SelectValue placeholder="Select experiment" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none" className="text-xs">
-                All Experiments
-              </SelectItem>
               {experiments.map((exp) => (
                 <SelectItem key={exp.id} value={exp.id.toString()} className="text-xs">
                   {exp.name}
