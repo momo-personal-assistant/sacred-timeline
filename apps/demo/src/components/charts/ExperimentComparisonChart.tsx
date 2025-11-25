@@ -26,13 +26,41 @@ interface ExperimentResults {
   retrieval_time_ms: number;
 }
 
+interface ExperimentConfig {
+  name: string;
+  description: string;
+  embedding: {
+    model: string;
+    dimensions?: number;
+    batchSize?: number;
+  };
+  chunking: {
+    strategy: string;
+    maxChunkSize?: number;
+    overlap?: number;
+  };
+  retrieval: {
+    similarityThreshold?: number;
+    chunkLimit?: number;
+  };
+  relationInference: {
+    keywordOverlapThreshold?: number;
+    useSemanticSimilarity?: boolean;
+    similarityThreshold?: number;
+    semanticWeight?: number;
+  };
+}
+
 interface Experiment {
   id: number;
   name: string;
+  description: string;
+  config: ExperimentConfig;
   is_baseline: boolean;
+  paper_ids: string[];
+  git_commit: string | null;
   created_at: string;
   results: ExperimentResults | null;
-  config: Record<string, unknown>;
 }
 
 interface ExperimentComparisonChartProps {

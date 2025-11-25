@@ -1,13 +1,17 @@
 'use client';
 
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, LayoutGrid, GitCompare } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+import ConfigDiffView from '@/components/charts/ConfigDiffView';
 import ExperimentComparisonChart from '@/components/charts/ExperimentComparisonChart';
 import ExperimentTimelineChart from '@/components/charts/ExperimentTimelineChart';
 import PrecisionRecallScatter from '@/components/charts/PrecisionRecallScatter';
+import SimilarExperimentsTable from '@/components/charts/SimilarExperimentsTable';
 import ExperimentDetailPanel from '@/components/ExperimentDetailPanel';
 import SystemStatusPanel from '@/components/SystemStatusPanel';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -157,23 +161,80 @@ export default function ExperimentsPanel({
         </TabsTrigger>
       </TabsList>
 
-      {/* Experiments Tab - 2 Column Layout */}
+      {/* Experiments Tab - Dynamic Layout based on selection */}
       <TabsContent value="experiments" className="space-y-0">
-        <div className="grid grid-cols-[1fr_35%] gap-3 h-[calc(100vh-220px)]">
-          {/* Left Column: Charts (65%) */}
+        {/* Mode Indicator */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="inline-flex items-center gap-2">
+            {selectedExperiment ? (
+              <>
+                <GitCompare className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Analysis Mode:</span>
+                <Badge variant="secondary" className="text-xs h-[18px] font-medium">
+                  {selectedExperiment.name}
+                </Badge>
+              </>
+            ) : (
+              <>
+                <LayoutGrid className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">
+                  Overview Mode - Select an experiment from the sidebar to analyze
+                </span>
+              </>
+            )}
+          </div>
+          {selectedExperiment && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-[28px]"
+              onClick={() => onExperimentSelect?.(undefined as unknown as number)}
+            >
+              Back to Overview
+            </Button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-[1fr_35%] gap-3 h-[calc(100vh-260px)]">
+          {/* Left Column: Dynamic Content (65%) */}
           <section className="overflow-y-auto space-y-3 pr-1">
-            <ExperimentTimelineChart
-              experiments={experiments}
-              onExperimentClick={handleExperimentClick}
-            />
-            <ExperimentComparisonChart
-              experiments={experiments}
-              onExperimentClick={handleExperimentClick}
-            />
-            <PrecisionRecallScatter
-              experiments={experiments}
-              onExperimentClick={handleExperimentClick}
-            />
+            {selectedExperiment ? (
+              /* Analysis Mode: Config-aware comparison */
+              <>
+                <ConfigDiffView
+                  experiment={selectedExperiment}
+                  baselineExperiment={baselineExperiment}
+                />
+                <SimilarExperimentsTable
+                  selectedExperiment={selectedExperiment}
+                  experiments={experiments}
+                  onExperimentClick={handleExperimentClick}
+                />
+                {/* Mini Timeline for context */}
+                <ExperimentTimelineChart
+                  experiments={experiments}
+                  onExperimentClick={handleExperimentClick}
+                  selectedExperimentId={selectedExperimentId}
+                  compact
+                />
+              </>
+            ) : (
+              /* Overview Mode: Full charts */
+              <>
+                <ExperimentTimelineChart
+                  experiments={experiments}
+                  onExperimentClick={handleExperimentClick}
+                />
+                <ExperimentComparisonChart
+                  experiments={experiments}
+                  onExperimentClick={handleExperimentClick}
+                />
+                <PrecisionRecallScatter
+                  experiments={experiments}
+                  onExperimentClick={handleExperimentClick}
+                />
+              </>
+            )}
           </section>
 
           {/* Right Column: Detail Panel (35%) */}
