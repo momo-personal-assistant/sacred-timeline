@@ -19,14 +19,14 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 const navigationItems = [
   {
-    title: 'Query Interface',
-    value: 'query' as const,
-    icon: Search,
-  },
-  {
     title: 'Experiments',
     value: 'experiments' as const,
     icon: BeakerIcon,
+  },
+  {
+    title: 'Query Interface',
+    value: 'query' as const,
+    icon: Search,
   },
   {
     title: 'Activity',

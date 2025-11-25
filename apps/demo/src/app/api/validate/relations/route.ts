@@ -110,14 +110,16 @@ export async function GET(request: NextRequest) {
     // Get all canonical objects
     const objects = await db.searchCanonicalObjects({}, 1000);
 
-    // Get paper titles for display
-    const papersResult = await pool.query(`
-      SELECT id, title FROM canonical_objects WHERE object_type = 'paper'
+    // Get all canonical object titles for display (not just papers)
+    const objectsResult = await pool.query(`
+      SELECT id, title, object_type FROM canonical_objects
     `);
-    const papers = papersResult.rows.map((row: { id: string; title: string }) => ({
-      id: row.id,
-      title: row.title || row.id.slice(0, 20),
-    }));
+    const papers = objectsResult.rows.map(
+      (row: { id: string; title: string; object_type: string }) => ({
+        id: row.id,
+        title: row.title || `${row.object_type}: ${row.id.split('|').pop() || row.id.slice(0, 20)}`,
+      })
+    );
 
     let inferred: Relation[];
 

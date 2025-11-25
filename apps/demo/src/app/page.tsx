@@ -53,7 +53,7 @@ interface Experiment {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'query' | 'experiments' | 'activity'>('query');
+  const [activeTab, setActiveTab] = useState<'query' | 'experiments' | 'activity'>('experiments');
   const [selectedExperimentId, setSelectedExperimentId] = useState<number | undefined>();
   const [experiments, setExperiments] = useState<Experiment[]>([]);
 

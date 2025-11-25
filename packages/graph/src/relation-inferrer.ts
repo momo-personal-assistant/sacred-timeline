@@ -250,7 +250,7 @@ export class RelationInferrer {
         const words = obj.title
           .toLowerCase()
           .split(/\s+/)
-          .filter((w) => w.length > 3); // Ignore short words
+          .filter((w: string) => w.length > 3); // Ignore short words
 
         for (const word of words) {
           keywords.add(word);
@@ -417,7 +417,7 @@ export class RelationInferrer {
         const words = obj.title
           .toLowerCase()
           .split(/\s+/)
-          .filter((w) => w.length > 3);
+          .filter((w: string) => w.length > 3);
 
         for (const word of words) {
           keywords.add(word);
@@ -537,26 +537,28 @@ export class RelationInferrer {
   }
 
   /**
-   * Infer all relations (explicit + similarity)
+   * Infer all relations (explicit + similarity + duplicates)
    */
   inferAll(objects: CanonicalObject[]): Relation[] {
     const explicit = this.extractExplicit(objects);
+    const duplicates = this.detectDuplicates(objects);
     const similarity = this.inferSimilarity(objects);
 
-    return [...explicit, ...similarity];
+    return [...explicit, ...duplicates, ...similarity];
   }
 
   /**
-   * Infer all relations with semantic embeddings (explicit + similarity with embeddings)
+   * Infer all relations with semantic embeddings (explicit + duplicates + similarity with embeddings)
    */
   inferAllWithEmbeddings(
     objects: CanonicalObject[],
     embeddings: Map<string, number[]>
   ): Relation[] {
     const explicit = this.extractExplicit(objects);
+    const duplicates = this.detectDuplicates(objects);
     const similarity = this.inferSimilarityWithEmbeddings(objects, embeddings);
 
-    return [...explicit, ...similarity];
+    return [...explicit, ...duplicates, ...similarity];
   }
 
   /**
