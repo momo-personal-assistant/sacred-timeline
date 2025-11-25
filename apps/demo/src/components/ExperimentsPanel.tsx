@@ -7,6 +7,7 @@ import ConfigDiffView from '@/components/charts/ConfigDiffView';
 import ExperimentComparisonChart from '@/components/charts/ExperimentComparisonChart';
 import ExperimentTimelineChart from '@/components/charts/ExperimentTimelineChart';
 import PrecisionRecallScatter from '@/components/charts/PrecisionRecallScatter';
+import RelationGraphView from '@/components/charts/RelationGraphView';
 import SimilarExperimentsTable from '@/components/charts/SimilarExperimentsTable';
 import ExperimentDetailPanel from '@/components/ExperimentDetailPanel';
 import SystemStatusPanel from '@/components/SystemStatusPanel';
@@ -35,6 +36,8 @@ interface ExperimentConfig {
   relationInference: {
     keywordOverlapThreshold?: number;
     useSemanticSimilarity?: boolean;
+    similarityThreshold?: number;
+    semanticWeight?: number;
   };
 }
 
@@ -201,6 +204,10 @@ export default function ExperimentsPanel({
             {selectedExperiment ? (
               /* Analysis Mode: Config-aware comparison */
               <>
+                {/* Relation Graph: Visual TP/FP/FN analysis */}
+                <RelationGraphView
+                  experimentConfig={selectedExperiment.config?.relationInference}
+                />
                 <ConfigDiffView
                   experiment={selectedExperiment}
                   baselineExperiment={baselineExperiment}

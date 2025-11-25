@@ -178,6 +178,7 @@ function findSimilarExperiments(
 
   for (const exp of allExperiments) {
     if (exp.id === selected.id) continue;
+    if (!selected.config || !exp.config) continue;
 
     const diffs = getParamDifferences(selected.config, exp.config);
 
