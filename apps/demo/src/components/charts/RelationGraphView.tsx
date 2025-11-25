@@ -100,6 +100,8 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'tp' | 'fp' | 'fn'>('all');
   const containerRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const graphRef = useRef<any>(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
 
   // Fetch relation data
@@ -144,7 +146,8 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
     const updateDimensions = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        setDimensions({ width: rect.width, height: 400 });
+        // Subtract border (2px) and extra padding to prevent node overflow
+        setDimensions({ width: Math.max(0, rect.width - 4), height: 400 });
       }
     };
 
@@ -206,6 +209,41 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
 
     return { nodes, links };
   }, [data, selectedStatus]); // Removed hoveredNode to prevent re-renders on hover
+
+  // Configure d3 forces after graph mounts for better centering
+  useEffect(() => {
+    if (!graphRef.current) return;
+    const fg = graphRef.current;
+
+    // Center the graph in the middle of the container
+    fg.d3Force('center')
+      ?.x(dimensions.width / 2)
+      .y(dimensions.height / 2);
+    // Reduce charge strength to keep nodes closer together
+    fg.d3Force('charge')?.strength(-100);
+  }, [dimensions, graphData]);
+
+  // Clamp node positions within bounds on each tick
+  const handleEngineTick = useCallback(() => {
+    if (!graphRef.current) return;
+    const padding = 50; // Keep nodes away from edges (accounts for labels)
+    const w = dimensions.width;
+    const h = dimensions.height;
+    // Access nodes via ref
+    const graphDataFn = graphRef.current.graphData;
+    if (!graphDataFn) return;
+    const currentData = graphDataFn();
+    if (!currentData?.nodes) return;
+
+    currentData.nodes.forEach((node: GraphNode) => {
+      if (node.x !== undefined) {
+        node.x = Math.max(padding, Math.min(w - padding, node.x));
+      }
+      if (node.y !== undefined) {
+        node.y = Math.max(padding, Math.min(h - padding, node.y));
+      }
+    });
+  }, [dimensions]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNodeHover = useCallback((node: any) => {
@@ -328,6 +366,7 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
           className="border rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-900"
         >
           <ForceGraph2D
+            ref={graphRef}
             graphData={graphData}
             width={dimensions.width}
             height={dimensions.height}
@@ -383,6 +422,7 @@ export default function RelationGraphView({ experimentConfig }: RelationGraphVie
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             linkLineDash={(link: any) => (link.status === 'fn' ? [4, 2] : null)}
             onNodeHover={handleNodeHover}
+            onEngineTick={handleEngineTick}
             cooldownTicks={100}
             d3AlphaDecay={0.02}
             d3VelocityDecay={0.3}
