@@ -56,7 +56,7 @@ interface Experiment {
 }
 
 interface AppRightSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  activeTab: 'query' | 'validate' | 'experiments' | 'activity';
+  activeTab: 'query' | 'experiments' | 'activity';
   selectedExperiment: Experiment | null;
   baselineExperiment: Experiment | null;
 }

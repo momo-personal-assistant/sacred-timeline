@@ -5,6 +5,7 @@
 
 import type { CanonicalObject } from '@unified-memory/shared/types/canonical';
 import { createCanonicalId } from '@unified-memory/shared/types/canonical';
+import { generateSemanticHash } from '@unified-memory/shared/utils/semantic-hash';
 
 export interface SlackMessage {
   ts: string;
@@ -108,6 +109,13 @@ export class SlackTransformer {
 
       // Search text (auto-generated)
       search_text: this.generateSearchText(thread),
+
+      // Semantic hash for duplicate detection (CDM paper recommendation)
+      semantic_hash: generateSemanticHash({
+        title: this.extractTitle(thread),
+        body: this.extractBody(thread),
+        keywords: thread.keywords,
+      }),
 
       // Metadata
       visibility: 'team',

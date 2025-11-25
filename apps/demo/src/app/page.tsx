@@ -8,7 +8,6 @@ import { AppSidebar } from '@/components/app-sidebar';
 import ExperimentsPanel from '@/components/ExperimentsPanel';
 import QueryPanel from '@/components/QueryPanel';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import ValidationPanel from '@/components/ValidationPanel';
 
 interface Experiment {
   id: number;
@@ -54,9 +53,7 @@ interface Experiment {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'query' | 'validate' | 'experiments' | 'activity'>(
-    'query'
-  );
+  const [activeTab, setActiveTab] = useState<'query' | 'experiments' | 'activity'>('query');
   const [selectedExperimentId, setSelectedExperimentId] = useState<number | undefined>();
   const [experiments, setExperiments] = useState<Experiment[]>([]);
 
@@ -91,8 +88,6 @@ export default function Home() {
           <div className="flex flex-1 flex-col min-h-0 p-4 md:p-6">
             {activeTab === 'query' ? (
               <QueryPanel />
-            ) : activeTab === 'validate' ? (
-              <ValidationPanel />
             ) : activeTab === 'experiments' ? (
               <ExperimentsPanel
                 selectedExperimentId={selectedExperimentId}

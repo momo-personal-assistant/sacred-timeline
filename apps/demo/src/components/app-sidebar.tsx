@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity, BeakerIcon, CheckCircle, Database, Search } from 'lucide-react';
+import { Activity, BeakerIcon, Database, Search } from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -13,8 +13,8 @@ import {
 } from '@/components/ui/sidebar';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  activeTab: 'query' | 'validate' | 'experiments' | 'activity';
-  onTabChange: (tab: 'query' | 'validate' | 'experiments' | 'activity') => void;
+  activeTab: 'query' | 'experiments' | 'activity';
+  onTabChange: (tab: 'query' | 'experiments' | 'activity') => void;
 }
 
 const navigationItems = [
@@ -22,11 +22,6 @@ const navigationItems = [
     title: 'Query Interface',
     value: 'query' as const,
     icon: Search,
-  },
-  {
-    title: 'Validation Metrics',
-    value: 'validate' as const,
-    icon: CheckCircle,
   },
   {
     title: 'Experiments',

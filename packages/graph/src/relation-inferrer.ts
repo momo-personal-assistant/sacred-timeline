@@ -45,6 +45,9 @@ export interface RelationInferrerOptions {
   // Weight for combining keyword and semantic similarity (0-1)
   // 0 = only keywords, 1 = only semantic, 0.5 = equal weight
   semanticWeight?: number;
+
+  // Enable duplicate detection using semantic_hash (CDM paper recommendation)
+  enableDuplicateDetection?: boolean;
 }
 
 export class RelationInferrer {
@@ -57,6 +60,7 @@ export class RelationInferrer {
       includeInferred: options.includeInferred ?? true,
       useSemanticSimilarity: options.useSemanticSimilarity ?? false,
       semanticWeight: options.semanticWeight ?? 0.7, // Default: 70% semantic, 30% keyword
+      enableDuplicateDetection: options.enableDuplicateDetection ?? true, // CDM paper: use semantic_hash for duplicates
     };
   }
 
@@ -305,6 +309,63 @@ export class RelationInferrer {
           });
         }
       }
+    }
+
+    return relations;
+  }
+
+  /**
+   * Detect duplicate objects using semantic_hash (CDM paper recommendation)
+   * Objects with identical semantic_hash are considered exact duplicates
+   */
+  detectDuplicates(objects: CanonicalObject[]): Relation[] {
+    if (!this.options.enableDuplicateDetection) {
+      return [];
+    }
+
+    const relations: Relation[] = [];
+    const hashMap = new Map<string, CanonicalObject[]>();
+
+    // Group objects by semantic_hash
+    for (const obj of objects) {
+      if (obj.semantic_hash) {
+        const existing = hashMap.get(obj.semantic_hash) || [];
+        existing.push(obj);
+        hashMap.set(obj.semantic_hash, existing);
+      }
+    }
+
+    // Find duplicates (groups with more than one object)
+    for (const [hash, group] of hashMap) {
+      if (group.length > 1) {
+        // Create duplicate_of relations between all pairs
+        // First object is considered the "original", others are duplicates
+        const original = group[0];
+        for (let i = 1; i < group.length; i++) {
+          const duplicate = group[i];
+          relations.push({
+            from_id: duplicate.id,
+            to_id: original.id,
+            type: 'duplicate_of',
+            source: 'computed',
+            confidence: 1.0, // Exact hash match = 100% confidence
+            metadata: {
+              semantic_hash: hash,
+              detection_method: 'semantic_hash',
+              group_size: group.length,
+            },
+            created_at: new Date().toISOString(),
+          });
+        }
+
+        console.log(
+          `[RelationInferrer] Found ${group.length} duplicates with hash ${hash.substring(0, 8)}...`
+        );
+      }
+    }
+
+    if (relations.length > 0) {
+      console.log(`[RelationInferrer] Detected ${relations.length} duplicate relations`);
     }
 
     return relations;

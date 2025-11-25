@@ -11,3 +11,4 @@ export * from './types/canonical';
 
 // Utils
 export * from './utils/logger';
+export * from './utils/semantic-hash';
