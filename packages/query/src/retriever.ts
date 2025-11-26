@@ -6,6 +6,7 @@
 
 import type { OpenAIEmbedder } from '@momo/embedding';
 import type { RelationInferrer, Relation } from '@momo/graph';
+import { TemporalProcessor } from '@momo/temporal';
 import type { UnifiedMemoryDB, CanonicalObject } from '@unified-memory/db';
 
 export interface ChunkResult {
@@ -219,5 +220,45 @@ export class Retriever {
     }
 
     return { objects, relations };
+  }
+
+  /**
+   * Retrieve with temporal reranking
+   * Boosts more recent documents in the ranking
+   */
+  async retrieveWithReranking(
+    query: string,
+    temporalConfig?: { maxAgeDays?: number; recencyBoost?: number }
+  ): Promise<RetrievalResult> {
+    // 1. Do basic retrieval
+    const result = await this.retrieve(query);
+
+    if (result.chunks.length === 0) {
+      return result;
+    }
+
+    // 2. Apply temporal reranking
+    const temporal = new TemporalProcessor({
+      maxAgeDays: temporalConfig?.maxAgeDays ?? 30,
+      recencyBoost: temporalConfig?.recencyBoost ?? 0.1,
+    });
+
+    const rerankedChunks = temporal.applyRecencyBoost(result.chunks, result.objects);
+
+    // 3. Reorder objects based on chunk order
+    const chunkOrderMap = new Map<string, number>(
+      rerankedChunks.map((c, i) => [c.canonical_object_id, i] as [string, number])
+    );
+    const rerankedObjects = [...result.objects].sort((a, b) => {
+      const aOrder = chunkOrderMap.get(a.id) ?? Infinity;
+      const bOrder = chunkOrderMap.get(b.id) ?? Infinity;
+      return aOrder - bOrder;
+    });
+
+    return {
+      ...result,
+      chunks: rerankedChunks,
+      objects: rerankedObjects,
+    };
   }
 }

@@ -10,7 +10,8 @@
     "@unified-memory/shared": "workspace:*",
     "@unified-memory/db": "workspace:*",
     "@momo/embedding": "workspace:*",
-    "@momo/graph": "workspace:*"
+    "@momo/graph": "workspace:*",
+    "@momo/temporal": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

@@ -32,6 +32,10 @@
     "inspect": "tsx scripts/inspect-db-state.ts",
     "inspect:full": "tsx scripts/inspect-db-state.ts --full",
     "sample-data": "tsx scripts/create-sample-data.ts",
+    "pipeline": "tsx scripts/run-pipeline.ts",
+    "pipeline:ingest": "tsx scripts/run-pipeline.ts ingest",
+    "pipeline:query": "tsx scripts/run-pipeline.ts query",
+    "pipeline:e2e": "tsx scripts/run-pipeline.ts e2e",
     "prepare": "husky install"
   },
   "devDependencies": {
