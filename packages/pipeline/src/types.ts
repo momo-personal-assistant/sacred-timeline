@@ -75,6 +75,7 @@ export interface PipelineContext {
     graph?: GraphMetrics;
     retrieval?: RetrievalMetrics;
     validation?: ValidationMetrics;
+    temporal?: TemporalMetrics;
   };
 
   // Database pool reference
@@ -112,6 +113,17 @@ export interface GraphMetrics {
   avg_degree: number;
   max_degree: number;
   top_central_nodes: Array<{ node_id: string; degree: number }>;
+}
+
+export interface TemporalMetrics {
+  temporal_coverage_days: number; // Time span from oldest to newest
+  avg_object_age_days: number; // Average age of objects
+  median_object_age_days: number; // Median age of objects
+  oldest_object_age_days: number; // Age of oldest object
+  newest_object_age_days: number; // Age of newest object
+  objects_per_time_bucket: Record<string, number>; // Distribution across time buckets
+  recency_score: number; // 0-1 score, higher = more recent data
+  temporal_clustering_coefficient: number; // How clustered objects are in time
 }
 
 // ============================================================
@@ -189,4 +201,9 @@ export interface RetrievalStageResult {
 export interface GraphStageResult {
   metrics: GraphMetrics;
   nodesAnalyzed: number;
+}
+
+export interface TemporalStageResult {
+  metrics: TemporalMetrics;
+  objectsAnalyzed: number;
 }

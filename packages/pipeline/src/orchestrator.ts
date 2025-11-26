@@ -14,6 +14,7 @@ import { EmbeddingStage } from './stages/embedding-stage';
 import { GraphComputationStage } from './stages/graph-computation-stage';
 import { RetrievalStage } from './stages/retrieval-stage';
 import { StorageStage } from './stages/storage-stage';
+import { TemporalAnalysisStage } from './stages/temporal-analysis-stage';
 import { ValidationStage } from './stages/validation-stage';
 import type { PipelineConfig, PipelineContext, PipelineResult, PipelineStage } from './types';
 
@@ -74,6 +75,11 @@ export class PipelineOrchestrator {
     // Add GraphComputationStage after ValidationStage (uses inferred relations)
     if (!this.options.skipValidation) {
       stages.push(new GraphComputationStage());
+    }
+
+    // Add TemporalAnalysisStage to analyze temporal patterns
+    if (!this.options.skipValidation) {
+      stages.push(new TemporalAnalysisStage());
     }
 
     return stages;
