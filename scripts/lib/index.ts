@@ -4,7 +4,7 @@
  * Common utilities for all CLI scripts in the scripts/ directory.
  *
  * Usage:
- *   import { createDb, withDb, printHeader } from './lib';
+ *   import { createDb, withDb, printHeader, parseArgs } from './lib';
  */
 
 // Database utilities
@@ -25,3 +25,6 @@ export {
   printSuccess,
   printWarning,
 } from './console';
+
+// Argument parsing utilities
+export { getOption, getOptionNumber, getPositional, hasFlag, parseArgs } from './args';
