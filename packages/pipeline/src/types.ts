@@ -76,6 +76,7 @@ export interface PipelineContext {
     retrieval?: RetrievalMetrics;
     validation?: ValidationMetrics;
     temporal?: TemporalMetrics;
+    consolidation?: ConsolidationMetrics;
   };
 
   // Database pool reference
@@ -124,6 +125,17 @@ export interface TemporalMetrics {
   objects_per_time_bucket: Record<string, number>; // Distribution across time buckets
   recency_score: number; // 0-1 score, higher = more recent data
   temporal_clustering_coefficient: number; // How clustered objects are in time
+}
+
+export interface ConsolidationMetrics {
+  total_objects: number; // Total number of objects analyzed
+  duplicate_pairs: number; // Number of potential duplicate object pairs
+  redundant_relations: number; // Number of redundant relations
+  consolidation_opportunities: number; // Total consolidation opportunities
+  avg_similarity_score: number; // Average similarity between duplicate pairs
+  duplicate_clusters: number; // Number of duplicate clusters found
+  consolidation_ratio: number; // Ratio of consolidatable items to total (0-1)
+  top_duplicates: Array<{ id1: string; id2: string; similarity: number }>; // Top duplicate pairs
 }
 
 // ============================================================
@@ -206,4 +218,10 @@ export interface GraphStageResult {
 export interface TemporalStageResult {
   metrics: TemporalMetrics;
   objectsAnalyzed: number;
+}
+
+export interface ConsolidationStageResult {
+  metrics: ConsolidationMetrics;
+  objectsAnalyzed: number;
+  duplicateClustersFound: number;
 }

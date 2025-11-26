@@ -5,6 +5,7 @@
  */
 
 export { ChunkingStage } from './chunking-stage';
+export { ConsolidationStage } from './consolidation-stage';
 export { EmbeddingStage } from './embedding-stage';
 export { GraphComputationStage } from './graph-computation-stage';
 export { RetrievalStage } from './retrieval-stage';

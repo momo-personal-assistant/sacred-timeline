@@ -10,6 +10,7 @@ import { execSync } from 'child_process';
 import type { CanonicalObject } from '@unified-memory/shared/types/canonical';
 
 import { ChunkingStage } from './stages/chunking-stage';
+import { ConsolidationStage } from './stages/consolidation-stage';
 import { EmbeddingStage } from './stages/embedding-stage';
 import { GraphComputationStage } from './stages/graph-computation-stage';
 import { RetrievalStage } from './stages/retrieval-stage';
@@ -80,6 +81,11 @@ export class PipelineOrchestrator {
     // Add TemporalAnalysisStage to analyze temporal patterns
     if (!this.options.skipValidation) {
       stages.push(new TemporalAnalysisStage());
+    }
+
+    // Add ConsolidationStage to detect duplicates and redundant relations
+    if (!this.options.skipValidation) {
+      stages.push(new ConsolidationStage());
     }
 
     return stages;
