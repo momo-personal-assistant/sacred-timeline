@@ -55,7 +55,9 @@
       "@momo/clustering": ["./packages/clustering/src"],
       "@momo/clustering/*": ["./packages/clustering/src/*"],
       "@momo/reasoning": ["./packages/reasoning/src"],
-      "@momo/reasoning/*": ["./packages/reasoning/src/*"]
+      "@momo/reasoning/*": ["./packages/reasoning/src/*"],
+      "@momo/pipeline": ["./packages/pipeline/src"],
+      "@momo/pipeline/*": ["./packages/pipeline/src/*"]
     }
   },
   "exclude": ["node_modules", "dist", ".next", "build"]
