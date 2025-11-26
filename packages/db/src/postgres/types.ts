@@ -193,32 +193,11 @@ export interface CanonicalObjectSearchResult extends CanonicalObject {
 }
 
 // =============================================================================
-// Helper Functions for ID Generation
+// Re-export ID helpers from shared package (single source of truth)
 // =============================================================================
 
-export function generateCanonicalId(
-  platform: Platform,
-  workspace: string,
-  objectType: ObjectType,
-  platformId: string
-): string {
-  return `${platform}|${workspace}|${objectType}|${platformId}`;
-}
-
-export function parseCanonicalId(id: string): {
-  platform: Platform;
-  workspace: string;
-  objectType: ObjectType;
-  platformId: string;
-} | null {
-  const parts = id.split('|');
-  if (parts.length !== 4) {
-    return null;
-  }
-  return {
-    platform: parts[0] as Platform,
-    workspace: parts[1],
-    objectType: parts[2] as ObjectType,
-    platformId: parts[3],
-  };
-}
+export {
+  createCanonicalId,
+  createCanonicalId as generateCanonicalId, // Alias for backward compatibility
+  parseCanonicalId,
+} from '@unified-memory/shared';

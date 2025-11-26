@@ -18,16 +18,22 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import * as dotenv from 'dotenv';
 import * as yaml from 'js-yaml';
 
 import { PipelineOrchestrator, type PipelineConfig } from '@momo/pipeline';
-import { UnifiedMemoryDB } from '@unified-memory/db';
 
+import {
+  createDb,
+  printDivider,
+  printDuration,
+  printError,
+  printHeader,
+  printInfo,
+  printKV,
+  printMetrics,
+  printSuccess,
+} from './lib';
 import type { ExperimentConfig } from './types/experiment-config';
-
-// Load environment variables
-dotenv.config();
 
 const DEFAULT_CONFIG_PATH = 'config/default.yaml';
 
@@ -85,50 +91,35 @@ async function main() {
   // Get config path from args
   const configPath = process.argv[2] || DEFAULT_CONFIG_PATH;
 
-  console.log('╔════════════════════════════════════════════════════════════╗');
-  console.log('║          Configuration-Driven Experiment System            ║');
-  console.log('╚════════════════════════════════════════════════════════════╝');
-  console.log();
+  printHeader('Configuration-Driven Experiment System');
 
   // Load configuration
   console.log(`📋 Loading configuration: ${configPath}`);
   const config = loadConfig(configPath);
-  console.log(`   Name: ${config.name}`);
-  console.log(`   Description: ${config.description}`);
+  printKV('Name', config.name);
+  printKV('Description', config.description);
   if (config.metadata.git_commit) {
-    console.log(`   Git commit: ${config.metadata.git_commit.substring(0, 8)}`);
+    printKV('Git commit', config.metadata.git_commit.substring(0, 8));
   }
   console.log();
 
   // Initialize database
-  const db = new UnifiedMemoryDB({
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
-    database: process.env.POSTGRES_DB || 'unified_memory',
-    user: process.env.POSTGRES_USER || 'unified_memory',
-    password: process.env.POSTGRES_PASSWORD || 'unified_memory_dev',
-    maxConnections: parseInt(process.env.POSTGRES_MAX_CONNECTIONS || '20', 10),
-    vectorDimensions: parseInt(process.env.VECTOR_DIMENSIONS || '1536', 10),
-  });
+  const db = await createDb();
+  printSuccess('Database connected');
 
   try {
-    await db.initialize();
-    console.log('✅ Database connected');
-
     // Create orchestrator with callbacks
     const orchestrator = new PipelineOrchestrator({
       openaiApiKey: process.env.OPENAI_API_KEY,
       onStageStart: (stageName) => {
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log(`STAGE: ${stageName.toUpperCase()}`);
-        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        printDivider(`STAGE: ${stageName}`);
       },
       onStageComplete: (stageName, durationMs) => {
-        console.log(`   ✅ ${stageName} completed (${durationMs}ms)`);
+        printSuccess(`${stageName} completed (${durationMs}ms)`);
         console.log();
       },
       onStageError: (stageName, error) => {
-        console.error(`   ❌ ${stageName} failed: ${error.message}`);
+        printError(`${stageName} failed: ${error.message}`);
       },
     });
 
@@ -139,41 +130,35 @@ async function main() {
     const result = await orchestrator.execute(pipelineConfig, db);
 
     // Print results
-    console.log('╔════════════════════════════════════════════════════════════╗');
-    console.log('║                    Experiment Complete                     ║');
-    console.log('╚════════════════════════════════════════════════════════════╝');
-    console.log();
+    printHeader('Experiment Complete');
 
     if (result.success) {
-      console.log('📊 Results:');
       if (result.metrics) {
-        console.log(`   F1 Score: ${(result.metrics.f1_score * 100).toFixed(1)}%`);
-        console.log(`   Precision: ${(result.metrics.precision * 100).toFixed(1)}%`);
-        console.log(`   Recall: ${(result.metrics.recall * 100).toFixed(1)}%`);
+        printMetrics(result.metrics);
       }
       console.log();
       console.log('📈 Stats:');
-      console.log(`   Objects: ${result.stats.objects}`);
-      console.log(`   Chunks: ${result.stats.chunks}`);
-      console.log(`   Embeddings: ${result.stats.embeddings}`);
+      printKV('Objects', result.stats.objects);
+      printKV('Chunks', result.stats.chunks);
+      printKV('Embeddings', result.stats.embeddings);
       console.log();
-      console.log(`⏱️  Duration: ${(result.duration_ms / 1000).toFixed(1)}s`);
+      printDuration('Duration', result.duration_ms);
       console.log();
 
       if (result.experimentId) {
-        console.log(`✅ Experiment saved (#${result.experimentId})`);
-        console.log('   View results in the Experiments tab');
+        printSuccess(`Experiment saved (#${result.experimentId})`);
+        printKV('View results', 'Experiments tab');
       } else {
-        console.log('ℹ️  Experiment NOT saved (autoSaveExperiment: false)');
+        printInfo('Experiment NOT saved (autoSaveExperiment: false)');
       }
     } else {
-      console.error('❌ Pipeline failed:', result.error);
+      printError(`Pipeline failed: ${result.error}`);
       process.exit(1);
     }
 
     console.log();
   } catch (error) {
-    console.error('❌ Error running experiment:', error);
+    printError(`Error running experiment: ${error}`);
     process.exit(1);
   } finally {
     await db.close();
