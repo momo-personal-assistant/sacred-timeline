@@ -5,9 +5,12 @@ import { useEffect, useState } from 'react';
 import ActivityFeed from '@/components/ActivityFeed';
 import { AppRightSidebar } from '@/components/app-right-sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
+import ExperimentDocsPanel from '@/components/ExperimentDocsPanel';
 import ExperimentsPanel from '@/components/ExperimentsPanel';
 import QueryPanel from '@/components/QueryPanel';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+
+type ExperimentStatus = 'draft' | 'running' | 'completed' | 'failed';
 
 interface Experiment {
   id: number;
@@ -50,29 +53,61 @@ interface Experiment {
     false_negatives: number;
     retrieval_time_ms: number;
   } | null;
+  status?: ExperimentStatus;
+  config_file_path?: string;
+  error_message?: string;
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'query' | 'experiments' | 'activity'>('experiments');
+  const [activeTab, setActiveTab] = useState<'query' | 'experiments' | 'activity' | 'reports'>(
+    'experiments'
+  );
   const [selectedExperimentId, setSelectedExperimentId] = useState<number | undefined>();
+  const [selectedReportId, setSelectedReportId] = useState<number | undefined>();
   const [experiments, setExperiments] = useState<Experiment[]>([]);
+  const [experimentsLoading, setExperimentsLoading] = useState(false);
+  const [experimentsError, setExperimentsError] = useState<string | null>(null);
 
-  // Fetch experiments for the right sidebar and auto-select most recent
-  useEffect(() => {
-    if (activeTab === 'experiments') {
-      fetch('/api/experiments')
-        .then((res) => res.json())
-        .then((data) => {
-          const exps = data.experiments || [];
-          setExperiments(exps);
-          // Auto-select most recent experiment (first in list, sorted by created_at desc)
-          if (exps.length > 0 && !selectedExperimentId) {
-            setSelectedExperimentId(exps[0].id);
+  // Fetch experiments - runs for both experiments and reports tabs
+  const fetchExperiments = () => {
+    setExperimentsLoading(true);
+    setExperimentsError(null);
+    fetch('/api/experiments')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch experiments');
+        return res.json();
+      })
+      .then((data) => {
+        const exps = data.experiments || [];
+        setExperiments(exps);
+        // Auto-select most recent experiment only on first load
+        setSelectedExperimentId((prev) => {
+          if (prev === undefined && exps.length > 0) {
+            return exps[0].id;
           }
-        })
-        .catch(console.error);
+          return prev;
+        });
+        // Auto-select first report if none selected
+        setSelectedReportId((prev) => {
+          if (prev === undefined && exps.length > 0) {
+            return exps[0].id;
+          }
+          return prev;
+        });
+      })
+      .catch((err) => {
+        setExperimentsError(err instanceof Error ? err.message : 'An error occurred');
+      })
+      .finally(() => {
+        setExperimentsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (activeTab === 'experiments' || activeTab === 'reports') {
+      fetchExperiments();
     }
-  }, [activeTab, selectedExperimentId]);
+  }, [activeTab]);
 
   const selectedExperiment = selectedExperimentId
     ? experiments.find((exp) => exp.id === selectedExperimentId) || null
@@ -80,9 +115,27 @@ export default function Home() {
 
   const baselineExperiment = experiments.find((exp) => exp.is_baseline) || null;
 
+  // Navigate to reports tab to view draft experiment docs
+  const handleViewDocs = (experimentId: number) => {
+    setSelectedReportId(experimentId);
+    setActiveTab('reports');
+  };
+
+  // Handle report selection from sidebar
+  const handleReportSelect = (id: number) => {
+    setSelectedReportId(id);
+  };
+
   return (
     <SidebarProvider>
-      <AppSidebar variant="inset" activeTab={activeTab} onTabChange={setActiveTab} />
+      <AppSidebar
+        variant="inset"
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        reportExperiments={experiments}
+        selectedReportId={selectedReportId}
+        onReportSelect={handleReportSelect}
+      />
       <SidebarInset className="bg-muted/50">
         <div className="flex flex-1 flex-col min-h-0">
           <div className="flex flex-1 flex-col min-h-0 p-4 md:p-6">
@@ -90,8 +143,17 @@ export default function Home() {
               <QueryPanel />
             ) : activeTab === 'experiments' ? (
               <ExperimentsPanel
+                experiments={experiments}
+                loading={experimentsLoading}
+                error={experimentsError}
                 selectedExperimentId={selectedExperimentId}
                 onExperimentSelect={setSelectedExperimentId}
+              />
+            ) : activeTab === 'reports' ? (
+              <ExperimentDocsPanel
+                selectedExperimentId={selectedReportId}
+                experiments={experiments}
+                onRefresh={fetchExperiments}
               />
             ) : (
               <ActivityFeed onNavigateToExperiment={() => setActiveTab('experiments')} />
@@ -103,6 +165,9 @@ export default function Home() {
         activeTab={activeTab}
         selectedExperiment={selectedExperiment}
         baselineExperiment={baselineExperiment}
+        onBaselineChange={fetchExperiments}
+        onExperimentRun={fetchExperiments}
+        onViewDocs={handleViewDocs}
       />
     </SidebarProvider>
   );
