@@ -38,6 +38,11 @@ export class ChunkingStage implements PipelineStage {
       chunking_config: config.chunking,
     });
 
+    // Persist layer metrics if experiment ID is available
+    if (context.experimentId) {
+      await this.persistLayerMetrics(context, stats, chunks.length);
+    }
+
     return {
       ...context,
       chunks,
@@ -76,6 +81,52 @@ export class ChunkingStage implements PipelineStage {
       );
     } catch {
       // Ignore logging errors
+    }
+  }
+
+  /**
+   * Persist chunking layer metrics to layer_metrics table
+   */
+  private async persistLayerMetrics(
+    context: PipelineContext,
+    stats: any,
+    chunksCount: number
+  ): Promise<void> {
+    const pool = (context.db as any).pool;
+    if (!pool || !context.experimentId) return;
+
+    const startTime = Date.now();
+
+    try {
+      const metrics = {
+        total_chunks: chunksCount,
+        total_objects: context.objects.length,
+        avg_chunk_size: stats.avgSize || 0,
+        min_chunk_size: stats.minSize || 0,
+        max_chunk_size: stats.maxSize || 0,
+        chunks_per_object: chunksCount / context.objects.length,
+        total_characters: stats.totalSize || 0,
+      };
+
+      await pool.query(
+        `INSERT INTO layer_metrics (experiment_id, layer, evaluation_method, metrics, duration_ms)
+         VALUES ($1, $2, $3, $4::jsonb, $5)
+         ON CONFLICT (experiment_id, layer, evaluation_method)
+         DO UPDATE SET
+           metrics = $4::jsonb,
+           duration_ms = $5,
+           created_at = NOW()`,
+        [
+          context.experimentId,
+          'chunking',
+          'ground_truth',
+          JSON.stringify(metrics),
+          Date.now() - startTime,
+        ]
+      );
+    } catch (error) {
+      // Log but don't fail the pipeline
+      console.error('Failed to persist chunking metrics:', error);
     }
   }
 

@@ -5,6 +5,7 @@
  */
 
 import type { Chunk, ChunkingStats } from '@momo/chunking';
+import type { Relation } from '@momo/graph';
 import type { CanonicalObject } from '@unified-memory/shared/types/canonical';
 
 // ============================================================
@@ -62,6 +63,7 @@ export interface PipelineContext {
   objects: CanonicalObject[];
   chunks: Chunk[];
   embeddings: Map<string, number[]>; // chunk_id -> embedding
+  inferredRelations?: Relation[]; // Inferred relations from validation stage
 
   // Stats collected along the way
   stats: {
@@ -70,6 +72,8 @@ export interface PipelineContext {
       totalTokens: number;
       costUsd: number;
     };
+    graph?: GraphMetrics;
+    retrieval?: RetrievalMetrics;
     validation?: ValidationMetrics;
   };
 
@@ -88,6 +92,26 @@ export interface ValidationMetrics {
   true_positives: number;
   false_positives: number;
   false_negatives: number;
+}
+
+export interface RetrievalMetrics {
+  ndcg_at_10: number;
+  mrr: number; // Mean Reciprocal Rank
+  precision_at_5: number;
+  recall_at_10: number;
+  total_queries: number;
+  avg_retrieval_time_ms: number;
+}
+
+export interface GraphMetrics {
+  node_count: number;
+  edge_count: number;
+  graph_density: number;
+  avg_clustering_coefficient: number;
+  connected_components: number;
+  avg_degree: number;
+  max_degree: number;
+  top_central_nodes: Array<{ node_id: string; degree: number }>;
 }
 
 // ============================================================
@@ -155,4 +179,14 @@ export interface ValidationStageResult {
   metrics: ValidationMetrics;
   groundTruthCount: number;
   inferredCount: number;
+}
+
+export interface RetrievalStageResult {
+  metrics: RetrievalMetrics;
+  queriesEvaluated: number;
+}
+
+export interface GraphStageResult {
+  metrics: GraphMetrics;
+  nodesAnalyzed: number;
 }

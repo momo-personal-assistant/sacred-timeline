@@ -21,6 +21,7 @@ export class ValidationStage implements PipelineStage {
     const { config, objects, db } = context;
 
     const pool = (db as any).pool;
+    const startTime = Date.now();
 
     // Initialize relation inferrer
     const inferrer = new RelationInferrer({
@@ -77,6 +78,19 @@ export class ValidationStage implements PipelineStage {
 
     // Calculate metrics
     const metrics = this.calculateMetrics(inferred, groundTruth);
+    const durationMs = Date.now() - startTime;
+
+    // Persist layer metrics if experiment ID is available
+    if (context.experimentId) {
+      await this.persistLayerMetrics(
+        context,
+        metrics,
+        inferred.length,
+        groundTruth.length,
+        embeddingsMap.size,
+        durationMs
+      );
+    }
 
     // Log activity
     await this.logActivity(context, {
@@ -89,6 +103,7 @@ export class ValidationStage implements PipelineStage {
 
     return {
       ...context,
+      inferredRelations: inferred, // Store inferred relations for GraphComputationStage
       stats: {
         ...context.stats,
         validation: metrics,
@@ -155,6 +170,47 @@ export class ValidationStage implements PipelineStage {
       );
     } catch {
       // Ignore logging errors
+    }
+  }
+
+  private async persistLayerMetrics(
+    context: PipelineContext,
+    validationMetrics: ValidationMetrics,
+    inferredCount: number,
+    groundTruthCount: number,
+    embeddingsLoadedCount: number,
+    durationMs: number
+  ): Promise<void> {
+    const pool = (context.db as any).pool;
+    if (!pool || !context.experimentId) return;
+
+    try {
+      const metrics = {
+        f1_score: validationMetrics.f1_score,
+        precision: validationMetrics.precision,
+        recall: validationMetrics.recall,
+        true_positives: validationMetrics.true_positives,
+        false_positives: validationMetrics.false_positives,
+        false_negatives: validationMetrics.false_negatives,
+        inferred_relations: inferredCount,
+        ground_truth_relations: groundTruthCount,
+        embeddings_loaded: embeddingsLoadedCount,
+        retrieval_time_ms: durationMs,
+      };
+
+      await pool.query(
+        `INSERT INTO layer_metrics (experiment_id, layer, evaluation_method, metrics, duration_ms)
+         VALUES ($1, $2, $3, $4::jsonb, $5)
+         ON CONFLICT (experiment_id, layer, evaluation_method)
+         DO UPDATE SET metrics = $4::jsonb, duration_ms = $5, created_at = NOW()`,
+        [context.experimentId, 'validation', 'ground_truth', JSON.stringify(metrics), durationMs]
+      );
+
+      console.log(
+        `[ValidationStage] Persisted layer metrics for experiment ${context.experimentId}: F1=${(validationMetrics.f1_score * 100).toFixed(1)}%`
+      );
+    } catch (error) {
+      console.error('Failed to persist validation layer metrics:', error);
     }
   }
 

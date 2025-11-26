@@ -54,6 +54,11 @@ export class EmbeddingStage implements PipelineStage {
       embedding_config: config.embedding,
     });
 
+    // Persist layer metrics if experiment ID is available
+    if (context.experimentId) {
+      await this.persistLayerMetrics(context, result.totalTokens, costUsd, result.results.length);
+    }
+
     return {
       ...context,
       embeddings,
@@ -95,6 +100,52 @@ export class EmbeddingStage implements PipelineStage {
       );
     } catch {
       // Ignore logging errors
+    }
+  }
+
+  /**
+   * Persist embedding layer metrics to layer_metrics table
+   */
+  private async persistLayerMetrics(
+    context: PipelineContext,
+    totalTokens: number,
+    costUsd: number,
+    embeddingsCount: number
+  ): Promise<void> {
+    const pool = (context.db as any).pool;
+    if (!pool || !context.experimentId) return;
+
+    const startTime = Date.now();
+
+    try {
+      const metrics = {
+        total_embeddings: embeddingsCount,
+        total_tokens: totalTokens,
+        estimated_cost_usd: costUsd,
+        avg_tokens_per_chunk: totalTokens / embeddingsCount,
+        embedding_model: context.config.embedding.model,
+        dimensions: context.config.embedding.dimensions,
+      };
+
+      await pool.query(
+        `INSERT INTO layer_metrics (experiment_id, layer, evaluation_method, metrics, duration_ms)
+         VALUES ($1, $2, $3, $4::jsonb, $5)
+         ON CONFLICT (experiment_id, layer, evaluation_method)
+         DO UPDATE SET
+           metrics = $4::jsonb,
+           duration_ms = $5,
+           created_at = NOW()`,
+        [
+          context.experimentId,
+          'embedding',
+          'ground_truth',
+          JSON.stringify(metrics),
+          Date.now() - startTime,
+        ]
+      );
+    } catch (error) {
+      // Log but don't fail the pipeline
+      console.error('Failed to persist embedding metrics:', error);
     }
   }
 

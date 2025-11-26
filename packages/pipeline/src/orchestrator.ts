@@ -11,6 +11,8 @@ import type { CanonicalObject } from '@unified-memory/shared/types/canonical';
 
 import { ChunkingStage } from './stages/chunking-stage';
 import { EmbeddingStage } from './stages/embedding-stage';
+import { GraphComputationStage } from './stages/graph-computation-stage';
+import { RetrievalStage } from './stages/retrieval-stage';
 import { StorageStage } from './stages/storage-stage';
 import { ValidationStage } from './stages/validation-stage';
 import type { PipelineConfig, PipelineContext, PipelineResult, PipelineStage } from './types';
@@ -60,8 +62,18 @@ export class PipelineOrchestrator {
       stages.push(new StorageStage());
     }
 
+    // Add RetrievalStage before ValidationStage
+    if (!this.options.skipValidation) {
+      stages.push(new RetrievalStage());
+    }
+
     if (!this.options.skipValidation) {
       stages.push(new ValidationStage());
+    }
+
+    // Add GraphComputationStage after ValidationStage (uses inferred relations)
+    if (!this.options.skipValidation) {
+      stages.push(new GraphComputationStage());
     }
 
     return stages;
@@ -104,10 +116,18 @@ export class PipelineOrchestrator {
       };
     }
 
+    // Create experiment record BEFORE pipeline execution (if configured)
+    let experimentId: number | undefined;
+    if (config.validation.autoSaveExperiment) {
+      experimentId = await this.createExperimentRecord(context, db);
+      context.experimentId = experimentId;
+    }
+
     // Log pipeline start
     await this.logPipelineActivity(context, 'start', {
       config_name: config.name,
       objects_count: context.objects.length,
+      experiment_id: experimentId,
     });
 
     try {
@@ -131,11 +151,9 @@ export class PipelineOrchestrator {
         }
       }
 
-      // Save experiment if configured
-      let experimentId: number | undefined;
-      if (config.validation.autoSaveExperiment) {
-        experimentId = await this.saveExperiment(context);
-        context.experimentId = experimentId;
+      // Update experiment with results if configured
+      if (experimentId && config.validation.autoSaveExperiment) {
+        await this.updateExperimentResults(context, experimentId);
       }
 
       const duration = Date.now() - startTime;
@@ -145,6 +163,7 @@ export class PipelineOrchestrator {
         config_name: config.name,
         duration_ms: duration,
         metrics: context.stats.validation,
+        experiment_id: experimentId,
       });
 
       return {
@@ -185,26 +204,25 @@ export class PipelineOrchestrator {
   }
 
   /**
-   * Save experiment to database
+   * Create experiment record at the start of pipeline execution
    */
-  private async saveExperiment(context: PipelineContext): Promise<number> {
-    const { config, stats, db } = context;
+  private async createExperimentRecord(context: PipelineContext, db: any): Promise<number> {
+    const { config } = context;
     const pool = (db as any).pool;
 
     const gitCommit = this.getGitCommit();
 
     const result = await pool.query(
       `INSERT INTO experiments (
-        name, description, config, is_baseline, paper_ids, git_commit, status, run_completed_at, created_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, 'completed', NOW(), NOW())
+        name, description, config, is_baseline, paper_ids, git_commit, status, created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, 'running', NOW())
       ON CONFLICT (name) DO UPDATE SET
         description = EXCLUDED.description,
         config = EXCLUDED.config,
         is_baseline = EXCLUDED.is_baseline,
         paper_ids = EXCLUDED.paper_ids,
         git_commit = EXCLUDED.git_commit,
-        status = 'completed',
-        run_completed_at = NOW()
+        status = 'running'
       RETURNING id`,
       [
         config.name,
@@ -216,7 +234,26 @@ export class PipelineOrchestrator {
       ]
     );
 
-    const experimentId = result.rows[0].id;
+    return result.rows[0].id;
+  }
+
+  /**
+   * Update experiment with final results after pipeline completion
+   */
+  private async updateExperimentResults(
+    context: PipelineContext,
+    experimentId: number
+  ): Promise<void> {
+    const { stats, db } = context;
+    const pool = (db as any).pool;
+
+    // Update experiment status to completed
+    await pool.query(
+      `UPDATE experiments
+       SET status = 'completed', run_completed_at = NOW()
+       WHERE id = $1`,
+      [experimentId]
+    );
 
     // Insert experiment results if we have validation metrics
     if (stats.validation) {
@@ -228,7 +265,17 @@ export class PipelineOrchestrator {
           experiment_id, scenario, f1_score, precision, recall,
           true_positives, false_positives, false_negatives,
           ground_truth_total, inferred_total, retrieval_time_ms, created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())`,
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
+        ON CONFLICT (experiment_id, scenario) DO UPDATE SET
+          f1_score = EXCLUDED.f1_score,
+          precision = EXCLUDED.precision,
+          recall = EXCLUDED.recall,
+          true_positives = EXCLUDED.true_positives,
+          false_positives = EXCLUDED.false_positives,
+          false_negatives = EXCLUDED.false_negatives,
+          ground_truth_total = EXCLUDED.ground_truth_total,
+          inferred_total = EXCLUDED.inferred_total,
+          retrieval_time_ms = EXCLUDED.retrieval_time_ms`,
         [
           experimentId,
           'normal',
@@ -244,8 +291,6 @@ export class PipelineOrchestrator {
         ]
       );
     }
-
-    return experimentId;
   }
 
   /**
