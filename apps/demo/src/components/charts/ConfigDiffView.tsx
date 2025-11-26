@@ -8,31 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
-interface ExperimentConfig {
-  name: string;
-  description: string;
-  embedding: {
-    model: string;
-    dimensions?: number;
-    batchSize?: number;
-  };
-  chunking: {
-    strategy: string;
-    maxChunkSize?: number;
-    overlap?: number;
-  };
-  retrieval: {
-    similarityThreshold?: number;
-    chunkLimit?: number;
-  };
-  relationInference: {
-    keywordOverlapThreshold?: number;
-    useSemanticSimilarity?: boolean;
-    similarityThreshold?: number;
-    semanticWeight?: number;
-  };
-}
-
 interface ExperimentResults {
   f1_score: number;
   precision: number;
@@ -47,7 +22,8 @@ interface Experiment {
   id: number;
   name: string;
   description: string;
-  config: ExperimentConfig;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  config: Record<string, any>;
   is_baseline: boolean;
   paper_ids: string[];
   git_commit: string | null;
@@ -61,129 +37,154 @@ interface ConfigDiffViewProps {
   compact?: boolean;
 }
 
+type ConfigValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Record<string, unknown>
+  | unknown[];
+
 interface DiffRow {
   category: string;
   parameter: string;
-  baselineValue: string | number | boolean | undefined;
-  selectedValue: string | number | boolean | undefined;
+  baselineValue: ConfigValue;
+  selectedValue: ConfigValue;
   isChanged: boolean;
+  changeType: 'modified' | 'added' | 'removed';
 }
 
-function formatValue(value: string | number | boolean | undefined): string {
-  if (value === undefined) return '-';
+function formatValue(value: ConfigValue): string {
+  if (value === undefined || value === null) return '-';
   if (typeof value === 'boolean') return value ? 'ON' : 'OFF';
+  if (typeof value === 'object') {
+    if (Array.isArray(value)) return `[${value.length} items]`;
+    return '{...}';
+  }
   return String(value);
 }
 
+// Convert camelCase/snake_case to readable label
+function toReadableLabel(key: string): string {
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, ' ')
+    .replace(/^\s/, '')
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+// Recursively compare two config objects and extract differences
 function getConfigDiffs(
-  selected: ExperimentConfig,
-  baseline: ExperimentConfig | undefined
+  selected: Record<string, unknown> | undefined,
+  baseline: Record<string, unknown> | undefined
 ): DiffRow[] {
   const diffs: DiffRow[] = [];
 
-  // Relation Inference
-  const selRI = selected.relationInference;
-  const baseRI = baseline?.relationInference;
+  if (!selected && !baseline) return diffs;
 
-  diffs.push({
-    category: 'Relation Inference',
-    parameter: 'Semantic Similarity',
-    baselineValue: baseRI?.useSemanticSimilarity,
-    selectedValue: selRI?.useSemanticSimilarity,
-    isChanged: baseRI?.useSemanticSimilarity !== selRI?.useSemanticSimilarity,
-  });
+  // Get all unique keys from both configs
+  const allKeys = new Set([...Object.keys(selected || {}), ...Object.keys(baseline || {})]);
 
-  diffs.push({
-    category: 'Relation Inference',
-    parameter: 'Similarity Threshold',
-    baselineValue: baseRI?.similarityThreshold,
-    selectedValue: selRI?.similarityThreshold,
-    isChanged: baseRI?.similarityThreshold !== selRI?.similarityThreshold,
-  });
+  // Skip these metadata fields
+  const skipFields = new Set(['name', 'description', 'created_at', 'metadata', 'validation']);
 
-  diffs.push({
-    category: 'Relation Inference',
-    parameter: 'Semantic Weight',
-    baselineValue: baseRI?.semanticWeight,
-    selectedValue: selRI?.semanticWeight,
-    isChanged: baseRI?.semanticWeight !== selRI?.semanticWeight,
-  });
+  for (const key of allKeys) {
+    if (skipFields.has(key)) continue;
 
-  diffs.push({
-    category: 'Relation Inference',
-    parameter: 'Keyword Overlap',
-    baselineValue: baseRI?.keywordOverlapThreshold,
-    selectedValue: selRI?.keywordOverlapThreshold,
-    isChanged: baseRI?.keywordOverlapThreshold !== selRI?.keywordOverlapThreshold,
-  });
+    const baseVal = baseline?.[key];
+    const selVal = selected?.[key];
 
-  // Embedding
-  const selEmb = selected.embedding;
-  const baseEmb = baseline?.embedding;
+    // If both are objects (not arrays), recurse into them
+    if (
+      baseVal &&
+      selVal &&
+      typeof baseVal === 'object' &&
+      typeof selVal === 'object' &&
+      !Array.isArray(baseVal) &&
+      !Array.isArray(selVal)
+    ) {
+      const category = toReadableLabel(key);
+      const nestedDiffs = compareNestedObjects(
+        category,
+        selVal as Record<string, unknown>,
+        baseVal as Record<string, unknown>
+      );
+      diffs.push(...nestedDiffs);
+    }
+    // If only baseline has this key (object)
+    else if (baseVal && typeof baseVal === 'object' && !Array.isArray(baseVal) && !selVal) {
+      const category = toReadableLabel(key);
+      const nestedDiffs = compareNestedObjects(
+        category,
+        undefined,
+        baseVal as Record<string, unknown>
+      );
+      diffs.push(...nestedDiffs);
+    }
+    // If only selected has this key (object)
+    else if (selVal && typeof selVal === 'object' && !Array.isArray(selVal) && !baseVal) {
+      const category = toReadableLabel(key);
+      const nestedDiffs = compareNestedObjects(
+        category,
+        selVal as Record<string, unknown>,
+        undefined
+      );
+      diffs.push(...nestedDiffs);
+    }
+    // For primitive values at top level (unlikely but handle)
+    else if (baseVal !== selVal) {
+      const changeType =
+        baseVal === undefined ? 'added' : selVal === undefined ? 'removed' : 'modified';
+      diffs.push({
+        category: 'General',
+        parameter: toReadableLabel(key),
+        baselineValue: baseVal as ConfigValue,
+        selectedValue: selVal as ConfigValue,
+        isChanged: true,
+        changeType,
+      });
+    }
+  }
 
-  diffs.push({
-    category: 'Embedding',
-    parameter: 'Model',
-    baselineValue: baseEmb?.model,
-    selectedValue: selEmb?.model,
-    isChanged: baseEmb?.model !== selEmb?.model,
-  });
+  return diffs;
+}
 
-  diffs.push({
-    category: 'Embedding',
-    parameter: 'Dimensions',
-    baselineValue: baseEmb?.dimensions,
-    selectedValue: selEmb?.dimensions,
-    isChanged: baseEmb?.dimensions !== selEmb?.dimensions,
-  });
+function compareNestedObjects(
+  category: string,
+  selected: Record<string, unknown> | undefined,
+  baseline: Record<string, unknown> | undefined
+): DiffRow[] {
+  const diffs: DiffRow[] = [];
 
-  // Chunking
-  const selChunk = selected.chunking;
-  const baseChunk = baseline?.chunking;
+  const allKeys = new Set([...Object.keys(selected || {}), ...Object.keys(baseline || {})]);
 
-  diffs.push({
-    category: 'Chunking',
-    parameter: 'Strategy',
-    baselineValue: baseChunk?.strategy,
-    selectedValue: selChunk?.strategy,
-    isChanged: baseChunk?.strategy !== selChunk?.strategy,
-  });
+  for (const key of allKeys) {
+    const baseVal = baseline?.[key];
+    const selVal = selected?.[key];
 
-  diffs.push({
-    category: 'Chunking',
-    parameter: 'Max Chunk Size',
-    baselineValue: baseChunk?.maxChunkSize,
-    selectedValue: selChunk?.maxChunkSize,
-    isChanged: baseChunk?.maxChunkSize !== selChunk?.maxChunkSize,
-  });
+    // Skip nested objects/arrays for simplicity - just show they differ
+    const baseDisplay = baseVal;
+    const selDisplay = selVal;
 
-  diffs.push({
-    category: 'Chunking',
-    parameter: 'Overlap',
-    baselineValue: baseChunk?.overlap,
-    selectedValue: selChunk?.overlap,
-    isChanged: baseChunk?.overlap !== selChunk?.overlap,
-  });
+    if (baseVal !== selVal) {
+      // Determine change type
+      let changeType: 'modified' | 'added' | 'removed' = 'modified';
+      if (baseVal === undefined) changeType = 'added';
+      else if (selVal === undefined) changeType = 'removed';
 
-  // Retrieval
-  const selRet = selected.retrieval;
-  const baseRet = baseline?.retrieval;
-
-  diffs.push({
-    category: 'Retrieval',
-    parameter: 'Similarity Threshold',
-    baselineValue: baseRet?.similarityThreshold,
-    selectedValue: selRet?.similarityThreshold,
-    isChanged: baseRet?.similarityThreshold !== selRet?.similarityThreshold,
-  });
-
-  diffs.push({
-    category: 'Retrieval',
-    parameter: 'Chunk Limit',
-    baselineValue: baseRet?.chunkLimit,
-    selectedValue: selRet?.chunkLimit,
-    isChanged: baseRet?.chunkLimit !== selRet?.chunkLimit,
-  });
+      diffs.push({
+        category,
+        parameter: toReadableLabel(key),
+        baselineValue: baseDisplay as ConfigValue,
+        selectedValue: selDisplay as ConfigValue,
+        isChanged: true,
+        changeType,
+      });
+    }
+  }
 
   return diffs;
 }
@@ -273,6 +274,12 @@ export default function ConfigDiffView({
     ? [...new Set(changedParams.map((d) => d.category))]
     : categories;
 
+  // Truncate long experiment name for display
+  const truncateName = (name: string, maxLen: number = 20) => {
+    if (name.length <= maxLen) return name;
+    return name.slice(0, maxLen) + '...';
+  };
+
   // Compact mode with Collapsible
   if (compact) {
     return (
@@ -282,17 +289,20 @@ export default function ConfigDiffView({
             variant="ghost"
             className="w-full justify-between px-3 py-2 h-auto hover:bg-muted/50"
           >
-            <div className="flex items-center gap-2">
-              <GitCompare className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-xs font-medium">Config Diff</span>
-              <span className="text-[10px] text-muted-foreground">
-                vs {baselineExperiment.name}
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <GitCompare className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+              <span className="text-xs font-medium flex-shrink-0">Config Diff</span>
+              <span
+                className="text-[10px] text-muted-foreground truncate"
+                title={`vs ${baselineExperiment.name}`}
+              >
+                vs {truncateName(baselineExperiment.name)}
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0 ml-2">
               {changedParams.length > 0 && (
                 <Badge variant="secondary" className="text-[10px] h-[16px] px-1.5 font-medium">
-                  {changedParams.length} changed
+                  {changedParams.length}
                 </Badge>
               )}
               <ChevronDown
@@ -309,54 +319,77 @@ export default function ConfigDiffView({
               No configuration differences
             </div>
           ) : (
-            <div className="border rounded-md overflow-hidden mt-2">
-              <table className="w-full text-[11px]">
-                <thead>
-                  <tr className="bg-muted/50">
-                    <th className="text-left px-2 py-1 font-medium text-muted-foreground">
-                      Parameter
-                    </th>
-                    <th className="text-center px-2 py-1 font-medium text-muted-foreground w-16">
-                      Baseline
-                    </th>
-                    <th className="text-center px-0.5 py-1 w-4"></th>
-                    <th className="text-center px-2 py-1 font-medium text-muted-foreground w-16">
-                      Current
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayCategories.map((category) => {
-                    const categoryDiffs = displayDiffs.filter((d) => d.category === category);
-
-                    return categoryDiffs.map((diff, idx) => (
-                      <tr
-                        key={`${category}-${diff.parameter}`}
-                        className="bg-yellow-50/50 dark:bg-yellow-950/10"
-                      >
-                        <td className="px-2 py-1 border-t">
-                          <div className="flex items-center gap-1">
-                            {idx === 0 && (
-                              <span className="text-muted-foreground text-[10px]">{category}:</span>
-                            )}
-                            {idx !== 0 && <span className="ml-3" />}
-                            <span className="font-medium">{diff.parameter}</span>
-                          </div>
-                        </td>
-                        <td className="text-center px-2 py-1 border-t font-mono text-muted-foreground">
-                          {formatValue(diff.baselineValue)}
-                        </td>
-                        <td className="text-center px-0.5 py-1 border-t">
-                          <ArrowRight className="h-2.5 w-2.5 text-yellow-600 dark:text-yellow-500" />
-                        </td>
-                        <td className="text-center px-2 py-1 border-t font-mono font-semibold text-yellow-700 dark:text-yellow-400">
-                          {formatValue(diff.selectedValue)}
-                        </td>
-                      </tr>
-                    ));
-                  })}
-                </tbody>
-              </table>
+            <div className="space-y-2 mt-2">
+              {displayCategories.map((category) => {
+                const categoryDiffs = displayDiffs.filter((d) => d.category === category);
+                return (
+                  <div key={category} className="border rounded-md overflow-hidden">
+                    {/* Category Header */}
+                    <div className="bg-muted/70 px-2 py-1 border-b">
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+                        {category}
+                      </span>
+                    </div>
+                    {/* Parameters Table */}
+                    <table className="w-full text-[11px]">
+                      <thead>
+                        <tr className="bg-muted/30">
+                          <th className="text-left px-2 py-1 font-medium text-muted-foreground">
+                            Parameter
+                          </th>
+                          <th className="text-center px-2 py-1 font-medium text-muted-foreground w-16">
+                            Base
+                          </th>
+                          <th className="text-center px-0.5 py-1 w-4"></th>
+                          <th className="text-center px-2 py-1 font-medium text-muted-foreground w-16">
+                            New
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {categoryDiffs.map((diff) => {
+                          const rowBg =
+                            diff.changeType === 'added'
+                              ? 'bg-green-50/50 dark:bg-green-950/10'
+                              : diff.changeType === 'removed'
+                                ? 'bg-red-50/50 dark:bg-red-950/10'
+                                : 'bg-yellow-50/50 dark:bg-yellow-950/10';
+                          const arrowColor =
+                            diff.changeType === 'added'
+                              ? 'text-green-600 dark:text-green-500'
+                              : diff.changeType === 'removed'
+                                ? 'text-red-600 dark:text-red-500'
+                                : 'text-yellow-600 dark:text-yellow-500';
+                          const valueColor =
+                            diff.changeType === 'added'
+                              ? 'text-green-700 dark:text-green-400'
+                              : diff.changeType === 'removed'
+                                ? 'text-red-700 dark:text-red-400'
+                                : 'text-yellow-700 dark:text-yellow-400';
+                          return (
+                            <tr key={`${category}-${diff.parameter}`} className={rowBg}>
+                              <td className="px-2 py-1 border-t">
+                                <span className="font-medium">{diff.parameter}</span>
+                              </td>
+                              <td className="text-center px-2 py-1 border-t font-mono text-muted-foreground">
+                                {formatValue(diff.baselineValue)}
+                              </td>
+                              <td className="text-center px-0.5 py-1 border-t">
+                                <ArrowRight className={`h-2.5 w-2.5 ${arrowColor}`} />
+                              </td>
+                              <td
+                                className={`text-center px-2 py-1 border-t font-mono font-semibold ${valueColor}`}
+                              >
+                                {formatValue(diff.selectedValue)}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
             </div>
           )}
         </CollapsibleContent>
