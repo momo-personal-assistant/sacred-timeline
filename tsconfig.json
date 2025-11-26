@@ -42,6 +42,8 @@
       "@momo/transformers/*": ["./packages/transformers/src/*"],
       "@momo/graph": ["./packages/graph/src"],
       "@momo/graph/*": ["./packages/graph/src/*"],
+      "@momo/chunking": ["./packages/chunking/src"],
+      "@momo/chunking/*": ["./packages/chunking/src/*"],
       "@momo/embedding": ["./packages/embedding/src"],
       "@momo/embedding/*": ["./packages/embedding/src/*"],
       "@momo/query": ["./packages/query/src"],
@@ -53,7 +55,9 @@
       "@momo/clustering": ["./packages/clustering/src"],
       "@momo/clustering/*": ["./packages/clustering/src/*"],
       "@momo/reasoning": ["./packages/reasoning/src"],
-      "@momo/reasoning/*": ["./packages/reasoning/src/*"]
+      "@momo/reasoning/*": ["./packages/reasoning/src/*"],
+      "@momo/pipeline": ["./packages/pipeline/src"],
+      "@momo/pipeline/*": ["./packages/pipeline/src/*"]
     }
   },
   "exclude": ["node_modules", "dist", ".next", "build"]

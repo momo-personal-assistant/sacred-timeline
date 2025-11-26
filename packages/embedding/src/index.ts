@@ -1,8 +1,11 @@
 /**
  * @momo/embedding
  *
- * Embedding generation and chunking strategies
+ * Embedding generation for the memory pipeline.
+ * Part of Write Path: Ingestion → Transform → Consolidation → Chunking → [Embedding]
+ *
+ * Note: Chunking has been moved to @momo/chunking package
  */
 
-export * from './openai-embedder';
-export * from './chunker';
+export { OpenAIEmbedder } from './openai-embedder';
+export type { EmbeddingConfig, EmbeddingResult, BatchEmbeddingResult } from './openai-embedder';
