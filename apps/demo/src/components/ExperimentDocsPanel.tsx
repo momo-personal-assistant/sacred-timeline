@@ -1,33 +1,13 @@
 'use client';
 
-import {
-  CheckCircle2,
-  Clock,
-  FileEdit,
-  FlaskConical,
-  Loader2,
-  Play,
-  Star,
-  Target,
-  TrendingUp,
-  XCircle,
-} from 'lucide-react';
+import { CheckCircle2, FileEdit, FlaskConical, Loader2, Play, Star, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import {
-  ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-} from 'recharts';
 import remarkGfm from 'remark-gfm';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer } from '@/components/ui/chart';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 type ExperimentStatus = 'draft' | 'running' | 'completed' | 'failed';
@@ -112,42 +92,40 @@ const statusConfig: Record<
   failed: { icon: XCircle, color: 'text-red-600', label: 'Failed', bgColor: 'bg-red-500/10' },
 };
 
-function MetricCard({
-  label,
-  value,
-  icon: Icon,
-  trend,
-  subtitle,
-}: {
-  label: string;
-  value: string;
-  icon: typeof Target;
-  trend?: number;
-  subtitle?: string;
-}) {
+function MetricsRow({ results, trend }: { results: ExperimentResults; trend?: number | null }) {
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Icon className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">{label}</p>
-              <p className="text-xl font-bold font-mono">{value}</p>
-              {subtitle && <p className="text-[10px] text-muted-foreground">{subtitle}</p>}
-            </div>
-          </div>
-          {trend !== undefined && (
-            <Badge variant={trend >= 0 ? 'default' : 'destructive'} className="text-xs">
-              {trend >= 0 ? '+' : ''}
-              {trend.toFixed(1)}%
-            </Badge>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex items-baseline gap-8 text-sm border-b pb-4">
+      <div>
+        <span className="text-muted-foreground">F1</span>{' '}
+        <span className="font-mono font-medium">{(results.f1_score * 100).toFixed(1)}%</span>
+        {trend !== undefined && trend !== null && (
+          <span className={`ml-1 text-xs ${trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {trend >= 0 ? '+' : ''}
+            {trend.toFixed(1)}%
+          </span>
+        )}
+      </div>
+      <div>
+        <span className="text-muted-foreground">Precision</span>{' '}
+        <span className="font-mono font-medium">{(results.precision * 100).toFixed(1)}%</span>
+        <span className="text-xs text-muted-foreground ml-1">
+          {results.true_positives}/{results.true_positives + results.false_positives}
+        </span>
+      </div>
+      <div>
+        <span className="text-muted-foreground">Recall</span>{' '}
+        <span className="font-mono font-medium">{(results.recall * 100).toFixed(1)}%</span>
+        <span className="text-xs text-muted-foreground ml-1">
+          {results.true_positives}/{results.true_positives + results.false_negatives}
+        </span>
+      </div>
+      <div>
+        <span className="text-muted-foreground">Response</span>{' '}
+        <span className="font-mono font-medium">
+          {(results.retrieval_time_ms / 1000).toFixed(1)}s
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -218,26 +196,6 @@ function ExperimentDetailView({
     } finally {
       setIsSettingBaseline(false);
     }
-  };
-
-  // Prepare radar chart data
-  const results = experiment.results;
-  const radarData =
-    hasResults && results
-      ? [
-          { metric: 'F1', value: results.f1_score * 100, fullMark: 100 },
-          { metric: 'Precision', value: results.precision * 100, fullMark: 100 },
-          { metric: 'Recall', value: results.recall * 100, fullMark: 100 },
-          {
-            metric: 'Speed',
-            value: Math.max(0, 100 - results.retrieval_time_ms / 10),
-            fullMark: 100,
-          },
-        ]
-      : [];
-
-  const chartConfig = {
-    value: { label: 'Score', color: 'hsl(var(--chart-1))' },
   };
 
   // Extract TOC from markdown content
@@ -335,61 +293,9 @@ function ExperimentDetailView({
         {/* Content */}
         <ScrollArea className="flex-1">
           <div className="p-6 space-y-6">
-            {/* Metrics + Radar Chart in one row */}
+            {/* Metrics Row */}
             {hasResults && experiment.results && (
-              <div className="flex gap-6">
-                {/* Metrics Grid */}
-                <div className="flex-1 grid grid-cols-2 gap-3">
-                  <MetricCard
-                    label="F1 Score"
-                    value={`${(experiment.results.f1_score * 100).toFixed(1)}%`}
-                    icon={Target}
-                    trend={improvementVsBaseline ?? undefined}
-                  />
-                  <MetricCard
-                    label="Precision"
-                    value={`${(experiment.results.precision * 100).toFixed(1)}%`}
-                    icon={CheckCircle2}
-                    subtitle={`${experiment.results.true_positives} TP / ${experiment.results.false_positives} FP`}
-                  />
-                  <MetricCard
-                    label="Recall"
-                    value={`${(experiment.results.recall * 100).toFixed(1)}%`}
-                    icon={TrendingUp}
-                    subtitle={`${experiment.results.true_positives} TP / ${experiment.results.false_negatives} FN`}
-                  />
-                  <MetricCard
-                    label="Response Time"
-                    value={`${experiment.results.retrieval_time_ms}ms`}
-                    icon={Clock}
-                  />
-                </div>
-
-                {/* Radar Chart */}
-                <Card className="w-[280px] shrink-0">
-                  <CardContent className="p-4">
-                    <ChartContainer config={chartConfig} className="h-[180px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart
-                          data={radarData}
-                          margin={{ top: 10, right: 20, bottom: 10, left: 20 }}
-                        >
-                          <PolarGrid />
-                          <PolarAngleAxis dataKey="metric" fontSize={10} />
-                          <PolarRadiusAxis angle={30} domain={[0, 100]} fontSize={9} tick={false} />
-                          <Radar
-                            name="Score"
-                            dataKey="value"
-                            stroke="hsl(var(--chart-1))"
-                            fill="hsl(var(--chart-1))"
-                            fillOpacity={0.3}
-                          />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    </ChartContainer>
-                  </CardContent>
-                </Card>
-              </div>
+              <MetricsRow results={experiment.results} trend={improvementVsBaseline} />
             )}
 
             {/* No Results State */}
