@@ -36,6 +36,9 @@
     "pipeline:ingest": "tsx scripts/run-pipeline.ts ingest",
     "pipeline:query": "tsx scripts/run-pipeline.ts query",
     "pipeline:e2e": "tsx scripts/run-pipeline.ts e2e",
+    "benchmark:chunking": "tsx scripts/benchmark/benchmark-chunking.ts",
+    "benchmark:embedding": "tsx scripts/benchmark/benchmark-embedding.ts",
+    "benchmark:relations": "tsx scripts/benchmark/benchmark-relation-inference.ts",
     "prepare": "husky install"
   },
   "devDependencies": {
