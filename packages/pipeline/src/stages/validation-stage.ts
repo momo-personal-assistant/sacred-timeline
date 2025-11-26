@@ -116,7 +116,11 @@ export class ValidationStage implements PipelineStage {
   }
 
   private calculateMetrics(inferred: Relation[], groundTruth: Relation[]): ValidationMetrics {
-    const normalizeRelation = (rel: Relation) => `${rel.from_id}|${rel.to_id}|${rel.type}`;
+    // Normalize relation by sorting IDs to handle bidirectional relations
+    const normalizeRelation = (rel: Relation) => {
+      const [id1, id2] = [rel.from_id, rel.to_id].sort();
+      return `${id1}|${id2}|${rel.type}`;
+    };
 
     const groundTruthSet = new Set(groundTruth.map(normalizeRelation));
     const inferredSet = new Set(inferred.map(normalizeRelation));
