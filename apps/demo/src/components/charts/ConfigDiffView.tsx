@@ -1,9 +1,12 @@
 'use client';
 
-import { ArrowRight, Lightbulb } from 'lucide-react';
+import { ArrowRight, ChevronDown, GitCompare, Lightbulb } from 'lucide-react';
+import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ExperimentConfig {
   name: string;
@@ -190,10 +193,22 @@ export default function ConfigDiffView({
   baselineExperiment,
   compact = false,
 }: ConfigDiffViewProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Helper to render empty state message for compact mode
+  const renderCompactEmpty = (message: string) => (
+    <div className="px-3 py-2">
+      <span className="text-xs text-muted-foreground">{message}</span>
+    </div>
+  );
+
   if (!experiment) {
+    if (compact) {
+      return renderCompactEmpty('Select an experiment');
+    }
     return (
-      <Card className={compact ? 'h-full' : ''}>
-        <CardHeader className={compact ? 'pb-2' : 'pb-2'}>
+      <Card>
+        <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold leading-tight">Configuration Diff</CardTitle>
           <CardDescription className="text-xs leading-[1.5]">
             Select an experiment to view configuration
@@ -204,8 +219,11 @@ export default function ConfigDiffView({
   }
 
   if (!baselineExperiment) {
+    if (compact) {
+      return renderCompactEmpty('No baseline to compare');
+    }
     return (
-      <Card className={compact ? 'h-full' : ''}>
+      <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold leading-tight">Configuration Diff</CardTitle>
           <CardDescription className="text-xs leading-[1.5]">
@@ -217,8 +235,11 @@ export default function ConfigDiffView({
   }
 
   if (experiment.is_baseline) {
+    if (compact) {
+      return renderCompactEmpty('Viewing baseline');
+    }
     return (
-      <Card className={compact ? 'h-full' : ''}>
+      <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold leading-tight">Configuration Diff</CardTitle>
           <CardDescription className="text-xs leading-[1.5]">
@@ -252,19 +273,109 @@ export default function ConfigDiffView({
     ? [...new Set(changedParams.map((d) => d.category))]
     : categories;
 
+  // Compact mode with Collapsible
+  if (compact) {
+    return (
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger asChild>
+          <Button
+            variant="ghost"
+            className="w-full justify-between px-3 py-2 h-auto hover:bg-muted/50"
+          >
+            <div className="flex items-center gap-2">
+              <GitCompare className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-xs font-medium">Config Diff</span>
+              <span className="text-[10px] text-muted-foreground">
+                vs {baselineExperiment.name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              {changedParams.length > 0 && (
+                <Badge variant="secondary" className="text-[10px] h-[16px] px-1.5 font-medium">
+                  {changedParams.length} changed
+                </Badge>
+              )}
+              <ChevronDown
+                className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 ${
+                  isOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </div>
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="px-3 pb-3">
+          {changedParams.length === 0 ? (
+            <div className="text-xs text-muted-foreground py-2 text-center">
+              No configuration differences
+            </div>
+          ) : (
+            <div className="border rounded-md overflow-hidden mt-2">
+              <table className="w-full text-[11px]">
+                <thead>
+                  <tr className="bg-muted/50">
+                    <th className="text-left px-2 py-1 font-medium text-muted-foreground">
+                      Parameter
+                    </th>
+                    <th className="text-center px-2 py-1 font-medium text-muted-foreground w-16">
+                      Baseline
+                    </th>
+                    <th className="text-center px-0.5 py-1 w-4"></th>
+                    <th className="text-center px-2 py-1 font-medium text-muted-foreground w-16">
+                      Current
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {displayCategories.map((category) => {
+                    const categoryDiffs = displayDiffs.filter((d) => d.category === category);
+
+                    return categoryDiffs.map((diff, idx) => (
+                      <tr
+                        key={`${category}-${diff.parameter}`}
+                        className="bg-yellow-50/50 dark:bg-yellow-950/10"
+                      >
+                        <td className="px-2 py-1 border-t">
+                          <div className="flex items-center gap-1">
+                            {idx === 0 && (
+                              <span className="text-muted-foreground text-[10px]">{category}:</span>
+                            )}
+                            {idx !== 0 && <span className="ml-3" />}
+                            <span className="font-medium">{diff.parameter}</span>
+                          </div>
+                        </td>
+                        <td className="text-center px-2 py-1 border-t font-mono text-muted-foreground">
+                          {formatValue(diff.baselineValue)}
+                        </td>
+                        <td className="text-center px-0.5 py-1 border-t">
+                          <ArrowRight className="h-2.5 w-2.5 text-yellow-600 dark:text-yellow-500" />
+                        </td>
+                        <td className="text-center px-2 py-1 border-t font-mono font-semibold text-yellow-700 dark:text-yellow-400">
+                          {formatValue(diff.selectedValue)}
+                        </td>
+                      </tr>
+                    ));
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
+    );
+  }
+
+  // Full mode (non-compact)
   return (
-    <Card className={compact ? 'h-full flex flex-col' : ''}>
+    <Card>
       <CardHeader className="pb-2">
         <div className="inline-flex items-center justify-between w-full">
           <div>
             <CardTitle className="text-sm font-semibold leading-tight">
-              {compact ? 'Config Changes' : 'Configuration Diff'}
+              Configuration Diff
             </CardTitle>
-            {!compact && (
-              <CardDescription className="text-xs leading-[1.5] mt-1">
-                {experiment.name} vs {baselineExperiment.name}
-              </CardDescription>
-            )}
+            <CardDescription className="text-xs leading-[1.5] mt-1">
+              {experiment.name} vs {baselineExperiment.name}
+            </CardDescription>
           </div>
           <Badge
             variant={changedParams.length > 0 ? 'secondary' : 'outline'}
@@ -275,7 +386,7 @@ export default function ConfigDiffView({
         </div>
       </CardHeader>
 
-      <CardContent className={`space-y-3 ${compact ? 'flex-1 overflow-auto pt-0' : ''}`}>
+      <CardContent className="space-y-3">
         {/* Parameter Diff Table */}
         <div className="border rounded-lg overflow-hidden">
           <table className="w-full text-xs">
@@ -333,8 +444,8 @@ export default function ConfigDiffView({
           </table>
         </div>
 
-        {/* Performance Comparison - hide in compact mode */}
-        {!compact && hasResults && (
+        {/* Performance Comparison */}
+        {hasResults && (
           <div className="space-y-2 pt-2 border-t">
             <h4 className="text-xs font-semibold leading-tight">Performance Impact</h4>
             <div className="grid grid-cols-3 gap-2 text-xs">
@@ -390,8 +501,8 @@ export default function ConfigDiffView({
           </div>
         )}
 
-        {/* Suggestion - hide in compact mode */}
-        {!compact && changedParams.length > 1 && (
+        {/* Suggestion */}
+        {changedParams.length > 1 && (
           <div className="flex items-start gap-2 p-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg text-xs">
             <Lightbulb className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
             <p className="text-blue-700 dark:text-blue-300 leading-[1.5]">

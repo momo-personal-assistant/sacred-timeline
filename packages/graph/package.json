@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "@unified-memory/shared": "workspace:*",
-    "@unified-memory/db": "workspace:*"
+    "@unified-memory/db": "workspace:*",
+    "openai": "^4.77.3"
   },
   "devDependencies": {
     "typescript": "^5.3.0"

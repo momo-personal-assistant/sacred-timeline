@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   description: 'Week 2: Embedding & Retrieval Layer',
 };
 
+// Force dynamic rendering (disable static generation)
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

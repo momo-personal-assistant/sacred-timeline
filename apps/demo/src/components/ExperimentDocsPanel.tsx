@@ -242,7 +242,7 @@ function ExperimentDetailView({
       <div className="flex-1 flex flex-col min-w-0">
         {/* Compact Header */}
         <div className="px-6 py-4 border-b shrink-0">
-          <div className="flex items-center justify-between gap-4">
+          <div className="max-w-[65%] mx-auto flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <Badge variant="outline" className={`${status.bgColor} ${status.color} shrink-0`}>
                 <StatusIcon
@@ -284,7 +284,7 @@ function ExperimentDetailView({
             </div>
           </div>
           {runError && (
-            <div className="mt-2 p-2 bg-destructive/10 rounded-md border border-destructive/20">
+            <div className="mt-2 p-2 bg-destructive/10 rounded-md border border-destructive/20 max-w-[65%] mx-auto">
               <p className="text-xs text-destructive">{runError}</p>
             </div>
           )}
@@ -292,7 +292,7 @@ function ExperimentDetailView({
 
         {/* Content */}
         <ScrollArea className="flex-1">
-          <div className="p-6 space-y-6">
+          <div className="p-6 space-y-6 max-w-[65%] mx-auto">
             {/* Metrics Row */}
             {hasResults && experiment.results && (
               <MetricsRow results={experiment.results} trend={improvementVsBaseline} />

@@ -1,8 +1,13 @@
 'use client';
 
+import { Settings2, RotateCcw } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import ConfigDiffView from '@/components/charts/ConfigDiffView';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -10,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 
 // Dynamic import to avoid SSR issues with canvas
 const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), {
@@ -82,6 +88,51 @@ interface ExperimentOption {
   name: string;
 }
 
+interface ExperimentConfig {
+  name: string;
+  description: string;
+  embedding: {
+    model: string;
+    dimensions?: number;
+    batchSize?: number;
+  };
+  chunking: {
+    strategy: string;
+    maxChunkSize?: number;
+    overlap?: number;
+  };
+  retrieval: {
+    similarityThreshold?: number;
+    chunkLimit?: number;
+  };
+  relationInference: {
+    keywordOverlapThreshold?: number;
+    useSemanticSimilarity?: boolean;
+    similarityThreshold?: number;
+    semanticWeight?: number;
+  };
+}
+
+interface Experiment {
+  id: number;
+  name: string;
+  description: string;
+  config: ExperimentConfig;
+  is_baseline: boolean;
+  paper_ids: string[];
+  git_commit: string | null;
+  created_at: string;
+  results: {
+    f1_score: number;
+    precision: number;
+    recall: number;
+    true_positives: number;
+    false_positives: number;
+    false_negatives: number;
+    retrieval_time_ms: number;
+  } | null;
+}
+
 interface RelationGraphViewProps {
   experimentConfig?: {
     useSemanticSimilarity?: boolean;
@@ -91,7 +142,9 @@ interface RelationGraphViewProps {
   };
   experiments?: ExperimentOption[];
   selectedExperimentId?: number;
-  onExperimentChange?: (experimentId: number | undefined) => void;
+  onExperimentChange?: (experimentId: number) => void;
+  selectedExperiment?: Experiment | null;
+  baselineExperiment?: Experiment | null;
   className?: string;
 }
 
@@ -101,11 +154,28 @@ const STATUS_COLORS = {
   fn: '#9ca3af', // gray-400 - False Negative (missed)
 };
 
+// Graph physics default values
+const DEFAULT_GRAPH_SETTINGS = {
+  chargeStrength: -120,
+  linkDistance: 30,
+  alphaDecay: 0.02,
+  velocityDecay: 0.3,
+};
+
+interface GraphSettings {
+  chargeStrength: number;
+  linkDistance: number;
+  alphaDecay: number;
+  velocityDecay: number;
+}
+
 export default function RelationGraphView({
   experimentConfig,
   experiments,
   selectedExperimentId,
   onExperimentChange,
+  selectedExperiment,
+  baselineExperiment,
   className,
 }: RelationGraphViewProps) {
   const [data, setData] = useState<RelationsData | null>(null);
@@ -113,6 +183,8 @@ export default function RelationGraphView({
   const [error, setError] = useState<string | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'tp' | 'fp' | 'fn'>('all');
+  const [graphSettings, setGraphSettings] = useState<GraphSettings>(DEFAULT_GRAPH_SETTINGS);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const graphRef = useRef<any>(null);
@@ -244,16 +316,45 @@ export default function RelationGraphView({
     return { nodes, links };
   }, [data, selectedStatus]);
 
+  // Generate a key for ForceGraph2D to force remount when settings change
+  const graphKey = useMemo(
+    () =>
+      `${graphSettings.chargeStrength}-${graphSettings.linkDistance}-${graphSettings.alphaDecay}-${graphSettings.velocityDecay}`,
+    [graphSettings]
+  );
+
   // Configure d3 forces after graph mounts for better centering
   useEffect(() => {
-    if (!graphRef.current) return;
-    const fg = graphRef.current;
+    // Use setTimeout to ensure graph is fully mounted after key change
+    const timeoutId = setTimeout(() => {
+      if (!graphRef.current) return;
+      const fg = graphRef.current;
 
-    fg.d3Force('center')
-      ?.x(dimensions.width / 2)
-      .y(dimensions.height / 2);
-    fg.d3Force('charge')?.strength(-120);
-  }, [dimensions, graphData]);
+      fg.d3Force('center')
+        ?.x(dimensions.width / 2)
+        .y(dimensions.height / 2);
+      fg.d3Force('charge')?.strength(graphSettings.chargeStrength);
+      fg.d3Force('link')?.distance(graphSettings.linkDistance);
+
+      // Reheat simulation to apply changes
+      fg.d3ReheatSimulation();
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [dimensions, graphData, graphSettings]);
+
+  // Reset graph settings to default
+  const handleResetSettings = useCallback(() => {
+    setGraphSettings(DEFAULT_GRAPH_SETTINGS);
+  }, []);
+
+  // Update individual setting
+  const updateSetting = useCallback(
+    <K extends keyof GraphSettings>(key: K, value: GraphSettings[K]) => {
+      setGraphSettings((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
   // Clamp node positions within bounds on each tick
   const handleEngineTick = useCallback(() => {
@@ -316,6 +417,7 @@ export default function RelationGraphView({
       {/* Graph Canvas */}
       <div ref={containerRef} className="w-full h-full">
         <ForceGraph2D
+          key={graphKey}
           ref={graphRef}
           graphData={graphData}
           width={dimensions.width}
@@ -369,8 +471,8 @@ export default function RelationGraphView({
           onNodeHover={handleNodeHover}
           onEngineTick={handleEngineTick}
           cooldownTicks={100}
-          d3AlphaDecay={0.02}
-          d3VelocityDecay={0.3}
+          d3AlphaDecay={graphSettings.alphaDecay}
+          d3VelocityDecay={graphSettings.velocityDecay}
         />
       </div>
 
@@ -399,8 +501,43 @@ export default function RelationGraphView({
         )}
       </div>
 
-      {/* Floating Dock - Bottom Center: Filter Controls */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
+      {/* Floating Dock - Bottom Left: Config Diff */}
+      <div className="absolute bottom-3 left-3 max-w-[420px]">
+        <div className="bg-background/95 backdrop-blur-sm rounded-lg shadow-md border overflow-hidden">
+          <ConfigDiffView
+            experiment={selectedExperiment || null}
+            baselineExperiment={baselineExperiment || null}
+            compact
+          />
+        </div>
+      </div>
+
+      {/* Floating Dock - Top Right: Metrics Summary (F1, Precision, Recall) */}
+      <div className="absolute top-3 right-3">
+        <div className="bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm border">
+          <div className="flex items-center gap-4 text-xs">
+            <div className="text-center">
+              <div className="text-muted-foreground">F1</div>
+              <div className="font-semibold text-blue-600">
+                {(data.metrics.f1_score * 100).toFixed(1)}%
+              </div>
+            </div>
+            <div className="w-px h-6 bg-border" />
+            <div className="text-center">
+              <div className="text-muted-foreground">Precision</div>
+              <div className="font-semibold">{(data.metrics.precision * 100).toFixed(1)}%</div>
+            </div>
+            <div className="w-px h-6 bg-border" />
+            <div className="text-center">
+              <div className="text-muted-foreground">Recall</div>
+              <div className="font-semibold">{(data.metrics.recall * 100).toFixed(1)}%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Floating Dock - Bottom Right: Filter Controls + Graph Settings */}
+      <div className="absolute bottom-3 right-3">
         <div className="bg-background/95 backdrop-blur-sm rounded-lg px-2 py-1.5 shadow-md border flex items-center gap-1">
           <button
             onClick={() => setSelectedStatus('all')}
@@ -447,30 +584,130 @@ export default function RelationGraphView({
             />
             Missed ({data.metrics.false_negatives})
           </button>
-        </div>
-      </div>
 
-      {/* Floating Dock - Top Right: Metrics Summary (F1, Precision, Recall) */}
-      <div className="absolute top-3 right-3">
-        <div className="bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm border">
-          <div className="flex items-center gap-4 text-xs">
-            <div className="text-center">
-              <div className="text-muted-foreground">F1</div>
-              <div className="font-semibold text-blue-600">
-                {(data.metrics.f1_score * 100).toFixed(1)}%
+          {/* Divider */}
+          <div className="w-px h-5 bg-border mx-1" />
+
+          {/* Settings Popover */}
+          <Popover open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <PopoverTrigger asChild>
+              <button
+                className={`flex items-center justify-center w-7 h-7 rounded-md transition-colors ${
+                  settingsOpen ? 'bg-muted' : 'hover:bg-muted/50'
+                }`}
+              >
+                <Settings2 className="h-4 w-4" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="top"
+              align="end"
+              className="w-72 p-0 bg-background/95 backdrop-blur-md shadow-lg border"
+              sideOffset={8}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b">
+                <div className="flex items-center gap-2">
+                  <Settings2 className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Graph Physics</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleResetSettings}
+                  className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Reset
+                </Button>
               </div>
-            </div>
-            <div className="w-px h-6 bg-border" />
-            <div className="text-center">
-              <div className="text-muted-foreground">Precision</div>
-              <div className="font-semibold">{(data.metrics.precision * 100).toFixed(1)}%</div>
-            </div>
-            <div className="w-px h-6 bg-border" />
-            <div className="text-center">
-              <div className="text-muted-foreground">Recall</div>
-              <div className="font-semibold">{(data.metrics.recall * 100).toFixed(1)}%</div>
-            </div>
-          </div>
+
+              {/* Settings Content */}
+              <div className="p-4 space-y-5">
+                {/* Charge Strength (Repulsion) */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-medium">Node Repulsion</Label>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {graphSettings.chargeStrength}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[graphSettings.chargeStrength]}
+                    onValueChange={([value]) => updateSetting('chargeStrength', value)}
+                    min={-300}
+                    max={-30}
+                    step={10}
+                    className="w-full"
+                  />
+                  <p className="text-[10px] text-muted-foreground">
+                    How strongly nodes push each other apart
+                  </p>
+                </div>
+
+                {/* Link Distance */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-medium">Link Distance</Label>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {graphSettings.linkDistance}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[graphSettings.linkDistance]}
+                    onValueChange={([value]) => updateSetting('linkDistance', value)}
+                    min={10}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                  <p className="text-[10px] text-muted-foreground">
+                    Target distance between connected nodes
+                  </p>
+                </div>
+
+                {/* Alpha Decay */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-medium">Simulation Speed</Label>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {graphSettings.alphaDecay.toFixed(2)}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[graphSettings.alphaDecay * 100]}
+                    onValueChange={([value]) => updateSetting('alphaDecay', value / 100)}
+                    min={1}
+                    max={10}
+                    step={1}
+                    className="w-full"
+                  />
+                  <p className="text-[10px] text-muted-foreground">
+                    How quickly the simulation settles
+                  </p>
+                </div>
+
+                {/* Velocity Decay */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-medium">Node Friction</Label>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {graphSettings.velocityDecay.toFixed(1)}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[graphSettings.velocityDecay * 10]}
+                    onValueChange={([value]) => updateSetting('velocityDecay', value / 10)}
+                    min={1}
+                    max={8}
+                    step={1}
+                    className="w-full"
+                  />
+                  <p className="text-[10px] text-muted-foreground">How quickly nodes slow down</p>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>

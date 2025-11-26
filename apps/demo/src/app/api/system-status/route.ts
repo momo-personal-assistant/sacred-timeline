@@ -1,18 +1,23 @@
+import { UnifiedMemoryDB } from '@unified-memory/db';
 import * as dotenv from 'dotenv';
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg';
 
 dotenv.config();
 
 export async function GET() {
-  const pool = new Pool({
+  const db = new UnifiedMemoryDB({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
     database: process.env.POSTGRES_DB || 'unified_memory',
     user: process.env.POSTGRES_USER || 'unified_memory',
     password: process.env.POSTGRES_PASSWORD || 'unified_memory_dev',
-    max: parseInt(process.env.POSTGRES_MAX_CONNECTIONS || '20', 10),
+    maxConnections: parseInt(process.env.POSTGRES_MAX_CONNECTIONS || '20', 10),
+    vectorDimensions: parseInt(process.env.VECTOR_DIMENSIONS || '1536', 10),
   });
+
+  await db.initialize();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pool = (db as any).pool;
 
   try {
     // System Health Checks
@@ -44,7 +49,7 @@ export async function GET() {
     const totalChunks = parseInt(chunkCount.rows[0].count, 10);
     const chunksWithEmbeddings = parseInt(embeddingCheck.rows[0].count, 10);
 
-    await pool.end();
+    await db.close();
 
     // Parse current config from latest experiment
     const currentConfig = latestExperiment.rows.length > 0 ? latestExperiment.rows[0].config : null;
@@ -115,7 +120,7 @@ export async function GET() {
     return NextResponse.json(systemStatus);
   } catch (error) {
     console.error('System status error:', error);
-    await pool.end().catch(() => {
+    await db.close().catch(() => {
       /* ignore cleanup errors */
     });
 

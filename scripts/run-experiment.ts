@@ -105,7 +105,8 @@ function loadConfig(configPath: string): ExperimentConfig {
 async function validateRelations(
   db: UnifiedMemoryDB,
   inferrer: RelationInferrer,
-  _scenarios: string[]
+  _scenarios: string[],
+  useContrastiveICL: boolean = false
 ): Promise<{
   f1_score: number;
   precision: number;
@@ -159,8 +160,19 @@ async function validateRelations(
   }
   console.log(`   Loaded embeddings for ${embeddingsMap.size}/${objects.length} objects`);
 
-  // Infer relations WITH EMBEDDINGS
-  const inferred = inferrer.inferAllWithEmbeddings(objects, embeddingsMap);
+  // Infer relations - use Contrastive ICL if enabled
+  let inferred: Relation[];
+  if (useContrastiveICL) {
+    console.log('   Using Contrastive ICL for relation inference (Paper 003)...');
+    // Extract explicit relations first
+    const explicit = inferrer.extractExplicit(objects);
+    // Then use Contrastive ICL for similarity relations
+    const contrastiveRelations = await inferrer.inferSimilarityWithContrastiveICL(objects);
+    inferred = [...explicit, ...contrastiveRelations];
+  } else {
+    // Use traditional embedding-based inference
+    inferred = inferrer.inferAllWithEmbeddings(objects, embeddingsMap);
+  }
 
   // Fetch ground truth
   const groundTruthResult = await pool.query(
@@ -202,6 +214,7 @@ async function validateRelations(
 
 /**
  * Save experiment to database
+ * Uses UPSERT to handle both new experiments and draft updates
  */
 async function saveExperiment(
   db: UnifiedMemoryDB,
@@ -211,17 +224,28 @@ async function saveExperiment(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pool = (db as any).pool;
 
-  // Insert experiment
+  // Use UPSERT: If experiment with same name exists (e.g., draft), update it
+  // Otherwise, insert a new one
   const expResult = await pool.query(
     `INSERT INTO experiments (
       name,
       description,
       config,
-      baseline,
+      is_baseline,
       paper_ids,
       git_commit,
+      status,
+      run_completed_at,
       created_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, NOW())
+    ) VALUES ($1, $2, $3, $4, $5, $6, 'completed', NOW(), NOW())
+    ON CONFLICT (name) DO UPDATE SET
+      description = EXCLUDED.description,
+      config = EXCLUDED.config,
+      is_baseline = EXCLUDED.is_baseline,
+      paper_ids = EXCLUDED.paper_ids,
+      git_commit = EXCLUDED.git_commit,
+      status = 'completed',
+      run_completed_at = NOW()
     RETURNING id`,
     [
       config.name,
@@ -236,6 +260,10 @@ async function saveExperiment(
   const experimentId = expResult.rows[0].id;
 
   // Insert experiment results
+  // Calculate totals: ground_truth = TP + FN, inferred = TP + FP
+  const groundTruthTotal = result.metrics.true_positives + result.metrics.false_negatives;
+  const inferredTotal = result.metrics.true_positives + result.metrics.false_positives;
+
   await pool.query(
     `INSERT INTO experiment_results (
       experiment_id,
@@ -246,9 +274,11 @@ async function saveExperiment(
       true_positives,
       false_positives,
       false_negatives,
+      ground_truth_total,
+      inferred_total,
       retrieval_time_ms,
       created_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())`,
     [
       experimentId,
       'normal', // Default scenario
@@ -258,6 +288,8 @@ async function saveExperiment(
       result.metrics.true_positives,
       result.metrics.false_positives,
       result.metrics.false_negatives,
+      groundTruthTotal,
+      inferredTotal,
       result.duration_ms,
     ]
   );
@@ -352,8 +384,16 @@ async function main() {
       includeInferred: config.relationInference.includeInferred,
       useSemanticSimilarity: config.relationInference.useSemanticSimilarity,
       semanticWeight: config.relationInference.semanticWeight,
+      // Contrastive ICL (Paper 003)
+      useContrastiveICL: config.relationInference.useContrastiveICL,
+      contrastiveExamples: config.relationInference.contrastiveExamples,
+      llmConfig: config.relationInference.llmConfig,
+      promptTemplate: config.relationInference.promptTemplate,
     });
     console.log('✅ Relation inferrer initialized');
+    if (config.relationInference.useContrastiveICL) {
+      console.log('   📊 Contrastive ICL enabled (Paper 003)');
+    }
     console.log();
 
     // ============================================
@@ -513,7 +553,12 @@ async function main() {
       console.log('STEP 4: Running Validation');
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-      metrics = await validateRelations(db, inferrer, config.validation.scenarios);
+      metrics = await validateRelations(
+        db,
+        inferrer,
+        config.validation.scenarios,
+        config.relationInference.useContrastiveICL ?? false
+      );
       console.log();
 
       // Log validation results

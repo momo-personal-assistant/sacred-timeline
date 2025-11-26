@@ -1,0 +1,125 @@
+# EXP-003: Schema-Based Relation Extraction
+# Based on: EXP-002 findings - actors 필드에 관계 정보가 이미 존재
+# Date: 2024-11-25
+
+name: "EXP-003: Schema-Based Relation Extraction"
+description: |
+  EXP-002 분석 결과, canonical_objects의 actors 필드에 관계 정보가 이미 존재함을 발견.
+
+  핵심 아이디어:
+  - LLM 추론 대신 스키마에서 직접 관계 추출
+  - actors 필드의 created_by, assignee, participants 등 활용
+  - O(n) 복잡도로 빠르고 정확한 관계 추출
+
+  기대 효과:
+  - 정확도: ~100% (스키마 데이터 그대로 사용)
+  - 비용: $0 (API 호출 없음)
+  - 속도: <1초 (DB 읽기만)
+
+  Baseline 대비:
+  - EXP-001 (cosine similarity): 65.9% F1
+  - EXP-002 (Contrastive ICL): 4.8% F1
+  - EXP-003 (schema-based): 예상 90%+ F1
+
+created_at: "2024-11-25"
+
+# Embedding Configuration (미사용 - 스키마 기반)
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+# Chunking Configuration (미사용 - 스키마 기반)
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+# Retrieval Configuration
+retrieval:
+  similarityThreshold: 0.35
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+# Relation Extraction Configuration - KEY CHANGES
+relationExtraction:
+  # 기존 방식 비활성화
+  useSemanticSimilarity: false
+  useContrastiveICL: false
+
+  # 새로운 방식: 스키마 기반 추출
+  useSchemaExtraction: true
+
+  # actors 필드에서 추출할 관계 타입
+  actorMappings:
+    - field: "created_by"
+      relationType: "created_by"
+      direction: "object_to_actor"  # ticket --created_by--> user
+
+    - field: "assignee"
+      relationType: "assigned_to"
+      direction: "object_to_actor"  # ticket --assigned_to--> user
+
+    - field: "participants"
+      relationType: "participated_in"
+      direction: "actor_to_object"  # user --participated_in--> thread
+      isArray: true
+
+    - field: "mentioned"
+      relationType: "mentioned_in"
+      direction: "actor_to_object"
+      isArray: true
+
+  # 추가 관계 추출 (properties 필드)
+  propertyMappings:
+    - field: "organization"
+      relationType: "belongs_to"
+      direction: "object_to_property"
+
+    - field: "project"
+      relationType: "part_of"
+      direction: "object_to_property"
+
+# Validation Configuration
+validation:
+  runOnSave: true
+  autoSaveExperiment: true
+  scenarios:
+    - "normal"
+
+  # Comparison with previous experiments
+  compareWith:
+    - "EXP-001"  # Baseline (65.9%)
+    - "EXP-002"  # Contrastive ICL (4.8%)
+
+  # Expected metrics
+  expectedMetrics:
+    f1_score_min: 0.90     # 최소 90% 기대
+    precision_min: 0.95    # 스키마 데이터이므로 높은 정확도
+    recall_min: 0.85       # 스키마에 없는 관계는 놓칠 수 있음
+
+# Metadata
+metadata:
+  baseline: false
+  git_commit: null
+  paper_ids: []  # 논문 기반이 아닌 실용적 접근
+
+  # Experiment tracking
+  hypothesis: "스키마에서 직접 관계를 추출하면 F1 90% 이상 달성"
+
+  learnings_from_exp002:
+    - "LLM 추론은 스키마 데이터가 있으면 불필요"
+    - "Title만으로는 관계 추론 불가능"
+    - "Contrastive ICL은 구조적 정보가 충분할 때만 효과적"
+
+  advantages:
+    - "정확도 높음 (스키마 데이터 그대로)"
+    - "비용 없음 (API 호출 없음)"
+    - "속도 빠름 (O(n))"
+    - "확장성 좋음 (대규모 데이터에도 적용 가능)"
+
+  limitations:
+    - "스키마에 없는 암묵적 관계는 추출 불가"
+    - "소스 시스템의 데이터 품질에 의존"

@@ -1,9 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
-import ConfigDiffView from '@/components/charts/ConfigDiffView';
-import ExperimentTimelineChart from '@/components/charts/ExperimentTimelineChart';
 import RelationGraphView from '@/components/charts/RelationGraphView';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -55,40 +51,25 @@ interface Experiment {
 }
 
 interface ExperimentsPanelProps {
+  experiments: Experiment[];
+  loading: boolean;
+  error: string | null;
   selectedExperimentId?: number;
   onExperimentSelect?: (experimentId: number) => void;
 }
 
 export default function ExperimentsPanel({
+  experiments,
+  loading,
+  error,
   selectedExperimentId,
   onExperimentSelect,
 }: ExperimentsPanelProps) {
-  const [experiments, setExperiments] = useState<Experiment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchExperiments();
-  }, []);
-
-  const fetchExperiments = async () => {
-    try {
-      const response = await fetch('/api/experiments');
-      if (!response.ok) throw new Error('Failed to fetch experiments');
-      const data = await response.json();
-      setExperiments(data.experiments);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const selectedExperiment = selectedExperimentId
     ? experiments.find((exp) => exp.id === selectedExperimentId) || null
     : null;
 
-  const handleExperimentClick = (experiment: Experiment) => {
+  const _handleExperimentClick = (experiment: Experiment) => {
     onExperimentSelect?.(experiment.id);
   };
 
@@ -129,39 +110,17 @@ export default function ExperimentsPanel({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Central Graph Visualization - Takes remaining space */}
-      <div className="flex-1 min-h-[300px]">
-        <RelationGraphView
-          experimentConfig={selectedExperiment?.config?.relationInference}
-          experiments={experiments.map((e) => ({ id: e.id, name: e.name }))}
-          selectedExperimentId={selectedExperimentId}
-          onExperimentChange={onExperimentSelect}
-          className="h-full"
-        />
-      </div>
-
-      {/* Bottom Section: Config Diff + Timeline - Fixed height */}
-      <div className="grid grid-cols-2 gap-3 mt-3 h-[200px] shrink-0">
-        {/* Config Diff */}
-        <div className="overflow-hidden">
-          <ConfigDiffView
-            experiment={selectedExperiment}
-            baselineExperiment={baselineExperiment}
-            compact
-          />
-        </div>
-
-        {/* Timeline */}
-        <div className="overflow-hidden">
-          <ExperimentTimelineChart
-            experiments={experiments}
-            onExperimentClick={handleExperimentClick}
-            selectedExperimentId={selectedExperimentId}
-            compact
-          />
-        </div>
-      </div>
+    <div className="relative h-full">
+      {/* Graph Visualization - Full height */}
+      <RelationGraphView
+        experimentConfig={selectedExperiment?.config?.relationInference}
+        experiments={experiments.map((e) => ({ id: e.id, name: e.name }))}
+        selectedExperimentId={selectedExperimentId}
+        onExperimentChange={onExperimentSelect}
+        selectedExperiment={selectedExperiment}
+        baselineExperiment={baselineExperiment}
+        className="h-full"
+      />
     </div>
   );
 }

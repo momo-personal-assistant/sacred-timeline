@@ -32,8 +32,11 @@ interface _ExperimentResult {
 }
 
 // GET /api/experiments - List all experiments
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const statusFilter = searchParams.get('status');
+
     const db = new UnifiedMemoryDB({
       host: process.env.POSTGRES_HOST || 'localhost',
       port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
@@ -47,8 +50,13 @@ export async function GET() {
     await db.initialize();
     const pool = (db as any).pool;
 
+    // Build query with optional status filter
+    const whereClause = statusFilter ? `WHERE e.status = $1` : '';
+    const queryParams = statusFilter ? [statusFilter] : [];
+
     // Get all experiments with their results
-    const result = await pool.query(`
+    const result = await pool.query(
+      `
       SELECT
         e.id,
         e.name,
@@ -58,6 +66,11 @@ export async function GET() {
         e.paper_ids,
         e.git_commit,
         e.created_at,
+        e.status,
+        e.config_file_path,
+        e.run_started_at,
+        e.run_completed_at,
+        e.error_message,
         r.f1_score,
         r.precision,
         r.recall,
@@ -67,8 +80,17 @@ export async function GET() {
         r.retrieval_time_ms
       FROM experiments e
       LEFT JOIN experiment_results r ON e.id = r.experiment_id
-      ORDER BY e.created_at DESC
-    `);
+      ${whereClause}
+      ORDER BY
+        CASE e.status
+          WHEN 'draft' THEN 0
+          WHEN 'running' THEN 1
+          ELSE 2
+        END,
+        e.created_at DESC
+    `,
+      queryParams
+    );
 
     const experiments = result.rows.map((row: any) => ({
       id: row.id,
@@ -79,6 +101,11 @@ export async function GET() {
       paper_ids: row.paper_ids || [],
       git_commit: row.git_commit,
       created_at: row.created_at,
+      status: row.status || 'completed',
+      config_file_path: row.config_file_path,
+      run_started_at: row.run_started_at,
+      run_completed_at: row.run_completed_at,
+      error_message: row.error_message,
       results:
         row.f1_score !== null
           ? {
@@ -131,14 +158,15 @@ export async function POST(request: NextRequest) {
     await db.initialize();
     const pool = (db as any).pool;
 
-    // Insert experiment
+    // Insert experiment (supports draft mode)
+    const status = experiment.status || 'completed';
     const experimentResult = await pool.query(
       `
       INSERT INTO experiments (
         name, description, embedding_model, chunking_strategy,
         similarity_threshold, keyword_overlap_threshold, chunk_limit,
-        config, tags, is_baseline
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        config, tags, is_baseline, status, config_file_path
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *
       `,
       [
@@ -152,6 +180,8 @@ export async function POST(request: NextRequest) {
         experiment.config ? JSON.stringify(experiment.config) : null,
         experiment.tags || null,
         experiment.is_baseline || false,
+        status,
+        experiment.config_file_path || null,
       ]
     );
 

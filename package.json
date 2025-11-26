@@ -27,6 +27,8 @@
     "generate:graph:all": "tsx scripts/generate-graph-dataset/index.ts --all",
     "validate:graph": "tsx scripts/generate-graph-dataset/validate.ts",
     "experiment": "tsx scripts/run-experiment.ts",
+    "experiment:create": "tsx scripts/experiment-create.ts",
+    "draft": "tsx scripts/save-experiment-draft.ts",
     "inspect": "tsx scripts/inspect-db-state.ts",
     "inspect:full": "tsx scripts/inspect-db-state.ts --full",
     "sample-data": "tsx scripts/create-sample-data.ts",

@@ -3,7 +3,7 @@
  * Extracts and infers relations between canonical objects
  */
 
-import type { CanonicalObject } from '@unified-memory/shared/types/canonical';
+import type { CanonicalObject } from '@unified-memory/db';
 
 export type RelationType =
   | 'triggered_by' // Slack thread triggered by Zendesk ticket
@@ -29,6 +29,26 @@ export interface Relation {
   created_at?: string;
 }
 
+/**
+ * Contrastive Example for ICL (Paper 003: Enhancing RAG Best Practices)
+ */
+export interface ContrastiveExample {
+  chunk1: string;
+  chunk2: string;
+  label: 'RELATED' | 'NOT_RELATED';
+  reason: string;
+}
+
+/**
+ * LLM Configuration for Contrastive ICL
+ */
+export interface LLMConfig {
+  model: string;
+  temperature?: number;
+  maxTokens?: number;
+  apiKey?: string;
+}
+
 export interface RelationInferrerOptions {
   // Similarity threshold for semantic similarity (0-1)
   similarityThreshold?: number;
@@ -48,6 +68,15 @@ export interface RelationInferrerOptions {
 
   // Enable duplicate detection using semantic_hash (CDM paper recommendation)
   enableDuplicateDetection?: boolean;
+
+  // Contrastive ICL (Paper 003: Enhancing RAG Best Practices)
+  useContrastiveICL?: boolean;
+  contrastiveExamples?: {
+    positive: ContrastiveExample[];
+    negative: ContrastiveExample[];
+  };
+  llmConfig?: LLMConfig;
+  promptTemplate?: string;
 }
 
 export class RelationInferrer {
@@ -56,12 +85,38 @@ export class RelationInferrer {
   constructor(options: RelationInferrerOptions = {}) {
     this.options = {
       similarityThreshold: options.similarityThreshold ?? 0.85,
-      keywordOverlapThreshold: options.keywordOverlapThreshold ?? 0.65, // Raised from 0.5 to 0.65 to reduce false positives
+      keywordOverlapThreshold: options.keywordOverlapThreshold ?? 0.65,
       includeInferred: options.includeInferred ?? true,
       useSemanticSimilarity: options.useSemanticSimilarity ?? false,
-      semanticWeight: options.semanticWeight ?? 0.7, // Default: 70% semantic, 30% keyword
-      enableDuplicateDetection: options.enableDuplicateDetection ?? true, // CDM paper: use semantic_hash for duplicates
+      semanticWeight: options.semanticWeight ?? 0.7,
+      enableDuplicateDetection: options.enableDuplicateDetection ?? true,
+      // Contrastive ICL defaults
+      useContrastiveICL: options.useContrastiveICL ?? false,
+      contrastiveExamples: options.contrastiveExamples ?? { positive: [], negative: [] },
+      llmConfig: options.llmConfig ?? { model: 'gpt-4o-mini', temperature: 0.1, maxTokens: 100 },
+      promptTemplate: options.promptTemplate ?? this.getDefaultPromptTemplate(),
     };
+  }
+
+  /**
+   * Get default prompt template for Contrastive ICL
+   */
+  private getDefaultPromptTemplate(): string {
+    return `당신은 두 텍스트 청크 간의 관계를 판단하는 전문가입니다.
+
+다음 예시들을 참고하세요:
+
+[관련 있는 예시]
+{{positiveExamples}}
+
+[관련 없는 예시]
+{{negativeExamples}}
+
+이제 다음 청크들의 관계를 판단하세요:
+청크 A: "{{chunk1}}"
+청크 B: "{{chunk2}}"
+
+응답: RELATED 또는 NOT_RELATED (한 단어로만)`;
   }
 
   /**
@@ -73,10 +128,11 @@ export class RelationInferrer {
 
     for (const obj of objects) {
       // 1. triggered_by (Slack thread → Zendesk ticket)
-      if (obj.relations?.triggered_by_ticket) {
+      const triggeredByTicket = obj.relations?.triggered_by_ticket;
+      if (typeof triggeredByTicket === 'string') {
         relations.push({
           from_id: obj.id,
-          to_id: obj.relations.triggered_by_ticket,
+          to_id: triggeredByTicket,
           type: 'triggered_by',
           source: 'explicit',
           confidence: 1.0,
@@ -85,10 +141,11 @@ export class RelationInferrer {
       }
 
       // 2. resulted_in (Slack thread → Linear issue)
-      if (obj.relations?.resulted_in_issue) {
+      const resultedInIssue = obj.relations?.resulted_in_issue;
+      if (typeof resultedInIssue === 'string') {
         relations.push({
           from_id: obj.id,
-          to_id: obj.relations.resulted_in_issue,
+          to_id: resultedInIssue,
           type: 'resulted_in',
           source: 'explicit',
           confidence: 1.0,
@@ -123,14 +180,16 @@ export class RelationInferrer {
       }
 
       // 5. decided_by (User who made decision → Slack thread)
-      if (obj.actors.decided_by) {
+      const decidedBy = obj.actors.decided_by;
+      if (typeof decidedBy === 'string') {
         relations.push({
-          from_id: obj.actors.decided_by,
+          from_id: decidedBy,
           to_id: obj.id,
           type: 'decided_by',
           source: 'explicit',
           confidence: 1.0,
-          created_at: obj.timestamps.decided_at || obj.timestamps.updated_at,
+          created_at:
+            (obj.timestamps.decided_at as string | undefined) || obj.timestamps.updated_at,
         });
       }
 
@@ -531,6 +590,150 @@ export class RelationInferrer {
     console.log(`  - Total pairs compared: ${pairCount}`);
     console.log(`  - Pairs with semantic similarity: ${semanticPairCount}`);
     console.log(`  - Pairs that passed threshold: ${passedThresholdCount}`);
+    console.log(`  - Relations created: ${relations.length}`);
+
+    return relations;
+  }
+
+  /**
+   * Build prompt for Contrastive ICL
+   */
+  private buildContrastivePrompt(chunk1: string, chunk2: string): string {
+    const { contrastiveExamples, promptTemplate } = this.options;
+
+    // Format positive examples
+    const positiveExamplesStr = contrastiveExamples.positive
+      .map((ex) => `청크 A: "${ex.chunk1}"\n청크 B: "${ex.chunk2}"\n결과: RELATED - ${ex.reason}`)
+      .join('\n\n');
+
+    // Format negative examples
+    const negativeExamplesStr = contrastiveExamples.negative
+      .map(
+        (ex) => `청크 A: "${ex.chunk1}"\n청크 B: "${ex.chunk2}"\n결과: NOT_RELATED - ${ex.reason}`
+      )
+      .join('\n\n');
+
+    // Replace placeholders
+    return promptTemplate
+      .replace('{{positiveExamples}}', positiveExamplesStr)
+      .replace('{{negativeExamples}}', negativeExamplesStr)
+      .replace('{{chunk1}}', chunk1)
+      .replace('{{chunk2}}', chunk2);
+  }
+
+  /**
+   * Infer relation using Contrastive ICL with LLM
+   * Paper 003: Contrastive In-Context Learning significantly improves relation accuracy
+   */
+  async inferRelationWithContrastiveICL(
+    chunk1: string,
+    chunk2: string,
+    obj1Id: string,
+    obj2Id: string
+  ): Promise<Relation | null> {
+    const prompt = this.buildContrastivePrompt(chunk1, chunk2);
+    const { llmConfig } = this.options;
+
+    try {
+      // Dynamic import to avoid circular dependencies
+      const { OpenAI } = await import('openai');
+      const openai = new OpenAI({
+        apiKey: llmConfig.apiKey || process.env.OPENAI_API_KEY,
+      });
+
+      const response = await openai.chat.completions.create({
+        model: llmConfig.model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: llmConfig.temperature ?? 0.1,
+        max_tokens: llmConfig.maxTokens ?? 100,
+      });
+
+      const result = response.choices[0]?.message?.content?.trim().toUpperCase();
+
+      if (result?.includes('RELATED') && !result?.includes('NOT_RELATED')) {
+        return {
+          from_id: obj1Id,
+          to_id: obj2Id,
+          type: 'similar_to',
+          source: 'inferred',
+          confidence: 0.9, // High confidence from LLM judgment
+          metadata: {
+            method: 'contrastive_icl',
+            model: llmConfig.model,
+            prompt_length: prompt.length,
+          },
+          created_at: new Date().toISOString(),
+        };
+      }
+
+      return null; // NOT_RELATED
+    } catch (error) {
+      console.error('[ContrastiveICL] Error inferring relation:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Infer similarity relations using Contrastive ICL (batch processing)
+   */
+  async inferSimilarityWithContrastiveICL(objects: CanonicalObject[]): Promise<Relation[]> {
+    if (!this.options.useContrastiveICL || !this.options.includeInferred) {
+      return [];
+    }
+
+    console.log(`\n[RelationInferrer] Contrastive ICL inference:`);
+    console.log(`  - Objects: ${objects.length}`);
+    console.log(`  - Positive examples: ${this.options.contrastiveExamples.positive.length}`);
+    console.log(`  - Negative examples: ${this.options.contrastiveExamples.negative.length}`);
+    console.log(`  - LLM model: ${this.options.llmConfig.model}`);
+
+    const relations: Relation[] = [];
+    const totalPairs = (objects.length * (objects.length - 1)) / 2;
+    let processedPairs = 0;
+    let relatedPairs = 0;
+
+    // Process pairs (with rate limiting consideration)
+    for (let i = 0; i < objects.length; i++) {
+      for (let j = i + 1; j < objects.length; j++) {
+        const obj1 = objects[i];
+        const obj2 = objects[j];
+        processedPairs++;
+
+        // Use title as chunk content for relation inference
+        const chunk1 = obj1.title || obj1.id;
+        const chunk2 = obj2.title || obj2.id;
+
+        const relation = await this.inferRelationWithContrastiveICL(
+          chunk1,
+          chunk2,
+          obj1.id,
+          obj2.id
+        );
+
+        if (relation) {
+          relatedPairs++;
+          relations.push(relation);
+
+          // Add reverse relation
+          relations.push({
+            ...relation,
+            from_id: obj2.id,
+            to_id: obj1.id,
+          });
+        }
+
+        // Progress logging every 10 pairs
+        if (processedPairs % 10 === 0 || processedPairs === totalPairs) {
+          console.log(
+            `  - Progress: ${processedPairs}/${totalPairs} pairs (${relatedPairs} related)`
+          );
+        }
+      }
+    }
+
+    console.log(`\n[RelationInferrer] Contrastive ICL Summary:`);
+    console.log(`  - Total pairs: ${totalPairs}`);
+    console.log(`  - Related pairs: ${relatedPairs}`);
     console.log(`  - Relations created: ${relations.length}`);
 
     return relations;

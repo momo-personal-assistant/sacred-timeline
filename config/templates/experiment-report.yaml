@@ -1,0 +1,128 @@
+# Experiment Configuration Template
+#
+# 이 템플릿을 복사하여 새 실험 설정을 만드세요:
+# cp config/templates/experiment-report.yaml config/experiments/YYYY-MM-DD-experiment-name.yaml
+#
+# 실행: pnpm run experiment config/experiments/your-experiment.yaml
+
+# =============================================================================
+# Experiment Metadata
+# =============================================================================
+experiment:
+  id: "EXP-XXX"                    # 실험 고유 ID
+  name: "[실험명]"
+  description: "[실험 설명]"
+  author: "[작성자]"
+  date: "YYYY-MM-DD"
+
+  # 상태: planned | in_progress | completed | abandoned
+  status: "planned"
+
+  # 결정: pending | adopted | rejected | needs_more_data
+  decision: "pending"
+
+  # 관련 리소스
+  related:
+    papers: []                     # e.g., ["001-Canonical Data Models"]
+    experiments: []                # e.g., ["EXP-001", "EXP-002"]
+
+  tags: []                         # e.g., ["relation-inference", "duplicate-detection"]
+
+# =============================================================================
+# Hypothesis & Success Criteria
+# =============================================================================
+hypothesis:
+  main: "[X를 하면 Y가 개선될 것이다]"
+  expected_improvement: "[예상 개선 효과]"
+
+  # 성공 기준
+  success_criteria:
+    - metric: "F1 Score"
+      baseline: 0.0
+      target: 0.0
+
+    - metric: "Precision"
+      baseline: 0.0
+      target: 0.0
+
+# =============================================================================
+# Experiment Parameters (실험 설정)
+# =============================================================================
+parameters:
+  # Relation Inference 설정
+  relation_inference:
+    similarity_threshold: 0.85
+    keyword_overlap_threshold: 0.65
+    use_semantic_similarity: false
+    semantic_weight: 0.7
+    enable_duplicate_detection: true    # NEW: semantic_hash 기반 중복 감지
+
+  # Embedding 설정
+  embedding:
+    model: "text-embedding-3-small"
+    provider: "openai"
+    chunk_size: 512
+    chunk_overlap: 50
+    strategy: "semantic"                # semantic | fixed | relational
+
+  # Retrieval 설정
+  retrieval:
+    top_k: 10
+    hybrid_search: false
+    bm25_weight: 0.3
+    vector_weight: 0.7
+
+# =============================================================================
+# Baseline Configuration (비교 대상)
+# =============================================================================
+baseline:
+  name: "current_production"
+  config_path: "config/default.yaml"    # 또는 직접 값 지정
+
+  # 또는 직접 baseline 값 지정
+  # parameters:
+  #   relation_inference:
+  #     enable_duplicate_detection: false
+
+# =============================================================================
+# Test Configuration
+# =============================================================================
+test:
+  # 테스트 데이터셋
+  dataset: "data/graph-datasets/normal.json"
+
+  # 실행 명령
+  commands:
+    - "pnpm tsx scripts/run-experiment.ts"
+    - "pnpm tsx scripts/validate-relations.ts"
+
+  # 결과 저장 경로
+  output_dir: "data/experiment-results/EXP-XXX/"
+
+# =============================================================================
+# Results (실험 후 기록)
+# =============================================================================
+results:
+  # 실험 실행 후 기록
+  executed_at: null
+  duration_seconds: null
+
+  # 측정된 메트릭
+  metrics:
+    f1_score: null
+    precision: null
+    recall: null
+
+  # 추가 관찰 사항
+  observations: []
+
+  # 결론
+  conclusion: null
+
+# =============================================================================
+# Validation (검증)
+# =============================================================================
+validation:
+  run_on_save: true
+  auto_save_experiment: false
+  compare_with_baseline: true

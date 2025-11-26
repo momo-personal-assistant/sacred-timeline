@@ -12,6 +12,8 @@ import {
   SidebarHeader,
 } from '@/components/ui/sidebar';
 
+type ExperimentStatus = 'draft' | 'running' | 'completed' | 'failed';
+
 interface Experiment {
   id: number;
   name: string;
@@ -53,18 +55,27 @@ interface Experiment {
     false_negatives: number;
     retrieval_time_ms: number;
   } | null;
+  status?: ExperimentStatus;
+  config_file_path?: string;
+  error_message?: string;
 }
 
 interface AppRightSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  activeTab: 'query' | 'experiments' | 'activity';
+  activeTab: 'query' | 'experiments' | 'activity' | 'reports';
   selectedExperiment: Experiment | null;
   baselineExperiment: Experiment | null;
+  onBaselineChange?: () => void;
+  onExperimentRun?: () => void;
+  onViewDocs?: (experimentId: number) => void;
 }
 
 export function AppRightSidebar({
   activeTab,
   selectedExperiment,
   baselineExperiment,
+  onBaselineChange,
+  onExperimentRun,
+  onViewDocs,
   ...props
 }: AppRightSidebarProps) {
   const [sidebarTab, setSidebarTab] = React.useState<'experiment' | 'system'>('experiment');
@@ -107,6 +118,9 @@ export function AppRightSidebar({
               <ExperimentDetailPanel
                 experiment={selectedExperiment}
                 baselineExperiment={baselineExperiment}
+                onBaselineChange={onBaselineChange}
+                onExperimentRun={onExperimentRun}
+                onViewDocs={onViewDocs}
               />
             ) : (
               <SystemStatusPanel compact />

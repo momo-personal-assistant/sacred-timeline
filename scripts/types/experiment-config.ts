@@ -3,6 +3,17 @@
  * Maps YAML config structure to TypeScript interfaces
  */
 
+/**
+ * Contrastive Example for ICL (Paper 003)
+ * Pairs of chunks with labels to teach the model correct/incorrect patterns
+ */
+export interface ContrastiveExample {
+  chunk1: string;
+  chunk2: string;
+  label: 'RELATED' | 'NOT_RELATED';
+  reason: string;
+}
+
 export interface ExperimentConfig {
   name: string;
   description: string;
@@ -34,6 +45,19 @@ export interface ExperimentConfig {
     includeInferred?: boolean;
     useSemanticSimilarity?: boolean;
     semanticWeight?: number;
+
+    // Contrastive ICL (Paper 003)
+    useContrastiveICL?: boolean;
+    contrastiveExamples?: {
+      positive: ContrastiveExample[];
+      negative: ContrastiveExample[];
+    };
+    llmConfig?: {
+      model: string;
+      temperature?: number;
+      maxTokens?: number;
+    };
+    promptTemplate?: string;
   };
 
   validation: {

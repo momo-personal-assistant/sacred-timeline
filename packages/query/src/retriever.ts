@@ -4,10 +4,9 @@
  * Retrieves relevant chunks and canonical objects using vector search and graph traversal
  */
 
-import type { OpenAIEmbedder } from '@momo/embedding/openai-embedder';
+import type { OpenAIEmbedder } from '@momo/embedding';
 import type { RelationInferrer, Relation } from '@momo/graph';
-import type { UnifiedMemoryDB } from '@unified-memory/db';
-import type { CanonicalObject } from '@unified-memory/shared/types/canonical';
+import type { UnifiedMemoryDB, CanonicalObject } from '@unified-memory/db';
 
 export interface ChunkResult {
   id: string;
