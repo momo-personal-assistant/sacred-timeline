@@ -266,9 +266,9 @@ export default function RelationGraphView({
   const graphData = useMemo((): GraphData => {
     if (!data) return { nodes: [], links: [] };
 
-    const paperMap = new Map(data.papers.map((p) => [p.id, p.title]));
+    const paperMap = new Map(data.papers.map((p) => [String(p.id), p.title]));
 
-    // Collect all unique node IDs from relations
+    // Collect all unique node IDs from relations (normalize to strings)
     const nodeIds = new Set<string>();
     const filteredRelations =
       selectedStatus === 'all'
@@ -276,15 +276,17 @@ export default function RelationGraphView({
         : data.relations.filter((r) => r.status === selectedStatus);
 
     filteredRelations.forEach((rel) => {
-      nodeIds.add(rel.from_id);
-      nodeIds.add(rel.to_id);
+      nodeIds.add(String(rel.from_id));
+      nodeIds.add(String(rel.to_id));
     });
 
     // Count connections per node
     const connectionCount = new Map<string, number>();
     filteredRelations.forEach((rel) => {
-      connectionCount.set(rel.from_id, (connectionCount.get(rel.from_id) || 0) + 1);
-      connectionCount.set(rel.to_id, (connectionCount.get(rel.to_id) || 0) + 1);
+      const fromId = String(rel.from_id);
+      const toId = String(rel.to_id);
+      connectionCount.set(fromId, (connectionCount.get(fromId) || 0) + 1);
+      connectionCount.set(toId, (connectionCount.get(toId) || 0) + 1);
     });
 
     // Create nodes
@@ -296,21 +298,32 @@ export default function RelationGraphView({
     }));
 
     // Create links with curvature for multi-edges
+    // Filter out any links where source or target node doesn't exist
     const linkPairs = new Map<string, number>();
-    const links: GraphLink[] = filteredRelations.map((rel) => {
-      const pairKey = [rel.from_id, rel.to_id].sort().join('|');
+    const links: GraphLink[] = [];
+
+    filteredRelations.forEach((rel) => {
+      const sourceId = String(rel.from_id);
+      const targetId = String(rel.to_id);
+
+      // Skip links where source or target node doesn't exist
+      if (!nodeIds.has(sourceId) || !nodeIds.has(targetId)) {
+        return;
+      }
+
+      const pairKey = [sourceId, targetId].sort().join('|');
       const pairIndex = linkPairs.get(pairKey) || 0;
       linkPairs.set(pairKey, pairIndex + 1);
 
-      return {
-        source: rel.from_id,
-        target: rel.to_id,
+      links.push({
+        source: sourceId,
+        target: targetId,
         status: rel.status,
         type: rel.type,
         color: STATUS_COLORS[rel.status],
         width: rel.status === 'fn' ? 1 : 2,
         curvature: pairIndex * 0.3,
-      };
+      });
     });
 
     return { nodes, links };

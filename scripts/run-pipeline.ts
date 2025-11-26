@@ -16,6 +16,9 @@
  *   pnpm tsx scripts/run-pipeline.ts e2e
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 import * as dotenv from 'dotenv';
 
 // Load environment variables
@@ -339,6 +342,9 @@ class MemoryPipeline {
       console.log(`  Clusters: ${stats.clusters}`);
       console.log(`${'='.repeat(60)}\n`);
 
+      // Save stats to JSON file for UI consumption
+      await this.saveStatsToFile(targetScenario, stats);
+
       return { success: true, stats };
     } catch (error) {
       console.error('\n[ERROR] Ingest failed:', error);
@@ -484,6 +490,77 @@ class MemoryPipeline {
         ]
       );
     }
+  }
+
+  /**
+   * Save pipeline stats to a JSON file for UI consumption
+   */
+  private async saveStatsToFile(scenario: string, stats: IngestResult['stats']): Promise<void> {
+    const PIPELINE_STAGES = [
+      { id: 'load', name: 'Load', label: 'Load Data' },
+      { id: 'transform', name: 'Transform', label: 'Transform' },
+      { id: 'chunk', name: 'Chunk', label: 'Chunk' },
+      { id: 'embed', name: 'Embed', label: 'Embed' },
+      { id: 'cluster', name: 'Cluster', label: 'Cluster' },
+      { id: 'graph', name: 'Graph', label: 'KG Build' },
+      { id: 'temporal', name: 'Temporal', label: 'Temporal' },
+      { id: 'consolidate', name: 'Consolidate', label: 'Consolidate' },
+      { id: 'store', name: 'Store', label: 'Store' },
+    ];
+
+    // Calculate cumulative start times and percentages
+    let cumulativeTime = 0;
+    const stages = PIPELINE_STAGES.map((stage) => {
+      const stageData = stats.stages[stage.id] || { duration: 0, count: 0 };
+      const startTime = cumulativeTime;
+      cumulativeTime += stageData.duration;
+      const percentage =
+        stats.totalDuration > 0 ? (stageData.duration / stats.totalDuration) * 100 : 0;
+
+      return {
+        id: stage.id,
+        name: stage.name,
+        label: stage.label,
+        status: 'completed',
+        duration: stageData.duration,
+        count: stageData.count,
+        startTime,
+        percentage,
+      };
+    });
+
+    // Find bottleneck
+    const bottleneckStage = stages.reduce(
+      (max, stage) => (stage.percentage > max.percentage ? stage : max),
+      stages[0]
+    );
+
+    const pipelineStats = {
+      runId: `run-${Date.now()}`,
+      scenario,
+      startedAt: new Date(stats.startTime).toISOString(),
+      completedAt: new Date().toISOString(),
+      stages,
+      totalDuration: stats.totalDuration,
+      bottleneckStage: bottleneckStage.id,
+      metrics: {
+        objects: stats.objects,
+        chunks: stats.chunks,
+        relations: stats.relations,
+        clusters: stats.clusters,
+        duplicatesRemoved: 0,
+      },
+    };
+
+    // Save to data directory
+    const dataDir = path.join(__dirname, '..', 'data');
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
+    const statsPath = path.join(dataDir, 'pipeline-stats.json');
+    fs.writeFileSync(statsPath, JSON.stringify(pipelineStats, null, 2));
+    console.log(`[STATS] Saved pipeline stats to ${statsPath}`);
   }
 
   // ============================================================

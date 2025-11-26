@@ -1,0 +1,81 @@
+{
+  "id": "EXP-002",
+  "name": "Object ID Indexing",
+  "description": "Include object_id (ENG-123, PR-456) in title and body for semantic search",
+  "created_at": "2025-11-26T07:13:33.912Z",
+  "git_commit": null,
+  "status": "completed",
+  "baseline": "EXP-001",
+  "config": {
+    "retrieval": {
+      "similarity_threshold": 0.35,
+      "chunk_limit": 20
+    },
+    "embedding": {
+      "model": "text-embedding-3-small",
+      "dimensions": 1536
+    },
+    "changes": [
+      {
+        "file": "scripts/run-benchmark.ts",
+        "description": "Add object_id to title and body for Linear/GitHub events",
+        "rationale": "Enable semantic search to find objects by their ID (ENG-123, PR-456)",
+        "lines": "228-288"
+      }
+    ]
+  },
+  "results": {
+    "overall_accuracy": 0.308,
+    "accuracy_by_type": {
+      "single_hop": 0,
+      "multi_hop": 0.5,
+      "temporal": 0,
+      "aggregation": 0.5,
+      "filtered_aggregation": 1,
+      "ranked": 0,
+      "attribution": 0,
+      "cross_source": 0.5
+    },
+    "passed_queries": ["q_003", "q_008", "q_009", "q_012"],
+    "failed_queries": [
+      "q_001",
+      "q_002",
+      "q_004",
+      "q_005",
+      "q_006",
+      "q_007",
+      "q_010",
+      "q_011",
+      "q_013"
+    ],
+    "latency": {
+      "avg_ms": 488,
+      "p50_ms": 413,
+      "p95_ms": 1216
+    }
+  },
+  "comparison": {
+    "baseline_accuracy": 0.077,
+    "new_accuracy": 0.308,
+    "improvement": "+23.1%",
+    "improvement_factor": "4x",
+    "newly_passed": ["q_003", "q_008", "q_012"],
+    "newly_failed": [],
+    "latency_change": "+29%"
+  },
+  "analysis": {
+    "key_findings": [
+      "4x improvement in overall accuracy (7.7% -> 30.8%)",
+      "multi_hop queries now 50% accurate (was 0%)",
+      "cross_source queries now 50% accurate (was 0%)",
+      "Latency increased slightly due to richer content"
+    ],
+    "remaining_issues": [
+      "single_hop (0%) - response format still narrative, not extracting precise values",
+      "temporal (0%) - time analysis not implemented",
+      "q_013 failing - ENG-123 -> PR-456 reverse lookup not working"
+    ],
+    "is_overfitting": false,
+    "overfitting_rationale": "Changes enable general-purpose object lookup, not benchmark-specific hacks"
+  }
+}

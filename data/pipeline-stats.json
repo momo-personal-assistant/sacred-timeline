@@ -1,0 +1,107 @@
+{
+  "runId": "run-1764139991388",
+  "scenario": "normal",
+  "startedAt": "2025-11-26T06:53:09.324Z",
+  "completedAt": "2025-11-26T06:53:11.388Z",
+  "stages": [
+    {
+      "id": "load",
+      "name": "Load",
+      "label": "Load Data",
+      "status": "completed",
+      "duration": 3,
+      "count": 88,
+      "startTime": 0,
+      "percentage": 0.14534883720930233
+    },
+    {
+      "id": "transform",
+      "name": "Transform",
+      "label": "Transform",
+      "status": "completed",
+      "duration": 1,
+      "count": 88,
+      "startTime": 3,
+      "percentage": 0.04844961240310078
+    },
+    {
+      "id": "chunk",
+      "name": "Chunk",
+      "label": "Chunk",
+      "status": "completed",
+      "duration": 0,
+      "count": 108,
+      "startTime": 4,
+      "percentage": 0
+    },
+    {
+      "id": "embed",
+      "name": "Embed",
+      "label": "Embed",
+      "status": "completed",
+      "duration": 1410,
+      "count": 108,
+      "startTime": 4,
+      "percentage": 68.31395348837209
+    },
+    {
+      "id": "cluster",
+      "name": "Cluster",
+      "label": "Cluster",
+      "status": "completed",
+      "duration": 1,
+      "count": 3,
+      "startTime": 1414,
+      "percentage": 0.04844961240310078
+    },
+    {
+      "id": "graph",
+      "name": "Graph",
+      "label": "KG Build",
+      "status": "completed",
+      "duration": 7,
+      "count": 291,
+      "startTime": 1415,
+      "percentage": 0.3391472868217054
+    },
+    {
+      "id": "temporal",
+      "name": "Temporal",
+      "label": "Temporal",
+      "status": "completed",
+      "duration": 0,
+      "count": 88,
+      "startTime": 1422,
+      "percentage": 0
+    },
+    {
+      "id": "consolidate",
+      "name": "Consolidate",
+      "label": "Consolidate",
+      "status": "completed",
+      "duration": 0,
+      "count": 88,
+      "startTime": 1422,
+      "percentage": 0
+    },
+    {
+      "id": "store",
+      "name": "Store",
+      "label": "Store",
+      "status": "completed",
+      "duration": 642,
+      "count": 196,
+      "startTime": 1422,
+      "percentage": 31.1046511627907
+    }
+  ],
+  "totalDuration": 2064,
+  "bottleneckStage": "embed",
+  "metrics": {
+    "objects": 88,
+    "chunks": 108,
+    "relations": 291,
+    "clusters": 3,
+    "duplicatesRemoved": 0
+  }
+}
