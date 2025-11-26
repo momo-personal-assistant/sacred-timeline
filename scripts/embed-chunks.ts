@@ -20,8 +20,8 @@
 
 import * as dotenv from 'dotenv';
 
-import { Chunker, type ChunkingConfig, type Chunk } from '@momo/embedding/chunker';
-import { OpenAIEmbedder, type EmbeddingConfig } from '@momo/embedding/openai-embedder';
+import { Chunker, type ChunkingConfig, type Chunk } from '@momo/chunking';
+import { OpenAIEmbedder, type EmbeddingConfig } from '@momo/embedding';
 import { UnifiedMemoryDB } from '@unified-memory/db';
 
 // Load environment variables

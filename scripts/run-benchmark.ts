@@ -17,7 +17,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-import { Chunker, OpenAIEmbedder } from '@momo/embedding';
+import { Chunker } from '@momo/chunking';
+import { OpenAIEmbedder } from '@momo/embedding';
 import { RelationInferrer } from '@momo/graph';
 import { Retriever } from '@momo/query';
 import { SimpleReasoner } from '@momo/reasoning';

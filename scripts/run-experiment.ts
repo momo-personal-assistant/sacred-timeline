@@ -21,8 +21,8 @@ import * as path from 'path';
 import * as dotenv from 'dotenv';
 import * as yaml from 'js-yaml';
 
-import { Chunker, type Chunk } from '@momo/embedding/chunker';
-import { OpenAIEmbedder } from '@momo/embedding/openai-embedder';
+import { Chunker, type Chunk } from '@momo/chunking';
+import { OpenAIEmbedder } from '@momo/embedding';
 import { RelationInferrer, type Relation } from '@momo/graph';
 import { UnifiedMemoryDB } from '@unified-memory/db';
 

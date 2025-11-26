@@ -25,9 +25,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Pipeline imports
+import { Chunker } from '@momo/chunking';
 import { SimpleClusterer } from '@momo/clustering';
 import { Consolidator } from '@momo/consolidation';
-import { Chunker, OpenAIEmbedder } from '@momo/embedding';
+import { OpenAIEmbedder } from '@momo/embedding';
 import { RelationInferrer } from '@momo/graph';
 import { SyntheticDataLoader } from '@momo/ingestion/synthetic-loader';
 import { Retriever } from '@momo/query';

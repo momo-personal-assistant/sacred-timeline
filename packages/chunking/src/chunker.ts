@@ -1,7 +1,8 @@
 /**
  * Text Chunking Strategies
  *
- * Splits text into chunks for embedding
+ * Splits text into chunks for embedding.
+ * Part of the Write Path: Ingestion → Transform → Consolidation → [Chunking] → Embedding
  */
 
 import type { CanonicalObject } from '@unified-memory/shared/types/canonical';
@@ -11,26 +12,36 @@ export interface Chunk {
   canonical_object_id: string;
   chunk_index: number;
   content: string;
-  method: 'fixed-size' | 'semantic' | 'relational';
+  method: ChunkingStrategy;
   metadata?: Record<string, any>;
 }
 
+export type ChunkingStrategy = 'fixed-size' | 'semantic' | 'relational';
+
 export interface ChunkingConfig {
-  strategy: 'fixed-size' | 'semantic' | 'relational';
-  maxChunkSize?: number; // For fixed-size strategy
-  overlap?: number; // For fixed-size strategy
-  preserveMetadata?: boolean;
+  strategy: ChunkingStrategy;
+  maxChunkSize?: number; // For fixed-size strategy (default: 500)
+  overlap?: number; // For fixed-size strategy (default: 50)
+  preserveMetadata?: boolean; // Include metadata in chunks (default: true)
+}
+
+export interface ChunkingStats {
+  total_chunks: number;
+  avg_chunk_size: number;
+  min_chunk_size: number;
+  max_chunk_size: number;
+  std_chunk_size: number;
 }
 
 export class Chunker {
-  private config: ChunkingConfig;
+  private config: Required<Omit<ChunkingConfig, 'strategy'>> & { strategy: ChunkingStrategy };
 
   constructor(config: ChunkingConfig) {
     this.config = {
-      maxChunkSize: config.maxChunkSize || 500,
-      overlap: config.overlap || 50,
-      preserveMetadata: config.preserveMetadata !== false,
-      ...config,
+      strategy: config.strategy,
+      maxChunkSize: config.maxChunkSize ?? 500,
+      overlap: config.overlap ?? 50,
+      preserveMetadata: config.preserveMetadata ?? true,
     };
   }
 
@@ -62,8 +73,8 @@ export class Chunker {
       return chunks;
     }
 
-    const maxSize = this.config.maxChunkSize!;
-    const overlap = this.config.overlap!;
+    const maxSize = this.config.maxChunkSize;
+    const overlap = this.config.overlap;
 
     let startIndex = 0;
     let chunkIndex = 0;
@@ -125,7 +136,7 @@ export class Chunker {
       // If adding this paragraph exceeds max size, save current chunk
       if (
         currentChunk.length > 0 &&
-        currentChunk.length + paragraph.length > this.config.maxChunkSize!
+        currentChunk.length + paragraph.length > this.config.maxChunkSize
       ) {
         chunks.push({
           id: `${obj.id}:chunk:${chunkIndex}`,
@@ -272,15 +283,9 @@ export class Chunker {
   }
 
   /**
-   * Get statistics about chunking
+   * Get statistics about chunking results
    */
-  getStats(chunks: Chunk[]): {
-    total_chunks: number;
-    avg_chunk_size: number;
-    min_chunk_size: number;
-    max_chunk_size: number;
-    std_chunk_size: number;
-  } {
+  getStats(chunks: Chunk[]): ChunkingStats {
     if (chunks.length === 0) {
       return {
         total_chunks: 0,
@@ -303,5 +308,12 @@ export class Chunker {
       max_chunk_size: Math.max(...sizes),
       std_chunk_size: Math.round(std),
     };
+  }
+
+  /**
+   * Get current configuration
+   */
+  getConfig(): ChunkingConfig {
+    return { ...this.config };
   }
 }
