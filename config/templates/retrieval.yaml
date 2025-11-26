@@ -1,0 +1,50 @@
+# Retrieval Parameters Experiment Template
+# Use this to tune retrieval thresholds and limits
+
+name: "retrieval-experiment"
+description: "Experiment with retrieval parameters (similarity, limits, depth)"
+
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.45             # Try: 0.25, 0.35, 0.45, 0.55, 0.65
+  chunkLimit: 30                        # Try: 10, 20, 30, 50
+  includeRelations: true
+  relationDepth: 2                      # Try: 0, 1, 2, 3
+
+relationInference:
+  similarityThreshold: 0.85
+  keywordOverlapThreshold: 0.65
+  includeInferred: true
+  useSemanticSimilarity: false
+  semanticWeight: 0.7
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: false
+  scenarios:
+    - "normal"
+    - "sales_heavy"
+    - "dev_heavy"
+
+metadata:
+  baseline: false
+  git_commit: null
+  paper_ids: []
+
+# Expected Impact:
+# - Higher similarityThreshold (0.55+): More precision, lower recall
+# - Lower similarityThreshold (0.25-0.35): More recall, may reduce precision
+# - Higher chunkLimit (30-50): More context, slower queries
+# - Lower chunkLimit (10-20): Faster, may miss relevant chunks
+# - Higher relationDepth (2-3): More graph expansion, richer context
+# - Lower relationDepth (0-1): Faster, less expansion

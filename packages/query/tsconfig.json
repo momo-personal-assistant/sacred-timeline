@@ -2,13 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "composite": false,
+    "noEmit": true
   },
-  "include": ["src/**/*"],
-  "references": [
-    { "path": "../shared" },
-    { "path": "../db" },
-    { "path": "../embedding" },
-    { "path": "../graph" }
-  ]
+  "include": ["src/**/*"]
 }

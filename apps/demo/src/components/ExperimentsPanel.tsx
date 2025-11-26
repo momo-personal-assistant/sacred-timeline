@@ -1,298 +1,216 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+import BenchmarkResultsView from '@/components/charts/BenchmarkResultsView';
+import PerformanceWaterfall from '@/components/charts/PerformanceWaterfall';
+import PipelineFlowDiagram from '@/components/charts/PipelineFlowDiagram';
+import PipelineKPICards from '@/components/charts/PipelineKPICards';
+import RelationGraphView from '@/components/charts/RelationGraphView';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DEMO_PIPELINE_STATS, type PipelineRunStats } from '@/types/pipeline';
+
+interface ExperimentConfig {
+  name: string;
+  description: string;
+  embedding: {
+    model: string;
+    dimensions?: number;
+    batchSize?: number;
+  };
+  chunking: {
+    strategy: string;
+    maxChunkSize?: number;
+    overlap?: number;
+  };
+  retrieval: {
+    similarityThreshold?: number;
+    chunkLimit?: number;
+  };
+  relationInference: {
+    keywordOverlapThreshold?: number;
+    useSemanticSimilarity?: boolean;
+    similarityThreshold?: number;
+    semanticWeight?: number;
+  };
+}
+
+interface ExperimentResults {
+  f1_score: number;
+  precision: number;
+  recall: number;
+  true_positives: number;
+  false_positives: number;
+  false_negatives: number;
+  retrieval_time_ms: number;
+}
 
 interface Experiment {
   id: number;
   name: string;
-  description?: string;
+  description: string;
+  config: ExperimentConfig;
+  is_baseline: boolean;
+  paper_ids: string[];
+  git_commit: string | null;
   created_at: string;
-  embedding_model?: string;
-  chunking_strategy?: string;
-  similarity_threshold?: number;
-  keyword_overlap_threshold?: number;
-  chunk_limit?: number;
-  tags?: string[];
-  is_baseline?: boolean;
-  avg_f1_score: number;
-  result_count: number;
+  results: ExperimentResults | null;
 }
 
-interface ExperimentResult {
-  scenario: string;
-  precision: number;
-  recall: number;
-  f1_score: number;
-  true_positives: number;
-  false_positives: number;
-  false_negatives: number;
+interface ExperimentsPanelProps {
+  experiments: Experiment[];
+  loading: boolean;
+  error: string | null;
+  selectedExperimentId?: number;
+  onExperimentSelect?: (experimentId: number) => void;
 }
 
-function getScoreColor(score: number): string {
-  if (score >= 0.6) return '#22c55e'; // green
-  if (score >= 0.4) return '#eab308'; // yellow
-  if (score >= 0.2) return '#f97316'; // orange
-  return '#ef4444'; // red
-}
+export default function ExperimentsPanel({
+  experiments,
+  loading,
+  error,
+  selectedExperimentId,
+  onExperimentSelect,
+}: ExperimentsPanelProps) {
+  const [pipelineStats, setPipelineStats] = useState<PipelineRunStats>(DEMO_PIPELINE_STATS);
+  const [isRealData, setIsRealData] = useState(false);
 
-export default function ExperimentsPanel() {
-  const [experiments, setExperiments] = useState<Experiment[]>([]);
-  const [selectedExperiment, setSelectedExperiment] = useState<number | null>(null);
-  const [experimentDetails, setExperimentDetails] = useState<{
-    experiment: Experiment;
-    results: ExperimentResult[];
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  // Fetch real pipeline stats from API
   useEffect(() => {
-    fetchExperiments();
+    async function fetchPipelineStats() {
+      try {
+        const response = await fetch('/api/pipeline/stats');
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          setPipelineStats(result.data);
+          setIsRealData(true);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch pipeline stats, using demo data:', err);
+      }
+    }
+
+    fetchPipelineStats();
   }, []);
 
-  useEffect(() => {
-    if (selectedExperiment) {
-      fetchExperimentDetails(selectedExperiment);
-    }
-  }, [selectedExperiment]);
+  const selectedExperiment = selectedExperimentId
+    ? experiments.find((exp) => exp.id === selectedExperimentId) || null
+    : null;
 
-  const fetchExperiments = async () => {
-    try {
-      const response = await fetch('/api/experiments');
-      if (!response.ok) throw new Error('Failed to fetch experiments');
-      const data = await response.json();
-      setExperiments(data);
-      if (data.length > 0 && !selectedExperiment) {
-        setSelectedExperiment(data[0].id);
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const _handleExperimentClick = (experiment: Experiment) => {
+    onExperimentSelect?.(experiment.id);
   };
 
-  const fetchExperimentDetails = async (id: number) => {
-    try {
-      const response = await fetch(`/api/experiments/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch experiment details');
-      const data = await response.json();
-      setExperimentDetails(data);
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
+  const baselineExperiment = experiments.find((exp) => exp.is_baseline) || null;
 
   if (loading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', color: '#6b7280' }}>
-        Loading experiments...
+      <div className="h-full flex items-center justify-center">
+        <p className="text-muted-foreground">Loading experiments...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        style={{
-          padding: '1rem',
-          backgroundColor: '#fee2e2',
-          border: '1px solid #ef4444',
-          borderRadius: '4px',
-          color: '#991b1b',
-        }}
-      >
-        Error: {error}
-      </div>
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle className="text-destructive">Error</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-destructive">{error}</p>
+        </CardContent>
+      </Card>
     );
   }
 
   if (experiments.length === 0) {
     return (
-      <div
-        style={{
-          padding: '2rem',
-          textAlign: 'center',
-          backgroundColor: '#f9fafb',
-          borderRadius: '8px',
-        }}
-      >
-        <p style={{ color: '#6b7280', marginBottom: '1rem' }}>No experiments yet</p>
-        <p style={{ fontSize: '0.9rem', color: '#9ca3af' }}>
-          Run a validation test to create your first experiment
-        </p>
-      </div>
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <p className="text-muted-foreground mb-2">No experiments yet</p>
+          <p className="text-sm text-muted-foreground">
+            Run `pnpm run experiment` to create your first experiment
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
-  const bestExperiment = experiments.reduce((best, exp) =>
-    exp.avg_f1_score > best.avg_f1_score ? exp : best
-  );
-
   return (
-    <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-          All Experiments ({experiments.length})
-        </h3>
-        <p style={{ fontSize: '0.9rem', color: '#6b7280', marginBottom: '1rem' }}>
-          Track and compare different configurations
-        </p>
+    <div className="relative h-full flex flex-col">
+      <Tabs defaultValue="pipeline" className="h-full flex flex-col">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
+          <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
+          <TabsTrigger value="benchmark">Benchmark</TabsTrigger>
+          <TabsTrigger value="graph">Knowledge Graph</TabsTrigger>
+        </TabsList>
 
-        {bestExperiment && (
-          <div
-            style={{
-              padding: '1rem',
-              backgroundColor: '#ecfdf5',
-              border: '2px solid #10b981',
-              borderRadius: '8px',
-              marginBottom: '1rem',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div
-                style={{
-                  padding: '0.25rem 0.75rem',
-                  backgroundColor: '#10b981',
-                  color: 'white',
-                  borderRadius: '12px',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                }}
-              >
-                BEST
-              </div>
-              <div style={{ fontWeight: 600 }}>{bestExperiment.name}</div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10b981', marginLeft: 'auto' }}>
-                {(bestExperiment.avg_f1_score * 100).toFixed(1)}%
-              </div>
-            </div>
-            <div style={{ fontSize: '0.85rem', color: '#065f46', marginTop: '0.5rem' }}>
-              {bestExperiment.embedding_model} + {bestExperiment.chunking_strategy}
-            </div>
-          </div>
-        )}
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-          {experiments.map((exp) => (
-            <div
-              key={exp.id}
-              onClick={() => setSelectedExperiment(exp.id)}
-              style={{
-                padding: '1rem',
-                backgroundColor: selectedExperiment === exp.id ? '#eff6ff' : 'white',
-                border: `2px solid ${selectedExperiment === exp.id ? '#3b82f6' : '#e5e7eb'}`,
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                <div>
-                  <div style={{ fontWeight: 600, marginBottom: '0.25rem' }}>{exp.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                    {new Date(exp.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    fontSize: '1.5rem',
-                    fontWeight: 700,
-                    color: getScoreColor(exp.avg_f1_score),
-                  }}
+        <TabsContent value="pipeline" className="flex-1 overflow-auto space-y-4 mt-0">
+          {/* Pipeline Flow Diagram */}
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-semibold">Pipeline Execution</CardTitle>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded ${
+                    isRealData
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                      : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
+                  }`}
                 >
-                  {(exp.avg_f1_score * 100).toFixed(1)}%
-                </div>
+                  {isRealData ? 'Real Data' : 'Demo Data'}
+                </span>
               </div>
+              <CardDescription className="text-xs">
+                9-stage ingest pipeline visualization
+                {isRealData && ` (${pipelineStats.totalDuration}ms total)`}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PipelineFlowDiagram
+                stages={pipelineStats.stages}
+                bottleneckStage={pipelineStats.bottleneckStage}
+                showDurations={true}
+              />
+            </CardContent>
+          </Card>
 
-              {exp.embedding_model && (
-                <div
-                  style={{
-                    marginTop: '0.5rem',
-                    fontSize: '0.8rem',
-                    color: '#6b7280',
-                  }}
-                >
-                  {exp.embedding_model} • {exp.chunking_strategy}
-                </div>
-              )}
+          {/* KPI Cards */}
+          <PipelineKPICards
+            stages={pipelineStats.stages}
+            metrics={pipelineStats.metrics}
+            totalDuration={pipelineStats.totalDuration}
+            bottleneckStage={pipelineStats.bottleneckStage}
+          />
 
-              {exp.tags && exp.tags.length > 0 && (
-                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                  {exp.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      style={{
-                        padding: '0.15rem 0.5rem',
-                        backgroundColor: '#f3f4f6',
-                        color: '#6b7280',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+          {/* Performance Waterfall */}
+          <PerformanceWaterfall
+            stages={pipelineStats.stages}
+            totalDuration={pipelineStats.totalDuration}
+            bottleneckStage={pipelineStats.bottleneckStage}
+          />
+        </TabsContent>
 
-      {experimentDetails && (
-        <div>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>
-            Results by Scenario
-          </h3>
+        <TabsContent value="benchmark" className="flex-1 overflow-auto mt-0">
+          <BenchmarkResultsView className="h-full" />
+        </TabsContent>
 
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {experimentDetails.results.map((result) => (
-              <div
-                key={result.scenario}
-                style={{
-                  padding: '1rem',
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontWeight: 600, marginBottom: '0.25rem', textTransform: 'capitalize' }}>
-                      {result.scenario.replace(/_/g, ' ')}
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-                      TP: {result.true_positives} | FP: {result.false_positives} | FN: {result.false_negatives}
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <MetricBadge label="P" value={result.precision} />
-                    <MetricBadge label="R" value={result.recall} />
-                    <MetricBadge label="F1" value={result.f1_score} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function MetricBadge({ label, value }: { label: string; value: number }) {
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ fontSize: '0.7rem', color: '#6b7280', marginBottom: '0.1rem' }}>{label}</div>
-      <div
-        style={{
-          fontSize: '1.1rem',
-          fontWeight: 700,
-          color: getScoreColor(value),
-        }}
-      >
-        {(value * 100).toFixed(0)}%
-      </div>
+        <TabsContent value="graph" className="flex-1 mt-0">
+          {/* Graph Visualization */}
+          <RelationGraphView
+            experimentConfig={selectedExperiment?.config?.relationInference}
+            experiments={experiments.map((e) => ({ id: e.id, name: e.name }))}
+            selectedExperimentId={selectedExperimentId}
+            onExperimentChange={onExperimentSelect}
+            selectedExperiment={selectedExperiment}
+            baselineExperiment={baselineExperiment}
+            className="h-full"
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

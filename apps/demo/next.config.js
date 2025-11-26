@@ -8,6 +8,8 @@ const nextConfig = {
     '@momo/graph',
     '@momo/query',
   ],
+  // Use standalone output for better Vercel deployment
+  output: 'standalone',
 };
 
 module.exports = nextConfig;

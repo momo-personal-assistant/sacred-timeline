@@ -1,0 +1,42 @@
+# Hybrid Search Experiment - Test Run
+# Testing UI display of experiment results
+
+name: "2025-11-24-hybrid-search"
+description: "Test hybrid search (semantic + keyword) for Experiments UI"
+
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.35
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+relationInference:
+  similarityThreshold: 0.80
+  keywordOverlapThreshold: 0.60
+  includeInferred: true
+  useSemanticSimilarity: true
+  semanticWeight: 0.7
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: true  # ENABLED to save to database
+  scenarios:
+    - "normal"
+    - "sales_heavy"
+    - "dev_heavy"
+
+metadata:
+  baseline: false
+  git_commit: null
+  paper_ids: []

@@ -1,0 +1,63 @@
+{
+  "id": "EXP-001",
+  "name": "Baseline",
+  "description": "Initial benchmark run without any optimizations",
+  "created_at": "2025-11-26T07:03:35.302Z",
+  "git_commit": null,
+  "status": "completed",
+  "config": {
+    "retrieval": {
+      "similarity_threshold": 0.35,
+      "chunk_limit": 20
+    },
+    "embedding": {
+      "model": "text-embedding-3-small",
+      "dimensions": 1536
+    },
+    "changes": []
+  },
+  "results": {
+    "overall_accuracy": 0.077,
+    "accuracy_by_type": {
+      "single_hop": 0,
+      "multi_hop": 0,
+      "temporal": 0,
+      "aggregation": 0,
+      "filtered_aggregation": 1,
+      "ranked": 0,
+      "attribution": 0,
+      "cross_source": 0
+    },
+    "passed_queries": ["q_009"],
+    "failed_queries": [
+      "q_001",
+      "q_002",
+      "q_003",
+      "q_004",
+      "q_005",
+      "q_006",
+      "q_007",
+      "q_008",
+      "q_010",
+      "q_011",
+      "q_012",
+      "q_013"
+    ],
+    "latency": {
+      "avg_ms": 378,
+      "p50_ms": 391,
+      "p95_ms": 500
+    }
+  },
+  "analysis": {
+    "key_findings": [
+      "Retrieval works but returns narrative responses instead of precise answers",
+      "object_id (ENG-123, PR-456) not searchable - missing from body/title",
+      "Cross-source linking not working due to missing object_id references"
+    ],
+    "bottlenecks": [
+      "Vector search only - no keyword/object_id lookup",
+      "Response format mismatch with expected answers"
+    ]
+  }
+}

@@ -1,0 +1,245 @@
+{
+  "id": "eval-1764141213912",
+  "benchmark_id": "benchmark_001",
+  "timestamp": "2025-11-26T07:13:33.912Z",
+  "results": [
+    {
+      "query_id": "q_001",
+      "query_type": "single_hop",
+      "predicted_answer": "\"누가 rate limit 불만을 처음 제기했나?\"에 대해 5개의 관련 정보를 찾았습니다:\n\n1. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 57%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요\n\n2. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 56%)\n   [ENG-123]\n\n3. [slack] Message in #support (관련도: 55%)\n   엔터프라이즈 플랜인데도 rate limit이 충분하지 않아요\n\n4. [slack] Message in #support (관련도: 51%)\n   저희도 rate limit 때문에 배치 작업이 자주 실패해요\n\n5. [slack] Message in #support (관련도: 47%)\n   API rate limit이 너무 낮아요. 하루 1000건 제한으로는 업무가 안됩니다.",
+      "expected_answer": "customer_alice",
+      "is_correct": false,
+      "partial_score": 0,
+      "latency_ms": 718,
+      "retrieved_chunks": [
+        "linear|acme-corp|issue|linear_001:chunk:0",
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "slack|acme-corp|message|slack_007:chunk:0",
+        "slack|acme-corp|message|slack_002:chunk:0",
+        "slack|acme-corp|message|slack_001:chunk:0",
+        "slack|acme-corp|message|slack_003:chunk:0",
+        "github|acme-corp|issue|github_003:chunk:0",
+        "github|acme-corp|pull_request|github_001:chunk:0",
+        "slack|acme-corp|message|slack_006:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_002",
+      "query_type": "single_hop",
+      "predicted_answer": "\"ENG-123 이슈의 현재 상태는?\"에 대해 2개의 관련 정보를 찾았습니다:\n\n1. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 54%)\n   [ENG-123]\n\n2. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 49%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요",
+      "expected_answer": "in_progress",
+      "is_correct": false,
+      "partial_score": 0,
+      "latency_ms": 425,
+      "retrieved_chunks": [
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "linear|acme-corp|issue|linear_001:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_003",
+      "query_type": "multi_hop",
+      "predicted_answer": "\"rate limit 관련 Slack 불만을 해결하기 위해 만들어진 PR은?\"에 대해 5개의 관련 정보를 찾았습니다:\n\n1. [slack] Message in #engineering (관련도: 60%)\n   Slack API rate limit 때문에 봇이 가끔 응답 못함. 백오프 로직 추가해야할듯\n\n2. [github] PR-456: feat: increase default rate limit to 5000/day (관련도: 50%)\n   [PR-456] Addresses customer feedback. Linked to ENG-123.\n\n3. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 48%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요\n\n4. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 47%)\n   [ENG-123]\n\n5. [slack] Message in #support (관련도: 47%)\n   엔터프라이즈 플랜인데도 rate limit이 충분하지 않아요",
+      "expected_answer": "PR-456",
+      "is_correct": true,
+      "partial_score": 1,
+      "latency_ms": 353,
+      "retrieved_chunks": [
+        "slack|acme-corp|message|slack_006:chunk:0",
+        "github|acme-corp|pull_request|github_001:chunk:0",
+        "linear|acme-corp|issue|linear_001:chunk:0",
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "slack|acme-corp|message|slack_007:chunk:0",
+        "github|acme-corp|issue|github_003:chunk:0",
+        "slack|acme-corp|message|slack_001:chunk:0",
+        "slack|acme-corp|message|slack_003:chunk:0",
+        "slack|acme-corp|message|slack_002:chunk:0",
+        "github|acme-corp|review|github_002:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_004",
+      "query_type": "multi_hop",
+      "predicted_answer": "\"customer_alice의 불만을 해결하기 위해 작업한 엔지니어는?\"에 대한 관련 정보를 찾지 못했습니다.",
+      "expected_answer": "engineer_dave",
+      "is_correct": false,
+      "partial_score": 0,
+      "latency_ms": 379,
+      "retrieved_chunks": []
+    },
+    {
+      "query_id": "q_005",
+      "query_type": "temporal",
+      "predicted_answer": "\"rate limit 불만이 급증한 시기는?\"에 대해 5개의 관련 정보를 찾았습니다:\n\n1. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 50%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요\n\n2. [slack] Message in #support (관련도: 50%)\n   엔터프라이즈 플랜인데도 rate limit이 충분하지 않아요\n\n3. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 47%)\n   [ENG-123]\n\n4. [slack] Message in #support (관련도: 46%)\n   저희도 rate limit 때문에 배치 작업이 자주 실패해요\n\n5. [slack] Message in #support (관련도: 42%)\n   API 호출 제한 늘려주실 수 있나요? 현재 limit이 너무 빡빡합니다",
+      "expected_answer": "2024-01-15 ~ 2024-01-17",
+      "is_correct": false,
+      "partial_score": 0,
+      "latency_ms": 302,
+      "retrieved_chunks": [
+        "linear|acme-corp|issue|linear_001:chunk:0",
+        "slack|acme-corp|message|slack_007:chunk:0",
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "slack|acme-corp|message|slack_002:chunk:0",
+        "slack|acme-corp|message|slack_003:chunk:0",
+        "github|acme-corp|issue|github_003:chunk:0",
+        "slack|acme-corp|message|slack_001:chunk:0",
+        "github|acme-corp|pull_request|github_001:chunk:0",
+        "slack|acme-corp|message|slack_006:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_006",
+      "query_type": "temporal",
+      "predicted_answer": "\"ENG-123이 생성된 후 PR이 올라오기까지 얼마나 걸렸나?\"에 대해 2개의 관련 정보를 찾았습니다:\n\n1. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 51%)\n   [ENG-123]\n\n2. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 44%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요",
+      "expected_answer": "3일 (72시간)",
+      "is_correct": false,
+      "partial_score": 0,
+      "latency_ms": 1216,
+      "retrieved_chunks": [
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "linear|acme-corp|issue|linear_001:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_007",
+      "query_type": "aggregation",
+      "predicted_answer": "\"가장 많이 언급된 제품 이슈는?\"에 대한 관련 정보를 찾지 못했습니다.",
+      "expected_answer": "API rate limit",
+      "is_correct": false,
+      "partial_score": 0,
+      "latency_ms": 413,
+      "retrieved_chunks": []
+    },
+    {
+      "query_id": "q_008",
+      "query_type": "aggregation",
+      "predicted_answer": "\"API rate limit 관련 불만이 총 몇 건?\"에 대해 5개의 관련 정보를 찾았습니다:\n\n1. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 64%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요\n\n2. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 61%)\n   [ENG-123]\n\n3. [slack] Message in #support (관련도: 59%)\n   API 호출 제한 늘려주실 수 있나요? 현재 limit이 너무 빡빡합니다\n\n4. [slack] Message in #support (관련도: 58%)\n   API rate limit이 너무 낮아요. 하루 1000건 제한으로는 업무가 안됩니다.\n\n5. [slack] Message in #engineering (관련도: 53%)\n   Slack API rate limit 때문에 봇이 가끔 응답 못함. 백오프 로직 추가해야할듯",
+      "expected_answer": 6,
+      "is_correct": true,
+      "partial_score": 1,
+      "latency_ms": 418,
+      "retrieved_chunks": [
+        "linear|acme-corp|issue|linear_001:chunk:0",
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "slack|acme-corp|message|slack_003:chunk:0",
+        "slack|acme-corp|message|slack_001:chunk:0",
+        "slack|acme-corp|message|slack_006:chunk:0",
+        "slack|acme-corp|message|slack_007:chunk:0",
+        "slack|acme-corp|message|slack_002:chunk:0",
+        "github|acme-corp|issue|github_003:chunk:0",
+        "github|acme-corp|pull_request|github_001:chunk:0",
+        "slack|acme-corp|message|slack_004:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_009",
+      "query_type": "filtered_aggregation",
+      "predicted_answer": "\"우리 제품 관련 API rate limit 불만만 몇 건? (외부 API 제외)\"에 대해 5개의 관련 정보를 찾았습니다:\n\n1. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 62%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요\n\n2. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 62%)\n   [ENG-123]\n\n3. [slack] Message in #support (관련도: 59%)\n   API rate limit이 너무 낮아요. 하루 1000건 제한으로는 업무가 안됩니다.\n\n4. [slack] Message in #support (관련도: 59%)\n   API 호출 제한 늘려주실 수 있나요? 현재 limit이 너무 빡빡합니다\n\n5. [slack] Message in #support (관련도: 51%)\n   엔터프라이즈 플랜인데도 rate limit이 충분하지 않아요",
+      "expected_answer": 5,
+      "is_correct": true,
+      "partial_score": 1,
+      "latency_ms": 493,
+      "retrieved_chunks": [
+        "linear|acme-corp|issue|linear_001:chunk:0",
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "slack|acme-corp|message|slack_001:chunk:0",
+        "slack|acme-corp|message|slack_003:chunk:0",
+        "slack|acme-corp|message|slack_007:chunk:0",
+        "slack|acme-corp|message|slack_006:chunk:0",
+        "github|acme-corp|issue|github_003:chunk:0",
+        "slack|acme-corp|message|slack_002:chunk:0",
+        "github|acme-corp|pull_request|github_001:chunk:0",
+        "slack|acme-corp|message|slack_005:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_010",
+      "query_type": "ranked",
+      "predicted_answer": "\"시급도 순으로 상위 3개 제품 이슈는?\"에 대해 1개의 관련 정보를 찾았습니다:\n\n1. [slack] Message in #support (관련도: 35%)\n   저희도 rate limit 때문에 배치 작업이 자주 실패해요",
+      "expected_answer": ["API rate limit", "문서 부족", "온보딩 복잡"],
+      "is_correct": false,
+      "partial_score": 0,
+      "latency_ms": 318,
+      "retrieved_chunks": ["slack|acme-corp|message|slack_002:chunk:0"]
+    },
+    {
+      "query_id": "q_011",
+      "query_type": "attribution",
+      "predicted_answer": "\"API rate limit 불만의 출처는?\"에 대해 5개의 관련 정보를 찾았습니다:\n\n1. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 59%)\n   [ENG-123]\n\n2. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 58%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요\n\n3. [slack] Message in #support (관련도: 58%)\n   API 호출 제한 늘려주실 수 있나요? 현재 limit이 너무 빡빡합니다\n\n4. [slack] Message in #support (관련도: 55%)\n   API rate limit이 너무 낮아요. 하루 1000건 제한으로는 업무가 안됩니다.\n\n5. [slack] Message in #engineering (관련도: 50%)\n   Slack API rate limit 때문에 봇이 가끔 응답 못함. 백오프 로직 추가해야할듯",
+      "expected_answer": "Slack #support에서 4건, GitHub에서 1건",
+      "is_correct": false,
+      "partial_score": 0.3333333333333333,
+      "latency_ms": 388,
+      "retrieved_chunks": [
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "linear|acme-corp|issue|linear_001:chunk:0",
+        "slack|acme-corp|message|slack_003:chunk:0",
+        "slack|acme-corp|message|slack_001:chunk:0",
+        "slack|acme-corp|message|slack_006:chunk:0",
+        "slack|acme-corp|message|slack_007:chunk:0",
+        "slack|acme-corp|message|slack_002:chunk:0",
+        "github|acme-corp|issue|github_003:chunk:0",
+        "slack|acme-corp|message|slack_004:chunk:0",
+        "github|acme-corp|pull_request|github_001:chunk:0",
+        "slack|acme-corp|message|slack_005:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_012",
+      "query_type": "cross_source",
+      "predicted_answer": "\"Slack에서 논의된 rate limit 이슈가 어떤 Linear 티켓으로 이어졌나?\"에 대해 5개의 관련 정보를 찾았습니다:\n\n1. [slack] Message in #engineering (관련도: 54%)\n   Slack API rate limit 때문에 봇이 가끔 응답 못함. 백오프 로직 추가해야할듯\n\n2. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 45%)\n   [ENG-123]\n\n3. [slack] Message in #support (관련도: 45%)\n   엔터프라이즈 플랜인데도 rate limit이 충분하지 않아요\n\n4. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 43%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요\n\n5. [slack] Message in #support (관련도: 40%)\n   저희도 rate limit 때문에 배치 작업이 자주 실패해요",
+      "expected_answer": "ENG-123",
+      "is_correct": true,
+      "partial_score": 1,
+      "latency_ms": 343,
+      "retrieved_chunks": [
+        "slack|acme-corp|message|slack_006:chunk:0",
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "slack|acme-corp|message|slack_007:chunk:0",
+        "linear|acme-corp|issue|linear_001:chunk:0",
+        "slack|acme-corp|message|slack_002:chunk:0",
+        "slack|acme-corp|message|slack_001:chunk:0",
+        "github|acme-corp|issue|github_003:chunk:0",
+        "slack|acme-corp|message|slack_003:chunk:0"
+      ]
+    },
+    {
+      "query_id": "q_013",
+      "query_type": "cross_source",
+      "predicted_answer": "\"Linear 티켓 ENG-123과 연결된 GitHub PR은?\"에 대해 2개의 관련 정보를 찾았습니다:\n\n1. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 38%)\n   [ENG-123]\n\n2. [linear] ENG-123: API Rate Limit 증가 검토 (관련도: 35%)\n   [ENG-123] 고객들로부터 rate limit 관련 불만이 다수 접수됨. 현재 1000/day -> 5000/day 검토 필요",
+      "expected_answer": "PR-456",
+      "is_correct": false,
+      "partial_score": 0,
+      "latency_ms": 582,
+      "retrieved_chunks": [
+        "linear|acme-corp|issue|linear_002:chunk:0",
+        "linear|acme-corp|issue|linear_001:chunk:0"
+      ]
+    }
+  ],
+  "metrics": {
+    "overall_accuracy": 0.3076923076923077,
+    "accuracy_by_type": {
+      "single_hop": 0,
+      "multi_hop": 0.5,
+      "temporal": 0,
+      "aggregation": 0.5,
+      "filtered_aggregation": 1,
+      "ranked": 0,
+      "attribution": 0,
+      "cross_source": 0.5
+    },
+    "single_hop_accuracy": 0,
+    "multi_hop_accuracy": 0.5,
+    "temporal_accuracy": 0,
+    "aggregation_accuracy": 0.5,
+    "cross_source_accuracy": 0.5,
+    "attribution_precision": 0,
+    "attribution_recall": 0,
+    "attribution_f1": 0,
+    "avg_latency_ms": 488.3076923076923,
+    "p50_latency_ms": 413,
+    "p95_latency_ms": 1216,
+    "total_tokens_used": 0
+  }
+}

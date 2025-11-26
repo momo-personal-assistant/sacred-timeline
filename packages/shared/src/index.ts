@@ -8,6 +8,11 @@
 export * from './types/memory';
 export * from './types/platform';
 export * from './types/canonical';
+export * from './types/benchmark';
 
 // Utils
 export * from './utils/logger';
+export * from './utils/semantic-hash';
+
+// Data
+export * from './data/sample-benchmark';

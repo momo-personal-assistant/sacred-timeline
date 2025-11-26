@@ -8,6 +8,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added (2025-11-24)
 
+- Research papers management system for systematic RAG optimization
+  - Database schema (migration 006) for papers table with metadata tracking
+  - `/analyze-papers` slash command for parallel document analysis (supports PDF, MD, TXT, HTML, etc.)
+  - `/papers-status` slash command for progress tracking
+  - Automatic paper-to-experiment linking via `experiment_papers` table
+  - Priority-based recommendation system for implementation order
+  - Expected F1 gain tracking and ROI analysis
+  - Directory structure: `docs/research/papers/sources/` (all text formats) and `summaries/`
+  - Comprehensive documentation in README.md and USAGE.md
+- Configuration-driven experiment system (YAML + CLI approach)
+  - Database schema update (migration 007) for enhanced experiment tracking
+    - Added `baseline` boolean flag for marking baseline configurations
+    - Added `paper_ids` text array for linking experiments to research papers
+    - Added `git_commit` varchar(40) for reproducibility tracking
+    - GIN index on paper_ids for efficient paper-based queries
+  - Updated ExperimentsPanel component with null-safe config rendering
+    - Graceful handling of legacy experiments without config field
+    - Conditional rendering for embedding, chunking, retrieval settings
+    - Display of paper IDs and git commit info
+  - Updated /api/experiments endpoint to return new schema fields
+  - Example experiment configuration: `config/experiments/2025-11-24-hybrid-001.yaml`
+    - Hybrid search testing (semantic + keyword)
+    - Auto-save experiment results to database
+    - Multi-scenario validation (normal, sales_heavy, dev_heavy)
+
+### Added (2025-11-24)
+
 - Experiments tracking system with API endpoints for CRUD operations ([9edc4d8](../../commit/9edc4d8))
   - GET /api/experiments - List all experiments with average F1 scores
   - POST /api/experiments - Create new experiment and save results

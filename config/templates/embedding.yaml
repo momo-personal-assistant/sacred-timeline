@@ -1,0 +1,48 @@
+# Embedding Model Experiment Template
+# Use this to experiment with different embedding models
+
+name: "embedding-experiment"
+description: "Experiment with different embedding models (OpenAI, Voyage, Cohere)"
+
+embedding:
+  model: "text-embedding-3-large"       # Try: text-embedding-3-small | text-embedding-3-large | voyage-2 | cohere-embed-v3
+  dimensions: 3072                      # 1536 for small, 3072 for large
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.35             # May need adjustment for different models
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+relationInference:
+  similarityThreshold: 0.85
+  keywordOverlapThreshold: 0.65
+  includeInferred: true
+  useSemanticSimilarity: false
+  semanticWeight: 0.7
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: false
+  scenarios:
+    - "normal"
+    - "sales_heavy"
+    - "dev_heavy"
+
+metadata:
+  baseline: false
+  git_commit: null
+  paper_ids: []
+
+# Expected Impact:
+# - text-embedding-3-large: Higher quality, 3072 dims, 5x cost
+# - text-embedding-3-small: Baseline, 1536 dims, lower cost
+# - voyage-2: Specialized for retrieval, similar quality
+# - cohere-embed-v3: Multilingual support, compression-friendly

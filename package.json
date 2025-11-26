@@ -26,9 +26,20 @@
     "generate:graph": "tsx scripts/generate-graph-dataset/index.ts",
     "generate:graph:all": "tsx scripts/generate-graph-dataset/index.ts --all",
     "validate:graph": "tsx scripts/generate-graph-dataset/validate.ts",
+    "experiment": "tsx scripts/run-experiment.ts",
+    "experiment:create": "tsx scripts/experiment-create.ts",
+    "draft": "tsx scripts/save-experiment-draft.ts",
+    "inspect": "tsx scripts/inspect-db-state.ts",
+    "inspect:full": "tsx scripts/inspect-db-state.ts --full",
+    "sample-data": "tsx scripts/create-sample-data.ts",
+    "pipeline": "tsx scripts/run-pipeline.ts",
+    "pipeline:ingest": "tsx scripts/run-pipeline.ts ingest",
+    "pipeline:query": "tsx scripts/run-pipeline.ts query",
+    "pipeline:e2e": "tsx scripts/run-pipeline.ts e2e",
     "prepare": "husky install"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
@@ -49,6 +60,7 @@
   "packageManager": "pnpm@8.11.0",
   "dependencies": {
     "@slack/web-api": "^7.12.0",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "js-yaml": "^4.1.1"
   }
 }

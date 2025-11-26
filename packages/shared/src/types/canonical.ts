@@ -118,8 +118,8 @@ export const CanonicalObjectSchema = z.object({
   object_type: z.string().min(1).max(50),
 
   // Core content
-  title: z.string().optional(),
-  body: z.string().optional(),
+  title: z.string().nullable().optional(),
+  body: z.string().nullable().optional(),
 
   // Structured data
   attachments: z.array(AttachmentSchema).optional(),

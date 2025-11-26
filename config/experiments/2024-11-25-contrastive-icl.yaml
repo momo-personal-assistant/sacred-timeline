@@ -1,0 +1,136 @@
+# EXP-002: Contrastive In-Context Learning for Relation Inference
+# Based on: Paper 003 - "Enhancing RAG: A Study of Best Practices" (University of Tubingen)
+# Date: 2024-11-25
+
+name: "EXP-002: Contrastive ICL Relation Inference"
+description: |
+  논문 003의 핵심 발견을 적용: Contrastive In-Context Learning이 모든 RAG 변형 중 최고 성능.
+
+  핵심 아이디어:
+  - 정답 예시(related)와 오답 예시(not related)를 함께 제공
+  - 모델이 올바른/잘못된 관계를 구분하는 패턴 학습
+  - TruthfulQA에서 +3.93% ROUGE-L, MMLU에서 +15% ROUGE-L 향상 기록
+
+  Momo 적용:
+  - 기존 cosine similarity + keyword overlap 방식 대신 LLM 기반 판단
+  - Contrastive examples로 false positive 감소 기대
+  - 예상 F1: 65.9% → 78%+ (+12%)
+created_at: "2024-11-25"
+
+# Embedding Configuration (baseline과 동일)
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+# Chunking Configuration (baseline과 동일)
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+# Retrieval Configuration
+retrieval:
+  similarityThreshold: 0.35
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+# Relation Inference Configuration - KEY CHANGES HERE
+relationInference:
+  # 기존 알고리즘 기반 유사도 비활성화
+  useSemanticSimilarity: false
+  keywordOverlapThreshold: 0.65
+  similarityThreshold: 0.85
+
+  # NEW: Contrastive ICL 활성화
+  useContrastiveICL: true
+
+  # Contrastive Examples - 정답/오답 쌍
+  contrastiveExamples:
+    positive:
+      - chunk1: "Q3 매출이 15% 증가했습니다"
+        chunk2: "3분기 재무 실적이 예상을 초과했습니다"
+        label: "RELATED"
+        reason: "둘 다 Q3 재무 성과에 대해 논의"
+      - chunk1: "버그 수정: 로그인 오류 해결"
+        chunk2: "인증 시스템 안정성 개선 완료"
+        label: "RELATED"
+        reason: "둘 다 인증/로그인 관련 이슈"
+      - chunk1: "새로운 API 엔드포인트 추가"
+        chunk2: "REST API 문서 업데이트 필요"
+        label: "RELATED"
+        reason: "API 개발과 문서화는 직접 연관됨"
+    negative:
+      - chunk1: "팀 미팅 월요일로 예정"
+        chunk2: "Q4 제품 출시 계획"
+        label: "NOT_RELATED"
+        reason: "다른 주제: 일정 vs 제품 출시"
+      - chunk1: "서버 메모리 사용량 높음"
+        chunk2: "신규 채용 공고 게시"
+        label: "NOT_RELATED"
+        reason: "기술 이슈와 HR은 무관"
+      - chunk1: "고객 피드백 수집 완료"
+        chunk2: "CI/CD 파이프라인 구성"
+        label: "NOT_RELATED"
+        reason: "고객 피드백과 DevOps는 별개"
+
+  # LLM Configuration for ICL
+  llmConfig:
+    model: "gpt-4o-mini"  # Cost-effective for relation inference
+    temperature: 0.1      # Low temperature for consistent judgment
+    maxTokens: 100        # Short response needed
+
+  # Prompt template for Contrastive ICL
+  # Placeholders: {{positiveExamples}}, {{negativeExamples}}, {{chunk1}}, {{chunk2}}
+  promptTemplate: |
+    당신은 두 텍스트 청크 간의 관계를 판단하는 전문가입니다.
+
+    다음 예시들을 참고하세요:
+
+    [관련 있는 예시]
+    {{positiveExamples}}
+
+    [관련 없는 예시]
+    {{negativeExamples}}
+
+    이제 다음 청크들의 관계를 판단하세요:
+    청크 A: "{{chunk1}}"
+    청크 B: "{{chunk2}}"
+
+    응답: RELATED 또는 NOT_RELATED (한 단어로만)
+
+# Validation Configuration
+validation:
+  runOnSave: true
+  autoSaveExperiment: true
+  scenarios:
+    - "normal"
+
+  # Comparison with baseline
+  compareWith: "EXP-001"
+
+  # Expected improvements
+  expectedMetrics:
+    f1_score_min: 0.72     # 최소 72% 기대 (baseline 65.9%에서 +6%)
+    precision_min: 0.60    # 최소 60% 기대 (false positive 감소)
+    recall_min: 0.80       # 최소 80% 유지
+
+# Metadata
+metadata:
+  baseline: false
+  git_commit: null
+  paper_ids:
+    - "003"  # Enhancing RAG: A Study of Best Practices
+
+  # Experiment tracking
+  hypothesis: "Contrastive ICL이 relation inference F1을 12% 이상 향상시킬 것"
+  risks:
+    - "LLM API 비용 증가"
+    - "Latency 증가 (각 쌍마다 API 호출)"
+    - "Example quality에 따른 성능 변동"
+  mitigations:
+    - "gpt-4o-mini로 비용 최소화"
+    - "Batch 처리로 latency 개선"
+    - "Ground truth에서 예시 추출"

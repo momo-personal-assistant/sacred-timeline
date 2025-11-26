@@ -1,0 +1,50 @@
+# Experiment: Enable Semantic Similarity
+# Goal: Test impact of semantic similarity on relation inference
+# Hypothesis: Enabling semantic similarity will improve recall by finding relations
+#            that keyword overlap misses (e.g., "login bug" ≈ "authentication issue")
+
+name: "Enable Semantic Similarity"
+description: "Enable embedding-based semantic similarity for relation inference"
+created_at: "2025-11-24"
+
+# Embedding Configuration (same as baseline)
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+# Chunking Configuration (same as baseline)
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+# Retrieval Configuration (same as baseline)
+retrieval:
+  similarityThreshold: 0.35
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+# Relation Inference Configuration
+# KEY CHANGE: useSemanticSimilarity = true
+relationInference:
+  similarityThreshold: 0.85             # Threshold for semantic similarity
+  keywordOverlapThreshold: 0.65         # Keep same as baseline
+  includeInferred: true
+  useSemanticSimilarity: true           # ← CHANGED: Enable semantic similarity!
+  semanticWeight: 0.7                   # 70% semantic, 30% keyword
+
+# Validation Configuration
+validation:
+  runOnSave: true
+  autoSaveExperiment: true              # ← CHANGED: Auto-save for comparison
+  scenarios:
+    - "normal"
+
+# Metadata
+metadata:
+  baseline: false                       # This is NOT the baseline
+  git_commit: null
+  paper_ids: []
