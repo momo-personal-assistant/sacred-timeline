@@ -482,6 +482,67 @@ interface TeamMemoryMetrics {
 
 ---
 
+## 14. Ground Truth 없는 평가 (POC/프로덕션)
+
+### LLM-as-Judge는 전체 데이터를 읽지 않음
+
+```
+전체 플랫폼 데이터 (100만 건)
+         ↓
+    [Retrieval System]  ← 여기서 99.999% 필터링
+         ↓
+   관련 Chunks (5-10개, ~2000 토큰)
+         ↓
+    [LLM-as-Judge]  ← 이 작은 튜플만 평가
+```
+
+| 평가 입력         | 크기                   |
+| ----------------- | ---------------------- |
+| Query             | 1-2문장                |
+| Retrieved Context | 5-10 청크 (~2000 토큰) |
+| Generated Answer  | 1-5문단                |
+| **총 Judge 입력** | **~3000-5000 토큰**    |
+
+### Ground Truth 없이 사용 가능한 지표
+
+| 지표                  | Ground Truth 필요? | 측정 방법           |
+| --------------------- | ------------------ | ------------------- |
+| **Faithfulness**      | 아니오             | 답변↔컨텍스트 일치 |
+| **Answer Relevancy**  | 아니오             | 질문↔답변 유사도   |
+| **Context Precision** | 예                 | -                   |
+| **Context Recall**    | 예                 | -                   |
+
+### 실제 회사들의 평가 방법
+
+| 회사          | 방법                         | Ground Truth |
+| ------------- | ---------------------------- | ------------ |
+| **Anthropic** | Human Preference + Elo Score | 불필요       |
+| **DeepMind**  | Multi-Judge (3 LLM 투표)     | 불필요       |
+| **DoorDash**  | LLM Guardrail + Judge        | 불필요       |
+
+### POC 평가 실무 가이드
+
+```python
+# 샘플링 기반 평가 (전체 쿼리 평가 불필요)
+evaluation_queries = random.sample(all_queries, n=100)
+
+for query in evaluation_queries:
+    context = retriever.retrieve(query)  # 이미 필터링됨
+    answer = generator.generate(query, context)
+
+    # LLM-as-Judge는 이 작은 튜플만 평가
+    faithfulness = judge.evaluate_faithfulness(answer, context)
+    relevancy = judge.evaluate_relevancy(query, answer)
+```
+
+**출처:**
+
+- [Anthropic - Constitutional AI](https://www.anthropic.com/research/constitutional-ai)
+- [DeepMind - FACTS Grounding](https://arxiv.org/abs/2311.12785)
+- [arXiv - LLM-as-Judge](https://arxiv.org/abs/2306.05685)
+
+---
+
 ## 참고 자료
 
 ### 학술 논문
