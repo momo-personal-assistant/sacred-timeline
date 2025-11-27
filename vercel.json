@@ -1,8 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm --filter @momo/demo build",
+  "buildCommand": "cd apps/demo && pnpm build",
   "devCommand": "cd apps/demo && pnpm dev",
-  "installCommand": "pnpm install",
-  "framework": null,
-  "outputDirectory": "apps/demo/.next"
+  "installCommand": "pnpm install"
 }
