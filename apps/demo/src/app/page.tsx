@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { AppSidebar } from '@/components/app-sidebar';
 import DatabasePanel from '@/components/DatabasePanel';
 import ExperimentDocsPanel from '@/components/ExperimentDocsPanel';
+import MomoDBPanel from '@/components/MomoDBPanel';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 type ExperimentStatus = 'draft' | 'running' | 'completed' | 'failed';
@@ -56,7 +57,7 @@ interface Experiment {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'database' | 'experiment'>('experiment');
+  const [activeTab, setActiveTab] = useState<'database' | 'experiment' | 'momo-db'>('experiment');
   const [selectedExperimentId, setSelectedExperimentId] = useState<number | undefined>();
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [_experimentsLoading, setExperimentsLoading] = useState(false);
@@ -90,11 +91,10 @@ export default function Home() {
       });
   };
 
+  // Fetch experiments on mount (always needed for sidebar)
   useEffect(() => {
-    if (activeTab === 'experiment') {
-      fetchExperiments();
-    }
-  }, [activeTab]);
+    fetchExperiments();
+  }, []);
 
   return (
     <SidebarProvider>
@@ -110,6 +110,8 @@ export default function Home() {
         <div className="flex flex-1 flex-col min-h-0">
           {activeTab === 'database' ? (
             <DatabasePanel />
+          ) : activeTab === 'momo-db' ? (
+            <MomoDBPanel />
           ) : (
             <ExperimentDocsPanel
               selectedExperimentId={selectedExperimentId}

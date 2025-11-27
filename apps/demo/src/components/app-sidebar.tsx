@@ -1,6 +1,6 @@
 'use client';
 
-import { Database, Star } from 'lucide-react';
+import { Brain, Database, Star } from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -27,8 +27,8 @@ interface ExperimentForSidebar {
 }
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  activeTab: 'database' | 'experiment';
-  onTabChange: (tab: 'database' | 'experiment') => void;
+  activeTab: 'database' | 'experiment' | 'momo-db';
+  onTabChange: (tab: 'database' | 'experiment' | 'momo-db') => void;
   experiments?: ExperimentForSidebar[];
   selectedExperimentId?: number;
   onExperimentSelect?: (id: number) => void;
@@ -164,7 +164,7 @@ export function AppSidebar({
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Database Button */}
+        {/* Database Buttons */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -176,6 +176,16 @@ export function AppSidebar({
                 >
                   <Database className="h-4 w-4" />
                   <span>Database</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={activeTab === 'momo-db'}
+                  onClick={() => onTabChange('momo-db')}
+                  tooltip="Momo DB"
+                >
+                  <Brain className="h-4 w-4" />
+                  <span>Momo DB</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
