@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import ActivityFeed from '@/components/ActivityFeed';
 import { AppRightSidebar } from '@/components/app-right-sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
+import BenchmarkDashboard from '@/components/BenchmarkDashboard';
+import DatabasePanel from '@/components/DatabasePanel';
 import ExperimentDocsPanel from '@/components/ExperimentDocsPanel';
 import ExperimentsPanel from '@/components/ExperimentsPanel';
 import QueryPanel from '@/components/QueryPanel';
@@ -59,9 +61,9 @@ interface Experiment {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'query' | 'experiments' | 'activity' | 'reports'>(
-    'experiments'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'query' | 'experiments' | 'activity' | 'reports' | 'benchmark' | 'database'
+  >('experiments');
   const [selectedExperimentId, setSelectedExperimentId] = useState<number | undefined>();
   const [selectedReportId, setSelectedReportId] = useState<number | undefined>();
   const [experiments, setExperiments] = useState<Experiment[]>([]);
@@ -149,6 +151,10 @@ export default function Home() {
                 selectedExperimentId={selectedExperimentId}
                 onExperimentSelect={setSelectedExperimentId}
               />
+            ) : activeTab === 'benchmark' ? (
+              <BenchmarkDashboard />
+            ) : activeTab === 'database' ? (
+              <DatabasePanel />
             ) : activeTab === 'reports' ? (
               <ExperimentDocsPanel
                 selectedExperimentId={selectedReportId}

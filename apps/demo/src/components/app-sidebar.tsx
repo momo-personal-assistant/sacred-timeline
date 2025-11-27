@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  BarChart3,
   BeakerIcon,
   CheckCircle2,
   ChevronRight,
@@ -41,8 +42,10 @@ interface ExperimentForSidebar {
 }
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  activeTab: 'query' | 'experiments' | 'activity' | 'reports';
-  onTabChange: (tab: 'query' | 'experiments' | 'activity' | 'reports') => void;
+  activeTab: 'query' | 'experiments' | 'activity' | 'reports' | 'benchmark' | 'database';
+  onTabChange: (
+    tab: 'query' | 'experiments' | 'activity' | 'reports' | 'benchmark' | 'database'
+  ) => void;
   reportExperiments?: ExperimentForSidebar[];
   selectedReportId?: number;
   onReportSelect?: (id: number) => void;
@@ -53,6 +56,16 @@ const navigationItems = [
     title: 'Experiments',
     value: 'experiments' as const,
     icon: BeakerIcon,
+  },
+  {
+    title: 'Benchmark',
+    value: 'benchmark' as const,
+    icon: BarChart3,
+  },
+  {
+    title: 'Database',
+    value: 'database' as const,
+    icon: Database,
   },
   {
     title: 'Query Interface',
