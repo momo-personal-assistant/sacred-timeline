@@ -93,60 +93,45 @@ function ExperimentCard({
         onClick();
         onTabChange();
       }}
-      className={`w-full max-w-full min-w-0 overflow-hidden text-left px-3 py-2.5 rounded-md transition-colors ${
+      className={`w-full max-w-full min-w-0 text-left px-3 py-2 rounded-md transition-colors ${
         isSelected ? 'bg-accent' : 'hover:bg-accent/50'
       }`}
     >
-      <div className="space-y-1.5 min-w-0 w-full">
+      <div className="space-y-1 min-w-0 w-full overflow-hidden">
         {/* Experiment Name */}
-        <div className="flex items-center gap-2 min-w-0 w-full">
+        <div className="flex items-center gap-2 min-w-0 w-full overflow-hidden">
           <div className="text-sm font-medium truncate flex-1 min-w-0">{experiment.name}</div>
           {experiment.is_baseline && (
             <Star className="h-3 w-3 fill-current text-primary shrink-0" />
           )}
         </div>
 
-        {/* Metadata Row */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground overflow-hidden">
-          <span className="shrink-0">{timeAgo(experiment.created_at)}</span>
-          {status === 'draft' && (
-            <>
-              <span className="shrink-0">•</span>
-              <span className={`${statusColor} shrink-0`}>Draft</span>
-            </>
-          )}
-          {status === 'running' && (
-            <>
-              <span className="shrink-0">•</span>
-              <span className={`${statusColor} shrink-0`}>Running</span>
-            </>
-          )}
-          {status === 'failed' && (
-            <>
-              <span className="shrink-0">•</span>
-              <span className={`${statusColor} shrink-0`}>Failed</span>
-            </>
-          )}
-        </div>
-
-        {/* F1 Score & Delta */}
-        {f1Score && (
-          <div className="flex items-center gap-2 text-xs overflow-hidden">
-            <span className="font-mono text-muted-foreground shrink-0">F1: {f1Score}%</span>
-            {delta !== null && (
-              <span
-                className={`font-mono shrink-0 ${
-                  delta >= 0
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-red-600 dark:text-red-400'
-                }`}
-              >
-                {delta >= 0 ? '+' : ''}
-                {delta.toFixed(1)}%
-              </span>
+        {/* F1 Score, Delta & Time */}
+        <div className="flex items-center justify-between gap-2 text-xs min-w-0 w-full overflow-hidden">
+          <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+            {f1Score && (
+              <>
+                <span className="font-mono text-muted-foreground shrink-0">F1: {f1Score}%</span>
+                {delta !== null && (
+                  <span
+                    className={`font-mono shrink-0 ${
+                      delta >= 0
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    }`}
+                  >
+                    {delta >= 0 ? '+' : ''}
+                    {delta.toFixed(1)}%
+                  </span>
+                )}
+              </>
             )}
+            {status === 'draft' && <span className={`${statusColor} shrink-0`}>Draft</span>}
+            {status === 'running' && <span className={`${statusColor} shrink-0`}>Running</span>}
+            {status === 'failed' && <span className={`${statusColor} shrink-0`}>Failed</span>}
           </div>
-        )}
+          <span className="text-muted-foreground shrink-0">{timeAgo(experiment.created_at)}</span>
+        </div>
       </div>
     </button>
   );
