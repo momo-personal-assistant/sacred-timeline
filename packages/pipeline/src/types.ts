@@ -35,6 +35,9 @@ export interface PipelineConfig {
     includeInferred: boolean;
     useSemanticSimilarity: boolean;
     semanticWeight: number;
+    // EXP-006 Stage 2: Project metadata
+    useProjectMetadata?: boolean;
+    projectWeight?: number;
     useContrastiveICL?: boolean;
   };
 

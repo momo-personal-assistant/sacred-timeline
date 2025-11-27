@@ -58,6 +58,25 @@ interface ZendeskTicket {
   satisfaction_rating?: { score: string; comment: string } | null;
 }
 
+interface SlackThread {
+  id: string;
+  channel: string;
+  channel_name: string;
+  title: string;
+  messages: Array<{
+    ts: string;
+    user: string;
+    text: string;
+    type: string;
+    thread_ts?: string;
+    reply_count?: number;
+    reactions?: Array<{ name: string; count: number; users: string[] }>;
+  }>;
+  participants: Array<{ id: string; displayName: string; email: string }>;
+  created_at: string;
+  updated_at: string;
+}
+
 // Parse command line arguments
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
@@ -93,6 +112,7 @@ async function main() {
   // Check if files exist
   const linearPath = path.join(dataDir, 'linear.json');
   const zendeskPath = path.join(dataDir, 'zendesk.json');
+  const slackPath = path.join(dataDir, 'slack.json');
 
   try {
     await fs.access(linearPath);
@@ -103,14 +123,27 @@ async function main() {
     process.exit(1);
   }
 
+  // Slack is optional (might not exist in older setups)
+  let slackExists = true;
+  try {
+    await fs.access(slackPath);
+  } catch {
+    slackExists = false;
+    console.log('⚠️  Slack sample file not found (optional)');
+  }
+
   // Read JSON files
   console.log('📖 Reading sample data files...');
   const linearData = JSON.parse(await fs.readFile(linearPath, 'utf-8')) as LinearIssue[];
   const zendeskData = JSON.parse(await fs.readFile(zendeskPath, 'utf-8')) as ZendeskTicket[];
+  const slackData = slackExists
+    ? (JSON.parse(await fs.readFile(slackPath, 'utf-8')) as SlackThread[])
+    : [];
 
   console.log(`   Linear issues: ${linearData.length}`);
   console.log(`   Zendesk tickets: ${zendeskData.length}`);
-  console.log(`   Total objects: ${linearData.length + zendeskData.length}\n`);
+  console.log(`   Slack threads: ${slackData.length}`);
+  console.log(`   Total objects: ${linearData.length + zendeskData.length + slackData.length}\n`);
 
   if (dryRun) {
     console.log('✅ DRY RUN: Would process these files');
@@ -253,6 +286,54 @@ async function main() {
     }
 
     console.log(`✅ Inserted ${zendeskData.length} Zendesk tickets\n`);
+
+    // Transform and insert Slack threads
+    if (slackData.length > 0) {
+      console.log('📝 Inserting Slack threads...');
+      insertedCount = 0;
+
+      for (const thread of slackData) {
+        // Use the first message timestamp as part of the ID
+        const threadTs = thread.messages[0]?.ts || thread.id;
+        const canonicalId = createCanonicalId('slack', workspace, 'thread', threadTs);
+
+        // Combine all messages into body
+        const body = thread.messages.map((m) => `[${m.user}]: ${m.text}`).join('\n');
+
+        const canonical = {
+          id: canonicalId,
+          platform: 'slack',
+          object_type: 'thread',
+          title: thread.title,
+          body: body,
+          actors: {
+            created_by: thread.participants[0]?.email || 'unknown',
+            participants: thread.participants.map((p) => p.email),
+          },
+          timestamps: {
+            created_at: thread.created_at,
+            updated_at: thread.updated_at,
+          },
+          relations: {},
+          properties: {
+            channel: thread.channel,
+            channel_name: thread.channel_name,
+            message_count: thread.messages.length,
+            participant_count: thread.participants.length,
+          },
+          visibility: 'team' as const,
+        };
+
+        await db.createCanonicalObject(canonical);
+        insertedCount++;
+
+        if (insertedCount % 10 === 0) {
+          console.log(`   Inserted ${insertedCount}/${slackData.length} threads...`);
+        }
+      }
+
+      console.log(`✅ Inserted ${slackData.length} Slack threads\n`);
+    }
 
     // Final counts
     const afterCounts = await pool.query(`

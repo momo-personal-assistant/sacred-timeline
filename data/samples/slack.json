@@ -1,0 +1,7152 @@
+[
+  {
+    "id": "thread-0001",
+    "channel": "C007",
+    "channel_name": "incidents",
+    "title": "Need help with data export feature",
+    "messages": [
+      {
+        "ts": "1756278755.997759",
+        "user": "user-10",
+        "text": "Need help with data export feature",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 5,
+        "reactions": [],
+        "latest_reply": "1742395817.255194"
+      },
+      {
+        "ts": "1735423026.719894",
+        "user": "user-9",
+        "text": "I think @Xander might know more about this",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 5,
+            "users": ["user-10", "user-9", "user-10", "user-7", "user-15"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 1,
+            "users": ["user-10"]
+          },
+          {
+            "name": "clap",
+            "count": 3,
+            "users": ["user-10", "user-9", "user-10"]
+          }
+        ]
+      },
+      {
+        "ts": "1744291461.312955",
+        "user": "user-7",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 4,
+            "users": ["user-10", "user-9", "user-10", "user-7"]
+          },
+          {
+            "name": "tada",
+            "count": 1,
+            "users": ["user-10"]
+          }
+        ]
+      },
+      {
+        "ts": "1739007954.771841",
+        "user": "user-9",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 2,
+            "users": ["user-10", "user-9"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-10", "user-9"]
+          }
+        ]
+      },
+      {
+        "ts": "1751893116.280415",
+        "user": "user-15",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 4,
+            "users": ["user-10", "user-9", "user-10", "user-7"]
+          },
+          {
+            "name": "tada",
+            "count": 4,
+            "users": ["user-10", "user-9", "user-10", "user-7"]
+          }
+        ]
+      },
+      {
+        "ts": "1739399255.610111",
+        "user": "user-10",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-10"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-10"]
+          },
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-10", "user-9"]
+          }
+        ]
+      },
+      {
+        "ts": "1759711709.395536",
+        "user": "user-9",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": []
+      },
+      {
+        "ts": "1754798099.157574",
+        "user": "user-15",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": []
+      },
+      {
+        "ts": "1756379382.119319",
+        "user": "user-10",
+        "text": "I think @Tina might know more about this",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": []
+      },
+      {
+        "ts": "1737867291.406066",
+        "user": "user-10",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": []
+      },
+      {
+        "ts": "1749204134.618071",
+        "user": "user-10",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 3,
+            "users": ["user-10", "user-9", "user-10"]
+          }
+        ]
+      },
+      {
+        "ts": "1742395817.255194",
+        "user": "user-15",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1756278755.997759",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 3,
+            "users": ["user-10", "user-9", "user-10"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      }
+    ],
+    "created_at": "2025-10-10T15:49:45.656Z",
+    "updated_at": "2025-11-25T18:42:42.126Z"
+  },
+  {
+    "id": "thread-0002",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "Can someone review API rate limiting?",
+    "messages": [
+      {
+        "ts": "1740295861.105251",
+        "user": "user-17",
+        "text": "Can someone review API rate limiting?",
+        "type": "message",
+        "reply_count": 3,
+        "reply_users_count": 3,
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-17", "user-13"]
+          },
+          {
+            "name": "eyes",
+            "count": 2,
+            "users": ["user-17", "user-13"]
+          }
+        ],
+        "latest_reply": "1747938996.155749"
+      },
+      {
+        "ts": "1750386951.690233",
+        "user": "user-13",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1740295861.105251",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 1,
+            "users": ["user-17"]
+          }
+        ]
+      },
+      {
+        "ts": "1737692140.108486",
+        "user": "user-17",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1740295861.105251",
+        "reactions": []
+      },
+      {
+        "ts": "1747938996.155749",
+        "user": "user-13",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1740295861.105251",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 1,
+            "users": ["user-17"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      }
+    ],
+    "created_at": "2025-11-10T20:58:29.353Z",
+    "updated_at": "2025-11-01T11:41:06.597Z"
+  },
+  {
+    "id": "thread-0003",
+    "channel": "C002",
+    "channel_name": "engineering",
+    "title": "Need help with search functionality",
+    "messages": [
+      {
+        "ts": "1762473446.421256",
+        "user": "user-15",
+        "text": "Need help with search functionality",
+        "type": "message",
+        "reply_count": 4,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1755180215.187245"
+      },
+      {
+        "ts": "1744897386.239350",
+        "user": "user-15",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1762473446.421256",
+        "reactions": []
+      },
+      {
+        "ts": "1760823649.194474",
+        "user": "user-19",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1762473446.421256",
+        "reactions": []
+      },
+      {
+        "ts": "1745471326.469672",
+        "user": "user-15",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1762473446.421256",
+        "reactions": []
+      },
+      {
+        "ts": "1755180215.187245",
+        "user": "user-19",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1762473446.421256",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      }
+    ],
+    "created_at": "2025-07-29T14:50:15.101Z",
+    "updated_at": "2025-11-26T05:44:01.583Z"
+  },
+  {
+    "id": "thread-0004",
+    "channel": "C005",
+    "channel_name": "design",
+    "title": "Bug report: deployment pipeline",
+    "messages": [
+      {
+        "ts": "1743423802.252006",
+        "user": "user-8",
+        "text": "Bug report: deployment pipeline",
+        "type": "message",
+        "reply_count": 8,
+        "reply_users_count": 2,
+        "reactions": [],
+        "latest_reply": "1749274149.207569"
+      },
+      {
+        "ts": "1737799486.411180",
+        "user": "user-13",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1743423802.252006",
+        "reactions": []
+      },
+      {
+        "ts": "1758380727.715957",
+        "user": "user-13",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1743423802.252006",
+        "reactions": []
+      },
+      {
+        "ts": "1751383896.875271",
+        "user": "user-13",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1743423802.252006",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 3,
+            "users": ["user-8", "user-13", "user-19"]
+          },
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-8", "user-13"]
+          },
+          {
+            "name": "clap",
+            "count": 2,
+            "users": ["user-8", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1761708404.454383",
+        "user": "user-13",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1743423802.252006",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 2,
+            "users": ["user-8", "user-13"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 1,
+            "users": ["user-8"]
+          },
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-8"]
+          }
+        ]
+      },
+      {
+        "ts": "1742964064.896983",
+        "user": "user-8",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1743423802.252006",
+        "reactions": [
+          {
+            "name": "eyes",
+            "count": 2,
+            "users": ["user-8", "user-13"]
+          },
+          {
+            "name": "eyes",
+            "count": 2,
+            "users": ["user-8", "user-13"]
+          },
+          {
+            "name": "warning",
+            "count": 2,
+            "users": ["user-8", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1748677056.416723",
+        "user": "user-8",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1743423802.252006",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 3,
+            "users": ["user-8", "user-13", "user-19"]
+          }
+        ]
+      },
+      {
+        "ts": "1744522164.698269",
+        "user": "user-8",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1743423802.252006",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-8", "user-13"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 1,
+            "users": ["user-8"]
+          },
+          {
+            "name": "pray",
+            "count": 3,
+            "users": ["user-8", "user-13", "user-19"]
+          }
+        ]
+      },
+      {
+        "ts": "1749274149.207569",
+        "user": "user-8",
+        "text": "cc @Uma @Kate",
+        "type": "message",
+        "thread_ts": "1743423802.252006",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      }
+    ],
+    "created_at": "2025-07-01T19:02:54.774Z",
+    "updated_at": "2025-11-08T16:13:32.963Z"
+  },
+  {
+    "id": "thread-0005",
+    "channel": "C006",
+    "channel_name": "devops",
+    "title": "Hey team, we need to discuss webhook handlers",
+    "messages": [
+      {
+        "ts": "1745284860.172344",
+        "user": "user-16",
+        "text": "Hey team, we need to discuss webhook handlers",
+        "type": "message",
+        "reply_count": 5,
+        "reply_users_count": 5,
+        "reactions": [],
+        "latest_reply": "1748687394.188461"
+      },
+      {
+        "ts": "1754999175.290357",
+        "user": "user-16",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1745284860.172344",
+        "reactions": []
+      },
+      {
+        "ts": "1740849651.548257",
+        "user": "user-15",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1745284860.172344",
+        "reactions": []
+      },
+      {
+        "ts": "1742846726.619088",
+        "user": "user-17",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1745284860.172344",
+        "reactions": []
+      },
+      {
+        "ts": "1746433471.717116",
+        "user": "user-16",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1745284860.172344",
+        "reactions": []
+      },
+      {
+        "ts": "1748687394.188461",
+        "user": "user-17",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1745284860.172344",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      }
+    ],
+    "created_at": "2025-07-28T07:43:12.586Z",
+    "updated_at": "2025-11-25T08:36:04.918Z"
+  },
+  {
+    "id": "thread-0006",
+    "channel": "C002",
+    "channel_name": "engineering",
+    "title": "Need help with database migration",
+    "messages": [
+      {
+        "ts": "1761504100.286870",
+        "user": "user-18",
+        "text": "Need help with database migration",
+        "type": "message",
+        "reply_count": 14,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1743407380.704390"
+      },
+      {
+        "ts": "1750511502.325029",
+        "user": "user-18",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": []
+      },
+      {
+        "ts": "1744292868.689825",
+        "user": "user-14",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          }
+        ]
+      },
+      {
+        "ts": "1756778725.174631",
+        "user": "user-18",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "clap",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "eyes",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          }
+        ]
+      },
+      {
+        "ts": "1756414461.210586",
+        "user": "user-14",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": []
+      },
+      {
+        "ts": "1739304794.830251",
+        "user": "user-18",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": []
+      },
+      {
+        "ts": "1756014845.435352",
+        "user": "user-18",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          }
+        ]
+      },
+      {
+        "ts": "1740899928.999881",
+        "user": "user-14",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": []
+      },
+      {
+        "ts": "1745044546.353331",
+        "user": "user-18",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": []
+      },
+      {
+        "ts": "1749910354.651645",
+        "user": "user-18",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "warning",
+            "count": 1,
+            "users": ["user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1759339672.571310",
+        "user": "user-18",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "white_check_mark",
+            "count": 1,
+            "users": ["user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1760973426.689316",
+        "user": "user-18",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 1,
+            "users": ["user-18"]
+          },
+          {
+            "name": "warning",
+            "count": 2,
+            "users": ["user-18", "user-14"]
+          },
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1763169359.964810",
+        "user": "user-14",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": []
+      },
+      {
+        "ts": "1756179904.870844",
+        "user": "user-18",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": []
+      },
+      {
+        "ts": "1743407380.704390",
+        "user": "user-18",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1761504100.286870",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      }
+    ],
+    "created_at": "2025-09-10T01:10:58.370Z",
+    "updated_at": "2025-11-15T17:50:17.549Z"
+  },
+  {
+    "id": "thread-0007",
+    "channel": "C004",
+    "channel_name": "product",
+    "title": "Update on notification system",
+    "messages": [
+      {
+        "ts": "1738679204.193434",
+        "user": "user-12",
+        "text": "Update on notification system",
+        "type": "message",
+        "reply_count": 1,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1761668467.115478"
+      },
+      {
+        "ts": "1761668467.115478",
+        "user": "user-12",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1738679204.193434",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 4,
+            "users": ["user-12", "user-3", "user-1", "user-15"]
+          },
+          {
+            "name": "+1",
+            "count": 4,
+            "users": ["user-12", "user-3", "user-1", "user-15"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-2",
+        "displayName": "David Gonzalez",
+        "email": "jack.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=2"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      }
+    ],
+    "created_at": "2025-08-02T19:12:10.306Z",
+    "updated_at": "2025-11-05T00:55:23.997Z"
+  },
+  {
+    "id": "thread-0008",
+    "channel": "C003",
+    "channel_name": "support",
+    "title": "Update on session management",
+    "messages": [
+      {
+        "ts": "1746847922.213652",
+        "user": "user-7",
+        "text": "Update on session management",
+        "type": "message",
+        "reply_count": 8,
+        "reply_users_count": 4,
+        "reactions": [],
+        "latest_reply": "1750829497.115847"
+      },
+      {
+        "ts": "1755908889.763705",
+        "user": "user-1",
+        "text": "cc @Iris @Peter",
+        "type": "message",
+        "thread_ts": "1746847922.213652",
+        "reactions": []
+      },
+      {
+        "ts": "1753093507.601838",
+        "user": "user-1",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1746847922.213652",
+        "reactions": []
+      },
+      {
+        "ts": "1740398378.136057",
+        "user": "user-1",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1746847922.213652",
+        "reactions": []
+      },
+      {
+        "ts": "1749901102.465847",
+        "user": "user-15",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1746847922.213652",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 4,
+            "users": ["user-7", "user-6", "user-1", "user-7"]
+          },
+          {
+            "name": "+1",
+            "count": 5,
+            "users": ["user-7", "user-6", "user-1", "user-7", "user-15"]
+          }
+        ]
+      },
+      {
+        "ts": "1762710003.299378",
+        "user": "user-15",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1746847922.213652",
+        "reactions": []
+      },
+      {
+        "ts": "1740800691.114027",
+        "user": "user-7",
+        "text": "cc @Peter @Peter",
+        "type": "message",
+        "thread_ts": "1746847922.213652",
+        "reactions": []
+      },
+      {
+        "ts": "1763020556.645345",
+        "user": "user-6",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1746847922.213652",
+        "reactions": []
+      },
+      {
+        "ts": "1750829497.115847",
+        "user": "user-7",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1746847922.213652",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-7"]
+          },
+          {
+            "name": "clap",
+            "count": 2,
+            "users": ["user-7", "user-6"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      }
+    ],
+    "created_at": "2025-06-24T07:04:48.191Z",
+    "updated_at": "2025-10-31T02:30:54.211Z"
+  },
+  {
+    "id": "thread-0009",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "Hey team, we need to discuss webhook handlers",
+    "messages": [
+      {
+        "ts": "1734762439.107456",
+        "user": "user-12",
+        "text": "Hey team, we need to discuss webhook handlers",
+        "type": "message",
+        "reply_count": 5,
+        "reply_users_count": 2,
+        "reactions": [],
+        "latest_reply": "1755609462.781692"
+      },
+      {
+        "ts": "1746063830.737107",
+        "user": "user-6",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1734762439.107456",
+        "reactions": []
+      },
+      {
+        "ts": "1733454031.517902",
+        "user": "user-15",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1734762439.107456",
+        "reactions": []
+      },
+      {
+        "ts": "1737291551.461864",
+        "user": "user-6",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1734762439.107456",
+        "reactions": []
+      },
+      {
+        "ts": "1753665107.851689",
+        "user": "user-6",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1734762439.107456",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 3,
+            "users": ["user-12", "user-15", "user-6"]
+          },
+          {
+            "name": "rocket",
+            "count": 3,
+            "users": ["user-12", "user-15", "user-6"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 1,
+            "users": ["user-12"]
+          }
+        ]
+      },
+      {
+        "ts": "1755609462.781692",
+        "user": "user-15",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1734762439.107456",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      }
+    ],
+    "created_at": "2025-07-22T23:57:26.114Z",
+    "updated_at": "2025-11-20T09:20:06.433Z"
+  },
+  {
+    "id": "thread-0010",
+    "channel": "C004",
+    "channel_name": "product",
+    "title": "Has anyone encountered issues with file upload limits?",
+    "messages": [
+      {
+        "ts": "1763911962.777305",
+        "user": "user-14",
+        "text": "Has anyone encountered issues with file upload limits?",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 2,
+        "reactions": [],
+        "latest_reply": "1754472232.859851"
+      },
+      {
+        "ts": "1752048869.621570",
+        "user": "user-16",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 2,
+            "users": ["user-14", "user-1"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-14"]
+          },
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-14", "user-1"]
+          }
+        ]
+      },
+      {
+        "ts": "1762136257.515141",
+        "user": "user-1",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": []
+      },
+      {
+        "ts": "1745408833.802609",
+        "user": "user-1",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 3,
+            "users": ["user-14", "user-1", "user-16"]
+          },
+          {
+            "name": "eyes",
+            "count": 3,
+            "users": ["user-14", "user-1", "user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1753134979.775158",
+        "user": "user-1",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": []
+      },
+      {
+        "ts": "1744791922.615247",
+        "user": "user-1",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 1,
+            "users": ["user-14"]
+          }
+        ]
+      },
+      {
+        "ts": "1754458195.860668",
+        "user": "user-14",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": []
+      },
+      {
+        "ts": "1752974755.341272",
+        "user": "user-1",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 3,
+            "users": ["user-14", "user-1", "user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1756958895.341470",
+        "user": "user-16",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": [
+          {
+            "name": "eyes",
+            "count": 1,
+            "users": ["user-14"]
+          },
+          {
+            "name": "+1",
+            "count": 2,
+            "users": ["user-14", "user-1"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 1,
+            "users": ["user-14"]
+          }
+        ]
+      },
+      {
+        "ts": "1747399480.292158",
+        "user": "user-16",
+        "text": "cc @Bob @Tina",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 3,
+            "users": ["user-14", "user-1", "user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1760263536.958480",
+        "user": "user-14",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-14", "user-1"]
+          },
+          {
+            "name": "heart",
+            "count": 3,
+            "users": ["user-14", "user-1", "user-16"]
+          },
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-14"]
+          }
+        ]
+      },
+      {
+        "ts": "1754472232.859851",
+        "user": "user-14",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1763911962.777305",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 3,
+            "users": ["user-14", "user-1", "user-16"]
+          },
+          {
+            "name": "pray",
+            "count": 3,
+            "users": ["user-14", "user-1", "user-16"]
+          },
+          {
+            "name": "+1",
+            "count": 3,
+            "users": ["user-14", "user-1", "user-16"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      }
+    ],
+    "created_at": "2025-11-16T23:40:40.394Z",
+    "updated_at": "2025-11-14T15:13:41.658Z"
+  },
+  {
+    "id": "thread-0011",
+    "channel": "C004",
+    "channel_name": "product",
+    "title": "Feature request from customer: data export feature",
+    "messages": [
+      {
+        "ts": "1756350394.813256",
+        "user": "user-18",
+        "text": "Feature request from customer: data export feature",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 4,
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 5,
+            "users": ["user-18", "user-7", "user-12", "user-18", "user-8"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 5,
+            "users": ["user-18", "user-7", "user-12", "user-18", "user-8"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 3,
+            "users": ["user-18", "user-7", "user-12"]
+          }
+        ],
+        "latest_reply": "1743478582.500516"
+      },
+      {
+        "ts": "1755447049.285665",
+        "user": "user-8",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 4,
+            "users": ["user-18", "user-7", "user-12", "user-18"]
+          },
+          {
+            "name": "warning",
+            "count": 2,
+            "users": ["user-18", "user-7"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 5,
+            "users": ["user-18", "user-7", "user-12", "user-18", "user-8"]
+          }
+        ]
+      },
+      {
+        "ts": "1733941554.188056",
+        "user": "user-7",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": []
+      },
+      {
+        "ts": "1737029722.672334",
+        "user": "user-8",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": []
+      },
+      {
+        "ts": "1740109235.922315",
+        "user": "user-12",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": []
+      },
+      {
+        "ts": "1735326802.648166",
+        "user": "user-8",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": []
+      },
+      {
+        "ts": "1746292361.526965",
+        "user": "user-12",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": []
+      },
+      {
+        "ts": "1756102349.268166",
+        "user": "user-18",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": []
+      },
+      {
+        "ts": "1735193815.856144",
+        "user": "user-8",
+        "text": "cc @Kate @Frank",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": []
+      },
+      {
+        "ts": "1744272637.433231",
+        "user": "user-18",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 1,
+            "users": ["user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1737146000.282847",
+        "user": "user-18",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 3,
+            "users": ["user-18", "user-7", "user-12"]
+          },
+          {
+            "name": "white_check_mark",
+            "count": 5,
+            "users": ["user-18", "user-7", "user-12", "user-18", "user-8"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 3,
+            "users": ["user-18", "user-7", "user-12"]
+          }
+        ]
+      },
+      {
+        "ts": "1743478582.500516",
+        "user": "user-12",
+        "text": "cc @Kate @Carol",
+        "type": "message",
+        "thread_ts": "1756350394.813256",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      }
+    ],
+    "created_at": "2025-09-04T12:04:58.528Z",
+    "updated_at": "2025-11-08T18:36:48.964Z"
+  },
+  {
+    "id": "thread-0012",
+    "channel": "C003",
+    "channel_name": "support",
+    "title": "Update on webhook handlers",
+    "messages": [
+      {
+        "ts": "1734398134.369730",
+        "user": "user-7",
+        "text": "Update on webhook handlers",
+        "type": "message",
+        "reply_count": 12,
+        "reply_users_count": 4,
+        "reactions": [],
+        "latest_reply": "1750512005.255504"
+      },
+      {
+        "ts": "1741486917.856523",
+        "user": "user-7",
+        "text": "I think @Bob might know more about this",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": []
+      },
+      {
+        "ts": "1760302724.433855",
+        "user": "user-16",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": []
+      },
+      {
+        "ts": "1750484002.752443",
+        "user": "user-7",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": [
+          {
+            "name": "eyes",
+            "count": 4,
+            "users": ["user-7", "user-18", "user-16", "user-5"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 4,
+            "users": ["user-7", "user-18", "user-16", "user-5"]
+          }
+        ]
+      },
+      {
+        "ts": "1744633753.815362",
+        "user": "user-16",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-7", "user-18"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 3,
+            "users": ["user-7", "user-18", "user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1745185794.685001",
+        "user": "user-7",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": []
+      },
+      {
+        "ts": "1758131709.752281",
+        "user": "user-7",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": []
+      },
+      {
+        "ts": "1756114578.783333",
+        "user": "user-18",
+        "text": "I think @Quinn might know more about this",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": []
+      },
+      {
+        "ts": "1760140708.410703",
+        "user": "user-7",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 2,
+            "users": ["user-7", "user-18"]
+          },
+          {
+            "name": "white_check_mark",
+            "count": 2,
+            "users": ["user-7", "user-18"]
+          },
+          {
+            "name": "clap",
+            "count": 4,
+            "users": ["user-7", "user-18", "user-16", "user-5"]
+          }
+        ]
+      },
+      {
+        "ts": "1761245958.608832",
+        "user": "user-18",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 2,
+            "users": ["user-7", "user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1738899784.644447",
+        "user": "user-16",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 2,
+            "users": ["user-7", "user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1759025450.283953",
+        "user": "user-5",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 4,
+            "users": ["user-7", "user-18", "user-16", "user-5"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 1,
+            "users": ["user-7"]
+          }
+        ]
+      },
+      {
+        "ts": "1750512005.255504",
+        "user": "user-5",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1734398134.369730",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      }
+    ],
+    "created_at": "2025-06-23T08:00:46.019Z",
+    "updated_at": "2025-11-01T05:42:53.032Z"
+  },
+  {
+    "id": "thread-0013",
+    "channel": "C006",
+    "channel_name": "devops",
+    "title": "Feature request from customer: webhook handlers",
+    "messages": [
+      {
+        "ts": "1757097455.671452",
+        "user": "user-10",
+        "text": "Feature request from customer: webhook handlers",
+        "type": "message",
+        "reply_count": 2,
+        "reply_users_count": 2,
+        "reactions": [],
+        "latest_reply": "1759958959.809618"
+      },
+      {
+        "ts": "1758077354.354830",
+        "user": "user-15",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1757097455.671452",
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 3,
+            "users": ["user-10", "user-9", "user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1759958959.809618",
+        "user": "user-1",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1757097455.671452",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      }
+    ],
+    "created_at": "2025-07-30T01:58:20.638Z",
+    "updated_at": "2025-11-08T00:12:54.809Z"
+  },
+  {
+    "id": "thread-0014",
+    "channel": "C005",
+    "channel_name": "design",
+    "title": "Hey team, we need to discuss search functionality",
+    "messages": [
+      {
+        "ts": "1734177976.673368",
+        "user": "user-20",
+        "text": "Hey team, we need to discuss search functionality",
+        "type": "message",
+        "reply_count": 13,
+        "reply_users_count": 2,
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 3,
+            "users": ["user-20", "user-2", "user-5"]
+          }
+        ],
+        "latest_reply": "1763579091.204314"
+      },
+      {
+        "ts": "1735543485.870643",
+        "user": "user-20",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1741173112.137960",
+        "user": "user-5",
+        "text": "I think @Olivia might know more about this",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1738373136.910978",
+        "user": "user-20",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1747938830.763009",
+        "user": "user-5",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1762271644.561547",
+        "user": "user-20",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1752300823.879452",
+        "user": "user-5",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1739057974.307490",
+        "user": "user-20",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-20", "user-2"]
+          },
+          {
+            "name": "eyes",
+            "count": 1,
+            "users": ["user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1740855330.935983",
+        "user": "user-2",
+        "text": "cc @Olivia @David",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1759301958.441895",
+        "user": "user-5",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1758550662.217732",
+        "user": "user-20",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1746888685.659893",
+        "user": "user-20",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1751895745.789387",
+        "user": "user-5",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      },
+      {
+        "ts": "1763579091.204314",
+        "user": "user-20",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1734177976.673368",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-2",
+        "displayName": "David Gonzalez",
+        "email": "jack.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=2"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      }
+    ],
+    "created_at": "2025-09-09T04:50:55.561Z",
+    "updated_at": "2025-11-06T11:48:05.542Z"
+  },
+  {
+    "id": "thread-0015",
+    "channel": "C002",
+    "channel_name": "engineering",
+    "title": "Hey team, we need to discuss deployment pipeline",
+    "messages": [
+      {
+        "ts": "1756571427.449523",
+        "user": "user-5",
+        "text": "Hey team, we need to discuss deployment pipeline",
+        "type": "message",
+        "reply_count": 5,
+        "reply_users_count": 3,
+        "reactions": [],
+        "latest_reply": "1756514354.420406"
+      },
+      {
+        "ts": "1747543212.888223",
+        "user": "user-7",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1756571427.449523",
+        "reactions": []
+      },
+      {
+        "ts": "1744917230.605276",
+        "user": "user-5",
+        "text": "I think @Iris might know more about this",
+        "type": "message",
+        "thread_ts": "1756571427.449523",
+        "reactions": []
+      },
+      {
+        "ts": "1756404620.648929",
+        "user": "user-1",
+        "text": "I think @Peter might know more about this",
+        "type": "message",
+        "thread_ts": "1756571427.449523",
+        "reactions": []
+      },
+      {
+        "ts": "1741357045.136683",
+        "user": "user-7",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1756571427.449523",
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 4,
+            "users": ["user-5", "user-7", "user-1", "user-7"]
+          }
+        ]
+      },
+      {
+        "ts": "1756514354.420406",
+        "user": "user-5",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1756571427.449523",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      }
+    ],
+    "created_at": "2025-11-02T02:36:42.466Z",
+    "updated_at": "2025-11-23T13:11:25.590Z"
+  },
+  {
+    "id": "thread-0016",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "Feature request from customer: the new authentication flow",
+    "messages": [
+      {
+        "ts": "1750370737.824978",
+        "user": "user-16",
+        "text": "Feature request from customer: the new authentication flow",
+        "type": "message",
+        "reply_count": 10,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1746357273.672772"
+      },
+      {
+        "ts": "1745807930.441056",
+        "user": "user-16",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": []
+      },
+      {
+        "ts": "1761019490.504467",
+        "user": "user-13",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": []
+      },
+      {
+        "ts": "1748132644.616577",
+        "user": "user-16",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 2,
+            "users": ["user-16", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1757104372.654284",
+        "user": "user-16",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 1,
+            "users": ["user-16"]
+          },
+          {
+            "name": "heart",
+            "count": 2,
+            "users": ["user-16", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1757585683.887136",
+        "user": "user-13",
+        "text": "I think @Bob might know more about this",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1734763504.172309",
+        "user": "user-16",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": []
+      },
+      {
+        "ts": "1753701998.464947",
+        "user": "user-13",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 1,
+            "users": ["user-16"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-16"]
+          },
+          {
+            "name": "rocket",
+            "count": 2,
+            "users": ["user-16", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1762243130.842280",
+        "user": "user-16",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": []
+      },
+      {
+        "ts": "1757946187.974736",
+        "user": "user-13",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 1,
+            "users": ["user-16"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-16", "user-13"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1746357273.672772",
+        "user": "user-16",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1750370737.824978",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      }
+    ],
+    "created_at": "2025-08-24T17:21:01.407Z",
+    "updated_at": "2025-11-03T13:29:46.317Z"
+  },
+  {
+    "id": "thread-0017",
+    "channel": "C003",
+    "channel_name": "support",
+    "title": "Can someone review search functionality?",
+    "messages": [
+      {
+        "ts": "1734503200.609074",
+        "user": "user-3",
+        "text": "Can someone review search functionality?",
+        "type": "message",
+        "reply_count": 2,
+        "reply_users_count": 2,
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 1,
+            "users": ["user-3"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 4,
+            "users": ["user-3", "user-19", "user-18", "user-9"]
+          }
+        ],
+        "latest_reply": "1745675175.784879"
+      },
+      {
+        "ts": "1756984988.699374",
+        "user": "user-19",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1734503200.609074",
+        "reactions": []
+      },
+      {
+        "ts": "1745675175.784879",
+        "user": "user-19",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1734503200.609074",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      }
+    ],
+    "created_at": "2025-06-08T13:27:32.245Z",
+    "updated_at": "2025-11-03T20:49:25.562Z"
+  },
+  {
+    "id": "thread-0018",
+    "channel": "C006",
+    "channel_name": "devops",
+    "title": "Need help with API rate limiting",
+    "messages": [
+      {
+        "ts": "1753708291.832498",
+        "user": "user-8",
+        "text": "Need help with API rate limiting",
+        "type": "message",
+        "reply_count": 7,
+        "reply_users_count": 6,
+        "reactions": [],
+        "latest_reply": "1748079851.791371"
+      },
+      {
+        "ts": "1732676363.542574",
+        "user": "user-11",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1753708291.832498",
+        "reactions": []
+      },
+      {
+        "ts": "1744604650.691591",
+        "user": "user-11",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1753708291.832498",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 1,
+            "users": ["user-8"]
+          },
+          {
+            "name": "+1",
+            "count": 1,
+            "users": ["user-8"]
+          },
+          {
+            "name": "warning",
+            "count": 2,
+            "users": ["user-8", "user-11"]
+          }
+        ]
+      },
+      {
+        "ts": "1733316440.711922",
+        "user": "user-10",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1753708291.832498",
+        "reactions": []
+      },
+      {
+        "ts": "1751464156.233996",
+        "user": "user-8",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1753708291.832498",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 2,
+            "users": ["user-8", "user-11"]
+          },
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-8", "user-11"]
+          },
+          {
+            "name": "eyes",
+            "count": 4,
+            "users": ["user-8", "user-11", "user-9", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1746710485.450270",
+        "user": "user-10",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1753708291.832498",
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 5,
+            "users": ["user-8", "user-11", "user-9", "user-6", "user-13"]
+          },
+          {
+            "name": "eyes",
+            "count": 5,
+            "users": ["user-8", "user-11", "user-9", "user-6", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1743176313.439295",
+        "user": "user-8",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1753708291.832498",
+        "reactions": []
+      },
+      {
+        "ts": "1748079851.791371",
+        "user": "user-6",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1753708291.832498",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 5,
+            "users": ["user-8", "user-11", "user-9", "user-6", "user-13"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 5,
+            "users": ["user-8", "user-11", "user-9", "user-6", "user-13"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      }
+    ],
+    "created_at": "2025-11-14T23:31:59.005Z",
+    "updated_at": "2025-11-02T22:52:13.989Z"
+  },
+  {
+    "id": "thread-0019",
+    "channel": "C005",
+    "channel_name": "design",
+    "title": "Quick question about user permissions",
+    "messages": [
+      {
+        "ts": "1740405494.849386",
+        "user": "user-9",
+        "text": "Quick question about user permissions",
+        "type": "message",
+        "reply_count": 9,
+        "reply_users_count": 1,
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 1,
+            "users": ["user-9"]
+          },
+          {
+            "name": "eyes",
+            "count": 2,
+            "users": ["user-9", "user-10"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-9", "user-10"]
+          }
+        ],
+        "latest_reply": "1739591265.799032"
+      },
+      {
+        "ts": "1752774301.349482",
+        "user": "user-9",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 1,
+            "users": ["user-9"]
+          },
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-9", "user-10"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 2,
+            "users": ["user-9", "user-10"]
+          }
+        ]
+      },
+      {
+        "ts": "1747347745.373458",
+        "user": "user-9",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-9", "user-10"]
+          }
+        ]
+      },
+      {
+        "ts": "1762226400.598805",
+        "user": "user-9",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-9"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-9", "user-10"]
+          }
+        ]
+      },
+      {
+        "ts": "1733712141.704624",
+        "user": "user-9",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": []
+      },
+      {
+        "ts": "1762859234.748462",
+        "user": "user-10",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": []
+      },
+      {
+        "ts": "1736945668.677100",
+        "user": "user-10",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": []
+      },
+      {
+        "ts": "1754336972.640257",
+        "user": "user-9",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-9", "user-10"]
+          }
+        ]
+      },
+      {
+        "ts": "1741557440.395279",
+        "user": "user-10",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 2,
+            "users": ["user-9", "user-10"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-9"]
+          }
+        ]
+      },
+      {
+        "ts": "1739591265.799032",
+        "user": "user-9",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1740405494.849386",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      }
+    ],
+    "created_at": "2025-07-19T17:18:12.991Z",
+    "updated_at": "2025-11-19T01:20:36.948Z"
+  },
+  {
+    "id": "thread-0020",
+    "channel": "C006",
+    "channel_name": "devops",
+    "title": "Heads up - session management might be affected",
+    "messages": [
+      {
+        "ts": "1756363829.630097",
+        "user": "user-19",
+        "text": "Heads up - session management might be affected",
+        "type": "message",
+        "reply_count": 6,
+        "reply_users_count": 6,
+        "reactions": [],
+        "latest_reply": "1752493846.104372"
+      },
+      {
+        "ts": "1737598168.764245",
+        "user": "user-18",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1756363829.630097",
+        "reactions": []
+      },
+      {
+        "ts": "1733819711.346224",
+        "user": "user-5",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1756363829.630097",
+        "reactions": []
+      },
+      {
+        "ts": "1756981307.809681",
+        "user": "user-12",
+        "text": "I think @Tina might know more about this",
+        "type": "message",
+        "thread_ts": "1756363829.630097",
+        "reactions": []
+      },
+      {
+        "ts": "1741195885.890024",
+        "user": "user-18",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1756363829.630097",
+        "reactions": []
+      },
+      {
+        "ts": "1743253446.773843",
+        "user": "user-18",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1756363829.630097",
+        "reactions": []
+      },
+      {
+        "ts": "1752493846.104372",
+        "user": "user-12",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1756363829.630097",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-4",
+        "displayName": "Tina Jackson",
+        "email": "rachel.garcia@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=4"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      }
+    ],
+    "created_at": "2025-09-01T02:06:59.724Z",
+    "updated_at": "2025-11-12T00:22:27.961Z"
+  },
+  {
+    "id": "thread-0021",
+    "channel": "C007",
+    "channel_name": "incidents",
+    "title": "FYI: session management is now available",
+    "messages": [
+      {
+        "ts": "1756378489.152350",
+        "user": "user-4",
+        "text": "FYI: session management is now available",
+        "type": "message",
+        "reply_count": 9,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1742362973.797862"
+      },
+      {
+        "ts": "1739618788.272985",
+        "user": "user-4",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-4", "user-1"]
+          },
+          {
+            "name": "rocket",
+            "count": 1,
+            "users": ["user-4"]
+          }
+        ]
+      },
+      {
+        "ts": "1753311180.481661",
+        "user": "user-4",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-4", "user-1"]
+          }
+        ]
+      },
+      {
+        "ts": "1746298462.379304",
+        "user": "user-4",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": []
+      },
+      {
+        "ts": "1757809912.569204",
+        "user": "user-4",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": []
+      },
+      {
+        "ts": "1752912031.984592",
+        "user": "user-1",
+        "text": "I think @Tina might know more about this",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 1,
+            "users": ["user-4"]
+          }
+        ]
+      },
+      {
+        "ts": "1761627280.319998",
+        "user": "user-4",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": []
+      },
+      {
+        "ts": "1744211582.379990",
+        "user": "user-4",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": []
+      },
+      {
+        "ts": "1755174662.269669",
+        "user": "user-1",
+        "text": "I think @Iris might know more about this",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 1,
+            "users": ["user-4"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 1,
+            "users": ["user-4"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-4", "user-1"]
+          }
+        ]
+      },
+      {
+        "ts": "1742362973.797862",
+        "user": "user-4",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1756378489.152350",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-4",
+        "displayName": "Tina Jackson",
+        "email": "rachel.garcia@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=4"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      }
+    ],
+    "created_at": "2025-09-06T14:12:34.839Z",
+    "updated_at": "2025-11-26T22:00:05.600Z"
+  },
+  {
+    "id": "thread-0022",
+    "channel": "C004",
+    "channel_name": "product",
+    "title": "Heads up - session management might be affected",
+    "messages": [
+      {
+        "ts": "1742635598.950974",
+        "user": "user-7",
+        "text": "Heads up - session management might be affected",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 5,
+        "reactions": [],
+        "latest_reply": "1763887709.152222"
+      },
+      {
+        "ts": "1734235637.899752",
+        "user": "user-11",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 5,
+            "users": ["user-7", "user-5", "user-20", "user-8", "user-17"]
+          },
+          {
+            "name": "+1",
+            "count": 5,
+            "users": ["user-7", "user-5", "user-20", "user-8", "user-17"]
+          }
+        ]
+      },
+      {
+        "ts": "1753161726.302328",
+        "user": "user-8",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": []
+      },
+      {
+        "ts": "1738515268.863764",
+        "user": "user-8",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": []
+      },
+      {
+        "ts": "1749494536.255000",
+        "user": "user-8",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": []
+      },
+      {
+        "ts": "1746805161.363117",
+        "user": "user-17",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": []
+      },
+      {
+        "ts": "1733778452.818049",
+        "user": "user-17",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-7"]
+          }
+        ]
+      },
+      {
+        "ts": "1747823685.928859",
+        "user": "user-7",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 2,
+            "users": ["user-7", "user-5"]
+          },
+          {
+            "name": "clap",
+            "count": 5,
+            "users": ["user-7", "user-5", "user-20", "user-8", "user-17"]
+          }
+        ]
+      },
+      {
+        "ts": "1756529279.507297",
+        "user": "user-20",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": []
+      },
+      {
+        "ts": "1759963306.162821",
+        "user": "user-11",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": []
+      },
+      {
+        "ts": "1734746601.165447",
+        "user": "user-20",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 2,
+            "users": ["user-7", "user-5"]
+          },
+          {
+            "name": "tada",
+            "count": 4,
+            "users": ["user-7", "user-5", "user-20", "user-8"]
+          }
+        ]
+      },
+      {
+        "ts": "1763887709.152222",
+        "user": "user-5",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1742635598.950974",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      }
+    ],
+    "created_at": "2025-10-03T00:20:02.850Z",
+    "updated_at": "2025-11-15T09:20:46.971Z"
+  },
+  {
+    "id": "thread-0023",
+    "channel": "C004",
+    "channel_name": "product",
+    "title": "Hey team, we need to discuss the new authentication flow",
+    "messages": [
+      {
+        "ts": "1745097150.181184",
+        "user": "user-19",
+        "text": "Hey team, we need to discuss the new authentication flow",
+        "type": "message",
+        "reply_count": 3,
+        "reply_users_count": 2,
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 3,
+            "users": ["user-19", "user-3", "user-5"]
+          },
+          {
+            "name": "warning",
+            "count": 3,
+            "users": ["user-19", "user-3", "user-5"]
+          },
+          {
+            "name": "pray",
+            "count": 1,
+            "users": ["user-19"]
+          }
+        ],
+        "latest_reply": "1744929529.121117"
+      },
+      {
+        "ts": "1762890088.299972",
+        "user": "user-3",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1745097150.181184",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 3,
+            "users": ["user-19", "user-3", "user-5"]
+          }
+        ]
+      },
+      {
+        "ts": "1757241600.827719",
+        "user": "user-19",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1745097150.181184",
+        "reactions": []
+      },
+      {
+        "ts": "1744929529.121117",
+        "user": "user-5",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1745097150.181184",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-19", "user-3"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      }
+    ],
+    "created_at": "2025-10-19T23:56:35.254Z",
+    "updated_at": "2025-11-06T01:19:21.254Z"
+  },
+  {
+    "id": "thread-0024",
+    "channel": "C003",
+    "channel_name": "support",
+    "title": "Has anyone encountered issues with API rate limiting?",
+    "messages": [
+      {
+        "ts": "1736564051.663721",
+        "user": "user-1",
+        "text": "Has anyone encountered issues with API rate limiting?",
+        "type": "message",
+        "reply_count": 14,
+        "reply_users_count": 6,
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 3,
+            "users": ["user-1", "user-10", "user-19"]
+          }
+        ],
+        "latest_reply": "1735891767.522124"
+      },
+      {
+        "ts": "1751685928.394052",
+        "user": "user-1",
+        "text": "cc @Bob @Xander",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      },
+      {
+        "ts": "1737931340.552408",
+        "user": "user-10",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      },
+      {
+        "ts": "1761255275.579196",
+        "user": "user-19",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      },
+      {
+        "ts": "1756938827.102979",
+        "user": "user-19",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      },
+      {
+        "ts": "1748365601.907432",
+        "user": "user-19",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      },
+      {
+        "ts": "1756990027.976651",
+        "user": "user-14",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 1,
+            "users": ["user-1"]
+          }
+        ]
+      },
+      {
+        "ts": "1762144874.924155",
+        "user": "user-16",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 4,
+            "users": ["user-1", "user-10", "user-19", "user-10"]
+          },
+          {
+            "name": "heart",
+            "count": 4,
+            "users": ["user-1", "user-10", "user-19", "user-10"]
+          }
+        ]
+      },
+      {
+        "ts": "1748572620.344137",
+        "user": "user-10",
+        "text": "I think @Uma might know more about this",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      },
+      {
+        "ts": "1759052299.398375",
+        "user": "user-10",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 1,
+            "users": ["user-1"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-1", "user-10"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 3,
+            "users": ["user-1", "user-10", "user-19"]
+          }
+        ]
+      },
+      {
+        "ts": "1747827077.212590",
+        "user": "user-10",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      },
+      {
+        "ts": "1753983474.843185",
+        "user": "user-19",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 5,
+            "users": ["user-1", "user-10", "user-19", "user-10", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1750714255.935730",
+        "user": "user-6",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 4,
+            "users": ["user-1", "user-10", "user-19", "user-10"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-1"]
+          }
+        ]
+      },
+      {
+        "ts": "1762091465.820763",
+        "user": "user-6",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      },
+      {
+        "ts": "1735891767.522124",
+        "user": "user-10",
+        "text": "cc @Uma @Carol",
+        "type": "message",
+        "thread_ts": "1736564051.663721",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      }
+    ],
+    "created_at": "2025-08-05T22:38:16.609Z",
+    "updated_at": "2025-11-24T21:11:37.498Z"
+  },
+  {
+    "id": "thread-0025",
+    "channel": "C007",
+    "channel_name": "incidents",
+    "title": "Need help with the new authentication flow",
+    "messages": [
+      {
+        "ts": "1743861648.397766",
+        "user": "user-11",
+        "text": "Need help with the new authentication flow",
+        "type": "message",
+        "reply_count": 3,
+        "reply_users_count": 3,
+        "reactions": [],
+        "latest_reply": "1747690193.740999"
+      },
+      {
+        "ts": "1734685622.854236",
+        "user": "user-15",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1743861648.397766",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 4,
+            "users": ["user-11", "user-15", "user-11", "user-17"]
+          }
+        ]
+      },
+      {
+        "ts": "1742807257.518099",
+        "user": "user-17",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1743861648.397766",
+        "reactions": []
+      },
+      {
+        "ts": "1747690193.740999",
+        "user": "user-9",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1743861648.397766",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      }
+    ],
+    "created_at": "2025-10-21T16:08:21.980Z",
+    "updated_at": "2025-11-22T21:53:56.161Z"
+  },
+  {
+    "id": "thread-0026",
+    "channel": "C005",
+    "channel_name": "design",
+    "title": "Heads up - deployment pipeline might be affected",
+    "messages": [
+      {
+        "ts": "1737731075.965816",
+        "user": "user-14",
+        "text": "Heads up - deployment pipeline might be affected",
+        "type": "message",
+        "reply_count": 7,
+        "reply_users_count": 5,
+        "reactions": [],
+        "latest_reply": "1748067265.496116"
+      },
+      {
+        "ts": "1743114832.555512",
+        "user": "user-18",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1737731075.965816",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 2,
+            "users": ["user-14", "user-17"]
+          }
+        ]
+      },
+      {
+        "ts": "1744131656.408981",
+        "user": "user-14",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1737731075.965816",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 3,
+            "users": ["user-14", "user-17", "user-18"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 4,
+            "users": ["user-14", "user-17", "user-18", "user-11"]
+          },
+          {
+            "name": "clap",
+            "count": 2,
+            "users": ["user-14", "user-17"]
+          }
+        ]
+      },
+      {
+        "ts": "1754740587.195848",
+        "user": "user-11",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1737731075.965816",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 3,
+            "users": ["user-14", "user-17", "user-18"]
+          },
+          {
+            "name": "fire",
+            "count": 3,
+            "users": ["user-14", "user-17", "user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1733067799.335255",
+        "user": "user-18",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1737731075.965816",
+        "reactions": []
+      },
+      {
+        "ts": "1755228294.169714",
+        "user": "user-18",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1737731075.965816",
+        "reactions": []
+      },
+      {
+        "ts": "1754210028.154517",
+        "user": "user-18",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1737731075.965816",
+        "reactions": []
+      },
+      {
+        "ts": "1748067265.496116",
+        "user": "user-18",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1737731075.965816",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      }
+    ],
+    "created_at": "2025-11-09T14:22:13.814Z",
+    "updated_at": "2025-10-28T22:42:55.803Z"
+  },
+  {
+    "id": "thread-0027",
+    "channel": "C008",
+    "channel_name": "customer-feedback",
+    "title": "Feature request from customer: the new authentication flow",
+    "messages": [
+      {
+        "ts": "1763504452.643059",
+        "user": "user-2",
+        "text": "Feature request from customer: the new authentication flow",
+        "type": "message",
+        "reply_count": 10,
+        "reply_users_count": 1,
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-2", "user-16"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-2", "user-16"]
+          }
+        ],
+        "latest_reply": "1757139307.269508"
+      },
+      {
+        "ts": "1763674797.319720",
+        "user": "user-2",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": []
+      },
+      {
+        "ts": "1755007795.672229",
+        "user": "user-16",
+        "text": "I think @Bob might know more about this",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": []
+      },
+      {
+        "ts": "1735072296.217536",
+        "user": "user-16",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 1,
+            "users": ["user-2"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 2,
+            "users": ["user-2", "user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1736778838.945847",
+        "user": "user-16",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": []
+      },
+      {
+        "ts": "1759411321.321269",
+        "user": "user-2",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 2,
+            "users": ["user-2", "user-16"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 1,
+            "users": ["user-2"]
+          }
+        ]
+      },
+      {
+        "ts": "1752806239.269744",
+        "user": "user-2",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-2"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 1,
+            "users": ["user-2"]
+          }
+        ]
+      },
+      {
+        "ts": "1743952058.774591",
+        "user": "user-16",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": []
+      },
+      {
+        "ts": "1737695436.884452",
+        "user": "user-2",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": []
+      },
+      {
+        "ts": "1753646369.105300",
+        "user": "user-2",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 1,
+            "users": ["user-2"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-2", "user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1757139307.269508",
+        "user": "user-2",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1763504452.643059",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-2",
+        "displayName": "David Gonzalez",
+        "email": "jack.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=2"
+      },
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      }
+    ],
+    "created_at": "2025-10-10T14:50:47.449Z",
+    "updated_at": "2025-11-25T22:59:49.041Z"
+  },
+  {
+    "id": "thread-0028",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "Hey team, we need to discuss the payment integration",
+    "messages": [
+      {
+        "ts": "1745177833.449312",
+        "user": "user-17",
+        "text": "Hey team, we need to discuss the payment integration",
+        "type": "message",
+        "reply_count": 3,
+        "reply_users_count": 3,
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 2,
+            "users": ["user-17", "user-10"]
+          },
+          {
+            "name": "heart",
+            "count": 1,
+            "users": ["user-17"]
+          },
+          {
+            "name": "rocket",
+            "count": 3,
+            "users": ["user-17", "user-10", "user-3"]
+          }
+        ],
+        "latest_reply": "1759904379.398219"
+      },
+      {
+        "ts": "1734793848.669957",
+        "user": "user-17",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1745177833.449312",
+        "reactions": []
+      },
+      {
+        "ts": "1759175080.475486",
+        "user": "user-10",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1745177833.449312",
+        "reactions": []
+      },
+      {
+        "ts": "1759904379.398219",
+        "user": "user-10",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1745177833.449312",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 1,
+            "users": ["user-17"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-17", "user-10"]
+          },
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-17"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      }
+    ],
+    "created_at": "2025-09-07T23:30:43.382Z",
+    "updated_at": "2025-11-26T21:30:11.077Z"
+  },
+  {
+    "id": "thread-0029",
+    "channel": "C003",
+    "channel_name": "support",
+    "title": "Has anyone encountered issues with user permissions?",
+    "messages": [
+      {
+        "ts": "1736360981.370132",
+        "user": "user-13",
+        "text": "Has anyone encountered issues with user permissions?",
+        "type": "message",
+        "reply_count": 6,
+        "reply_users_count": 6,
+        "reactions": [],
+        "latest_reply": "1746798386.182230"
+      },
+      {
+        "ts": "1752490922.811718",
+        "user": "user-18",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1736360981.370132",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 1,
+            "users": ["user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1756065221.378860",
+        "user": "user-1",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1736360981.370132",
+        "reactions": []
+      },
+      {
+        "ts": "1743549356.367570",
+        "user": "user-12",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1736360981.370132",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 5,
+            "users": ["user-13", "user-18", "user-12", "user-12", "user-20"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 3,
+            "users": ["user-13", "user-18", "user-12"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 5,
+            "users": ["user-13", "user-18", "user-12", "user-12", "user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1759262616.771502",
+        "user": "user-20",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1736360981.370132",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1751068470.820909",
+        "user": "user-1",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1736360981.370132",
+        "reactions": []
+      },
+      {
+        "ts": "1746798386.182230",
+        "user": "user-13",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1736360981.370132",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      }
+    ],
+    "created_at": "2025-07-27T03:10:20.735Z",
+    "updated_at": "2025-11-08T07:56:16.089Z"
+  },
+  {
+    "id": "thread-0030",
+    "channel": "C003",
+    "channel_name": "support",
+    "title": "Quick question about mobile app performance",
+    "messages": [
+      {
+        "ts": "1742373678.667638",
+        "user": "user-9",
+        "text": "Quick question about mobile app performance",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 6,
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 4,
+            "users": ["user-9", "user-11", "user-13", "user-14"]
+          }
+        ],
+        "latest_reply": "1738413885.803862"
+      },
+      {
+        "ts": "1738098726.952592",
+        "user": "user-11",
+        "text": "cc @Nathan @Tina",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 3,
+            "users": ["user-9", "user-11", "user-13"]
+          },
+          {
+            "name": "fire",
+            "count": 4,
+            "users": ["user-9", "user-11", "user-13", "user-14"]
+          }
+        ]
+      },
+      {
+        "ts": "1754558456.522564",
+        "user": "user-13",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 3,
+            "users": ["user-9", "user-11", "user-13"]
+          },
+          {
+            "name": "rocket",
+            "count": 2,
+            "users": ["user-9", "user-11"]
+          },
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-9", "user-11"]
+          }
+        ]
+      },
+      {
+        "ts": "1753394041.497285",
+        "user": "user-13",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 1,
+            "users": ["user-9"]
+          }
+        ]
+      },
+      {
+        "ts": "1750100861.741624",
+        "user": "user-9",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": []
+      },
+      {
+        "ts": "1738897485.648024",
+        "user": "user-9",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": []
+      },
+      {
+        "ts": "1747376167.349767",
+        "user": "user-20",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": []
+      },
+      {
+        "ts": "1741073615.993559",
+        "user": "user-20",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 2,
+            "users": ["user-9", "user-11"]
+          }
+        ]
+      },
+      {
+        "ts": "1760421450.330430",
+        "user": "user-9",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": []
+      },
+      {
+        "ts": "1762643506.521553",
+        "user": "user-20",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": []
+      },
+      {
+        "ts": "1744115522.361003",
+        "user": "user-20",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": []
+      },
+      {
+        "ts": "1738413885.803862",
+        "user": "user-20",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1742373678.667638",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      }
+    ],
+    "created_at": "2025-09-05T03:14:29.844Z",
+    "updated_at": "2025-11-16T15:14:19.611Z"
+  },
+  {
+    "id": "thread-0031",
+    "channel": "C004",
+    "channel_name": "product",
+    "title": "Can someone review data export feature?",
+    "messages": [
+      {
+        "ts": "1739142886.573085",
+        "user": "user-14",
+        "text": "Can someone review data export feature?",
+        "type": "message",
+        "reply_count": 2,
+        "reply_users_count": 2,
+        "reactions": [],
+        "latest_reply": "1758610665.512377"
+      },
+      {
+        "ts": "1744851503.237927",
+        "user": "user-9",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1739142886.573085",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 3,
+            "users": ["user-14", "user-9", "user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1758610665.512377",
+        "user": "user-20",
+        "text": "cc @Tina @Tina",
+        "type": "message",
+        "thread_ts": "1739142886.573085",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      }
+    ],
+    "created_at": "2025-11-04T00:55:53.328Z",
+    "updated_at": "2025-11-13T21:25:02.868Z"
+  },
+  {
+    "id": "thread-0032",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "Need help with webhook handlers",
+    "messages": [
+      {
+        "ts": "1743133716.973014",
+        "user": "user-19",
+        "text": "Need help with webhook handlers",
+        "type": "message",
+        "reply_count": 7,
+        "reply_users_count": 5,
+        "reactions": [],
+        "latest_reply": "1756686690.261662"
+      },
+      {
+        "ts": "1738257543.233016",
+        "user": "user-18",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1743133716.973014",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 3,
+            "users": ["user-19", "user-6", "user-13"]
+          },
+          {
+            "name": "fire",
+            "count": 3,
+            "users": ["user-19", "user-6", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1732759470.528137",
+        "user": "user-13",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1743133716.973014",
+        "reactions": []
+      },
+      {
+        "ts": "1737151440.821826",
+        "user": "user-18",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1743133716.973014",
+        "reactions": []
+      },
+      {
+        "ts": "1741439956.653672",
+        "user": "user-19",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1743133716.973014",
+        "reactions": []
+      },
+      {
+        "ts": "1741164894.379772",
+        "user": "user-1",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1743133716.973014",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 1,
+            "users": ["user-19"]
+          },
+          {
+            "name": "+1",
+            "count": 4,
+            "users": ["user-19", "user-6", "user-13", "user-1"]
+          }
+        ]
+      },
+      {
+        "ts": "1742174939.962111",
+        "user": "user-13",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1743133716.973014",
+        "reactions": []
+      },
+      {
+        "ts": "1756686690.261662",
+        "user": "user-1",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1743133716.973014",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-19"]
+          },
+          {
+            "name": "+1",
+            "count": 3,
+            "users": ["user-19", "user-6", "user-13"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      }
+    ],
+    "created_at": "2025-06-09T09:39:31.390Z",
+    "updated_at": "2025-11-15T20:17:07.444Z"
+  },
+  {
+    "id": "thread-0033",
+    "channel": "C007",
+    "channel_name": "incidents",
+    "title": "Feature request from customer: the new authentication flow",
+    "messages": [
+      {
+        "ts": "1751204971.335324",
+        "user": "user-3",
+        "text": "Feature request from customer: the new authentication flow",
+        "type": "message",
+        "reply_count": 9,
+        "reply_users_count": 5,
+        "reactions": [],
+        "latest_reply": "1760090993.710993"
+      },
+      {
+        "ts": "1739889561.226302",
+        "user": "user-5",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": []
+      },
+      {
+        "ts": "1764172631.441443",
+        "user": "user-15",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 3,
+            "users": ["user-3", "user-15", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1745370865.397485",
+        "user": "user-3",
+        "text": "cc @Kate @Nathan",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 5,
+            "users": ["user-3", "user-15", "user-13", "user-6", "user-13"]
+          },
+          {
+            "name": "warning",
+            "count": 3,
+            "users": ["user-3", "user-15", "user-13"]
+          },
+          {
+            "name": "pray",
+            "count": 2,
+            "users": ["user-3", "user-15"]
+          }
+        ]
+      },
+      {
+        "ts": "1736774085.838458",
+        "user": "user-13",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 5,
+            "users": ["user-3", "user-15", "user-13", "user-6", "user-13"]
+          },
+          {
+            "name": "eyes",
+            "count": 2,
+            "users": ["user-3", "user-15"]
+          },
+          {
+            "name": "+1",
+            "count": 4,
+            "users": ["user-3", "user-15", "user-13", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1756191953.901847",
+        "user": "user-3",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": []
+      },
+      {
+        "ts": "1759870555.549545",
+        "user": "user-13",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 5,
+            "users": ["user-3", "user-15", "user-13", "user-6", "user-13"]
+          },
+          {
+            "name": "warning",
+            "count": 1,
+            "users": ["user-3"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 4,
+            "users": ["user-3", "user-15", "user-13", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1743505882.678204",
+        "user": "user-6",
+        "text": "I think @Carol might know more about this",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 5,
+            "users": ["user-3", "user-15", "user-13", "user-6", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1759259505.839643",
+        "user": "user-3",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-3", "user-15"]
+          }
+        ]
+      },
+      {
+        "ts": "1760090993.710993",
+        "user": "user-3",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1751204971.335324",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      }
+    ],
+    "created_at": "2025-08-21T11:22:43.313Z",
+    "updated_at": "2025-11-10T17:54:35.605Z"
+  },
+  {
+    "id": "thread-0034",
+    "channel": "C008",
+    "channel_name": "customer-feedback",
+    "title": "Has anyone encountered issues with search functionality?",
+    "messages": [
+      {
+        "ts": "1760392769.465183",
+        "user": "user-19",
+        "text": "Has anyone encountered issues with search functionality?",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 3,
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 3,
+            "users": ["user-19", "user-11", "user-11"]
+          },
+          {
+            "name": "eyes",
+            "count": 3,
+            "users": ["user-19", "user-11", "user-11"]
+          }
+        ],
+        "latest_reply": "1750840299.901396"
+      },
+      {
+        "ts": "1742651798.933012",
+        "user": "user-3",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 1,
+            "users": ["user-19"]
+          },
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-19", "user-11"]
+          }
+        ]
+      },
+      {
+        "ts": "1760732688.200075",
+        "user": "user-3",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": []
+      },
+      {
+        "ts": "1752643497.655865",
+        "user": "user-19",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": []
+      },
+      {
+        "ts": "1745345383.135951",
+        "user": "user-19",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": []
+      },
+      {
+        "ts": "1739130087.920163",
+        "user": "user-11",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 4,
+            "users": ["user-19", "user-11", "user-11", "user-3"]
+          }
+        ]
+      },
+      {
+        "ts": "1749677400.184779",
+        "user": "user-19",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": [
+          {
+            "name": "rocket",
+            "count": 2,
+            "users": ["user-19", "user-11"]
+          },
+          {
+            "name": "pray",
+            "count": 4,
+            "users": ["user-19", "user-11", "user-11", "user-3"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 2,
+            "users": ["user-19", "user-11"]
+          }
+        ]
+      },
+      {
+        "ts": "1736877092.280523",
+        "user": "user-11",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": []
+      },
+      {
+        "ts": "1750052343.825518",
+        "user": "user-11",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": []
+      },
+      {
+        "ts": "1753201369.547228",
+        "user": "user-3",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": []
+      },
+      {
+        "ts": "1738631453.802495",
+        "user": "user-11",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": []
+      },
+      {
+        "ts": "1750840299.901396",
+        "user": "user-11",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1760392769.465183",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      }
+    ],
+    "created_at": "2025-06-14T22:05:39.983Z",
+    "updated_at": "2025-11-14T11:37:31.832Z"
+  },
+  {
+    "id": "thread-0035",
+    "channel": "C008",
+    "channel_name": "customer-feedback",
+    "title": "Need help with data export feature",
+    "messages": [
+      {
+        "ts": "1743238985.914381",
+        "user": "user-3",
+        "text": "Need help with data export feature",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 3,
+        "reactions": [],
+        "latest_reply": "1760891316.359127"
+      },
+      {
+        "ts": "1756621029.471379",
+        "user": "user-13",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1746349207.563871",
+        "user": "user-6",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1738584395.156541",
+        "user": "user-3",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1759247417.213622",
+        "user": "user-13",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1753943198.720219",
+        "user": "user-13",
+        "text": "I think @Kate might know more about this",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1748681795.709637",
+        "user": "user-6",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1759629540.706483",
+        "user": "user-13",
+        "text": "I think @Iris might know more about this",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1748299607.188682",
+        "user": "user-6",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1763087141.303742",
+        "user": "user-8",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": []
+      },
+      {
+        "ts": "1745244308.235307",
+        "user": "user-3",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-3", "user-8"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 4,
+            "users": ["user-3", "user-8", "user-13", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1760891316.359127",
+        "user": "user-8",
+        "text": "cc @Iris @Iris",
+        "type": "message",
+        "thread_ts": "1743238985.914381",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 2,
+            "users": ["user-3", "user-8"]
+          },
+          {
+            "name": "white_check_mark",
+            "count": 1,
+            "users": ["user-3"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      },
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      }
+    ],
+    "created_at": "2025-08-30T18:13:01.107Z",
+    "updated_at": "2025-11-24T06:57:22.810Z"
+  },
+  {
+    "id": "thread-0036",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "FYI: user permissions is now available",
+    "messages": [
+      {
+        "ts": "1733375660.489874",
+        "user": "user-15",
+        "text": "FYI: user permissions is now available",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 2,
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 1,
+            "users": ["user-15"]
+          },
+          {
+            "name": "eyes",
+            "count": 3,
+            "users": ["user-15", "user-14", "user-20"]
+          }
+        ],
+        "latest_reply": "1749865582.888887"
+      },
+      {
+        "ts": "1754408823.266638",
+        "user": "user-20",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": []
+      },
+      {
+        "ts": "1755825831.501828",
+        "user": "user-15",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-15"]
+          }
+        ]
+      },
+      {
+        "ts": "1743507213.497151",
+        "user": "user-20",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": []
+      },
+      {
+        "ts": "1736715037.549244",
+        "user": "user-15",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": [
+          {
+            "name": "pray",
+            "count": 1,
+            "users": ["user-15"]
+          },
+          {
+            "name": "eyes",
+            "count": 3,
+            "users": ["user-15", "user-14", "user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1751289696.278162",
+        "user": "user-14",
+        "text": "cc @Olivia @Kate",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": []
+      },
+      {
+        "ts": "1762201892.654377",
+        "user": "user-20",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": []
+      },
+      {
+        "ts": "1739454457.767403",
+        "user": "user-20",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 1,
+            "users": ["user-15"]
+          }
+        ]
+      },
+      {
+        "ts": "1735334735.841669",
+        "user": "user-15",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 2,
+            "users": ["user-15", "user-14"]
+          },
+          {
+            "name": "pray",
+            "count": 3,
+            "users": ["user-15", "user-14", "user-20"]
+          },
+          {
+            "name": "eyes",
+            "count": 3,
+            "users": ["user-15", "user-14", "user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1747077152.592591",
+        "user": "user-15",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": []
+      },
+      {
+        "ts": "1736032284.876111",
+        "user": "user-15",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 2,
+            "users": ["user-15", "user-14"]
+          },
+          {
+            "name": "fire",
+            "count": 3,
+            "users": ["user-15", "user-14", "user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1749865582.888887",
+        "user": "user-14",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1733375660.489874",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 2,
+            "users": ["user-15", "user-14"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      }
+    ],
+    "created_at": "2025-08-22T06:50:44.799Z",
+    "updated_at": "2025-11-10T19:36:27.881Z"
+  },
+  {
+    "id": "thread-0037",
+    "channel": "C003",
+    "channel_name": "support",
+    "title": "Heads up - caching strategy might be affected",
+    "messages": [
+      {
+        "ts": "1735404812.175926",
+        "user": "user-9",
+        "text": "Heads up - caching strategy might be affected",
+        "type": "message",
+        "reply_count": 13,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1749280683.324419"
+      },
+      {
+        "ts": "1747549806.768037",
+        "user": "user-18",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1748230637.419331",
+        "user": "user-9",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1751006763.197048",
+        "user": "user-18",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1741932559.366835",
+        "user": "user-18",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1758143547.170636",
+        "user": "user-18",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1762270554.578977",
+        "user": "user-9",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1737107989.868132",
+        "user": "user-9",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1758862468.426979",
+        "user": "user-18",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1743795968.774976",
+        "user": "user-9",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": [
+          {
+            "name": "eyes",
+            "count": 2,
+            "users": ["user-9", "user-18"]
+          },
+          {
+            "name": "tada",
+            "count": 1,
+            "users": ["user-9"]
+          },
+          {
+            "name": "+1",
+            "count": 2,
+            "users": ["user-9", "user-18"]
+          }
+        ]
+      },
+      {
+        "ts": "1733643298.504272",
+        "user": "user-18",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      },
+      {
+        "ts": "1761950467.812440",
+        "user": "user-18",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 1,
+            "users": ["user-9"]
+          }
+        ]
+      },
+      {
+        "ts": "1752302342.921182",
+        "user": "user-9",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 2,
+            "users": ["user-9", "user-18"]
+          },
+          {
+            "name": "rocket",
+            "count": 1,
+            "users": ["user-9"]
+          }
+        ]
+      },
+      {
+        "ts": "1749280683.324419",
+        "user": "user-18",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1735404812.175926",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      }
+    ],
+    "created_at": "2025-10-07T21:19:36.882Z",
+    "updated_at": "2025-11-20T08:35:10.876Z"
+  },
+  {
+    "id": "thread-0038",
+    "channel": "C008",
+    "channel_name": "customer-feedback",
+    "title": "FYI: caching strategy is now available",
+    "messages": [
+      {
+        "ts": "1740898539.593319",
+        "user": "user-11",
+        "text": "FYI: caching strategy is now available",
+        "type": "message",
+        "reply_count": 1,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1739072801.121278"
+      },
+      {
+        "ts": "1739072801.121278",
+        "user": "user-12",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1740898539.593319",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-4",
+        "displayName": "Tina Jackson",
+        "email": "rachel.garcia@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=4"
+      },
+      {
+        "id": "user-4",
+        "displayName": "Tina Jackson",
+        "email": "rachel.garcia@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=4"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      }
+    ],
+    "created_at": "2025-07-02T12:30:38.552Z",
+    "updated_at": "2025-11-15T15:21:09.570Z"
+  },
+  {
+    "id": "thread-0039",
+    "channel": "C003",
+    "channel_name": "support",
+    "title": "Heads up - user permissions might be affected",
+    "messages": [
+      {
+        "ts": "1737468004.604102",
+        "user": "user-4",
+        "text": "Heads up - user permissions might be affected",
+        "type": "message",
+        "reply_count": 14,
+        "reply_users_count": 1,
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 1,
+            "users": ["user-4"]
+          }
+        ],
+        "latest_reply": "1760229642.676510"
+      },
+      {
+        "ts": "1754655821.378085",
+        "user": "user-19",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1761119614.850252",
+        "user": "user-4",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1734120419.254297",
+        "user": "user-4",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": [
+          {
+            "name": "eyes",
+            "count": 1,
+            "users": ["user-4"]
+          },
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-4"]
+          }
+        ]
+      },
+      {
+        "ts": "1759838913.165133",
+        "user": "user-19",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": [
+          {
+            "name": "eyes",
+            "count": 1,
+            "users": ["user-4"]
+          },
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-4", "user-19"]
+          },
+          {
+            "name": "+1",
+            "count": 1,
+            "users": ["user-4"]
+          }
+        ]
+      },
+      {
+        "ts": "1763404511.115937",
+        "user": "user-4",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1735604636.427967",
+        "user": "user-19",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1745389062.376019",
+        "user": "user-19",
+        "text": "LGTM",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1745675778.867610",
+        "user": "user-4",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1753669261.591758",
+        "user": "user-19",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 1,
+            "users": ["user-4"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-4"]
+          }
+        ]
+      },
+      {
+        "ts": "1749604593.346542",
+        "user": "user-4",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 1,
+            "users": ["user-4"]
+          },
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-4"]
+          },
+          {
+            "name": "fire",
+            "count": 1,
+            "users": ["user-4"]
+          }
+        ]
+      },
+      {
+        "ts": "1741639456.707216",
+        "user": "user-4",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1745039663.734602",
+        "user": "user-19",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1754762558.743481",
+        "user": "user-19",
+        "text": "I think @Tina might know more about this",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": []
+      },
+      {
+        "ts": "1760229642.676510",
+        "user": "user-4",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1737468004.604102",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 1,
+            "users": ["user-4"]
+          }
+        ]
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-4",
+        "displayName": "Tina Jackson",
+        "email": "rachel.garcia@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=4"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      }
+    ],
+    "created_at": "2025-06-08T12:36:23.135Z",
+    "updated_at": "2025-11-01T22:11:38.863Z"
+  },
+  {
+    "id": "thread-0040",
+    "channel": "C005",
+    "channel_name": "design",
+    "title": "Has anyone encountered issues with mobile app performance?",
+    "messages": [
+      {
+        "ts": "1746877434.679862",
+        "user": "user-11",
+        "text": "Has anyone encountered issues with mobile app performance?",
+        "type": "message",
+        "reply_count": 13,
+        "reply_users_count": 6,
+        "reactions": [],
+        "latest_reply": "1735551100.353976"
+      },
+      {
+        "ts": "1745155578.510932",
+        "user": "user-17",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1745944524.200615",
+        "user": "user-11",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1747885304.560836",
+        "user": "user-6",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1732750663.418932",
+        "user": "user-6",
+        "text": "I think @Quinn might know more about this",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1735150912.279195",
+        "user": "user-6",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1760960949.325066",
+        "user": "user-6",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1737743102.116294",
+        "user": "user-6",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1740770272.574353",
+        "user": "user-6",
+        "text": "I think @David might know more about this",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1735153512.588187",
+        "user": "user-5",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 5,
+            "users": ["user-11", "user-2", "user-6", "user-6", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1745999223.469394",
+        "user": "user-2",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      },
+      {
+        "ts": "1734468739.433029",
+        "user": "user-6",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 4,
+            "users": ["user-11", "user-2", "user-6", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1752513021.228472",
+        "user": "user-6",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 5,
+            "users": ["user-11", "user-2", "user-6", "user-6", "user-6"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 2,
+            "users": ["user-11", "user-2"]
+          }
+        ]
+      },
+      {
+        "ts": "1735551100.353976",
+        "user": "user-6",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1746877434.679862",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-2",
+        "displayName": "David Gonzalez",
+        "email": "jack.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=2"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      }
+    ],
+    "created_at": "2025-09-05T06:18:03.786Z",
+    "updated_at": "2025-11-06T06:26:38.778Z"
+  },
+  {
+    "id": "thread-0041",
+    "channel": "C006",
+    "channel_name": "devops",
+    "title": "Heads up - file upload limits might be affected",
+    "messages": [
+      {
+        "ts": "1760194655.987116",
+        "user": "user-20",
+        "text": "Heads up - file upload limits might be affected",
+        "type": "message",
+        "reply_count": 5,
+        "reply_users_count": 3,
+        "reactions": [],
+        "latest_reply": "1759303345.885298"
+      },
+      {
+        "ts": "1737839282.219219",
+        "user": "user-12",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1760194655.987116",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 1,
+            "users": ["user-20"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 4,
+            "users": ["user-20", "user-20", "user-12", "user-15"]
+          }
+        ]
+      },
+      {
+        "ts": "1743358763.670011",
+        "user": "user-20",
+        "text": "Good catch!",
+        "type": "message",
+        "thread_ts": "1760194655.987116",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 3,
+            "users": ["user-20", "user-20", "user-12"]
+          },
+          {
+            "name": "eyes",
+            "count": 1,
+            "users": ["user-20"]
+          },
+          {
+            "name": "tada",
+            "count": 1,
+            "users": ["user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1762437122.167702",
+        "user": "user-12",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1760194655.987116",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 3,
+            "users": ["user-20", "user-20", "user-12"]
+          }
+        ]
+      },
+      {
+        "ts": "1741501824.189429",
+        "user": "user-15",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1760194655.987116",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-20", "user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1759303345.885298",
+        "user": "user-20",
+        "text": "Can we schedule a call to discuss?",
+        "type": "message",
+        "thread_ts": "1760194655.987116",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      }
+    ],
+    "created_at": "2025-06-18T09:01:02.263Z",
+    "updated_at": "2025-11-05T23:15:02.488Z"
+  },
+  {
+    "id": "thread-0042",
+    "channel": "C005",
+    "channel_name": "design",
+    "title": "Need help with database migration",
+    "messages": [
+      {
+        "ts": "1747056493.881845",
+        "user": "user-9",
+        "text": "Need help with database migration",
+        "type": "message",
+        "reply_count": 6,
+        "reply_users_count": 6,
+        "reactions": [],
+        "latest_reply": "1750150878.346921"
+      },
+      {
+        "ts": "1735788829.133470",
+        "user": "user-14",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1747056493.881845",
+        "reactions": [
+          {
+            "name": "thumbsdown",
+            "count": 1,
+            "users": ["user-9"]
+          }
+        ]
+      },
+      {
+        "ts": "1744366741.769399",
+        "user": "user-15",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1747056493.881845",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 1,
+            "users": ["user-9"]
+          }
+        ]
+      },
+      {
+        "ts": "1742158771.691367",
+        "user": "user-16",
+        "text": "Let me pull up the logs",
+        "type": "message",
+        "thread_ts": "1747056493.881845",
+        "reactions": [
+          {
+            "name": "thumbsup",
+            "count": 4,
+            "users": ["user-9", "user-7", "user-2", "user-14"]
+          },
+          {
+            "name": "white_check_mark",
+            "count": 5,
+            "users": ["user-9", "user-7", "user-2", "user-14", "user-15"]
+          },
+          {
+            "name": "fire",
+            "count": 4,
+            "users": ["user-9", "user-7", "user-2", "user-14"]
+          }
+        ]
+      },
+      {
+        "ts": "1752334568.560402",
+        "user": "user-2",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1747056493.881845",
+        "reactions": []
+      },
+      {
+        "ts": "1743413401.669796",
+        "user": "user-15",
+        "text": "I think @Bob might know more about this",
+        "type": "message",
+        "thread_ts": "1747056493.881845",
+        "reactions": []
+      },
+      {
+        "ts": "1750150878.346921",
+        "user": "user-2",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1747056493.881845",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      },
+      {
+        "id": "user-7",
+        "displayName": "Peter Anderson",
+        "email": "david.wilson@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=7"
+      },
+      {
+        "id": "user-2",
+        "displayName": "David Gonzalez",
+        "email": "jack.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=2"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-2",
+        "displayName": "David Gonzalez",
+        "email": "jack.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=2"
+      }
+    ],
+    "created_at": "2025-08-25T13:32:05.035Z",
+    "updated_at": "2025-11-08T08:38:56.021Z"
+  },
+  {
+    "id": "thread-0043",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "Need help with deployment pipeline",
+    "messages": [
+      {
+        "ts": "1757055815.151682",
+        "user": "user-20",
+        "text": "Need help with deployment pipeline",
+        "type": "message",
+        "reply_count": 11,
+        "reply_users_count": 5,
+        "reactions": [
+          {
+            "name": "tada",
+            "count": 4,
+            "users": ["user-20", "user-13", "user-14", "user-5"]
+          },
+          {
+            "name": "pray",
+            "count": 3,
+            "users": ["user-20", "user-13", "user-14"]
+          }
+        ],
+        "latest_reply": "1753343329.304149"
+      },
+      {
+        "ts": "1761664126.217001",
+        "user": "user-13",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 1,
+            "users": ["user-20"]
+          },
+          {
+            "name": "+1",
+            "count": 4,
+            "users": ["user-20", "user-13", "user-14", "user-5"]
+          },
+          {
+            "name": "thumbsdown",
+            "count": 5,
+            "users": ["user-20", "user-13", "user-14", "user-5", "user-2"]
+          }
+        ]
+      },
+      {
+        "ts": "1736020383.624578",
+        "user": "user-5",
+        "text": "I think @Tina might know more about this",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": []
+      },
+      {
+        "ts": "1732691770.570317",
+        "user": "user-20",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": []
+      },
+      {
+        "ts": "1761653761.159494",
+        "user": "user-2",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 5,
+            "users": ["user-20", "user-13", "user-14", "user-5", "user-2"]
+          }
+        ]
+      },
+      {
+        "ts": "1750206041.921772",
+        "user": "user-20",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": []
+      },
+      {
+        "ts": "1757385940.182234",
+        "user": "user-5",
+        "text": "Can you share more details?",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": []
+      },
+      {
+        "ts": "1741902259.537828",
+        "user": "user-2",
+        "text": "This is related to the issue we had last week",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": []
+      },
+      {
+        "ts": "1764053697.725889",
+        "user": "user-5",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 1,
+            "users": ["user-20"]
+          },
+          {
+            "name": "+1",
+            "count": 2,
+            "users": ["user-20", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1758729620.816967",
+        "user": "user-5",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 3,
+            "users": ["user-20", "user-13", "user-14"]
+          },
+          {
+            "name": "tada",
+            "count": 2,
+            "users": ["user-20", "user-13"]
+          }
+        ]
+      },
+      {
+        "ts": "1750809509.125417",
+        "user": "user-20",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": [
+          {
+            "name": "thinking_face",
+            "count": 4,
+            "users": ["user-20", "user-13", "user-14", "user-5"]
+          },
+          {
+            "name": "thinking_face",
+            "count": 4,
+            "users": ["user-20", "user-13", "user-14", "user-5"]
+          },
+          {
+            "name": "heart",
+            "count": 1,
+            "users": ["user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1753343329.304149",
+        "user": "user-2",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1757055815.151682",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-2",
+        "displayName": "David Gonzalez",
+        "email": "jack.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=2"
+      },
+      {
+        "id": "user-14",
+        "displayName": "Tina Martin",
+        "email": "frank.wilson@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=14"
+      }
+    ],
+    "created_at": "2025-09-02T00:50:09.467Z",
+    "updated_at": "2025-11-18T16:45:48.874Z"
+  },
+  {
+    "id": "thread-0044",
+    "channel": "C006",
+    "channel_name": "devops",
+    "title": "Need help with deployment pipeline",
+    "messages": [
+      {
+        "ts": "1763600002.827315",
+        "user": "user-16",
+        "text": "Need help with deployment pipeline",
+        "type": "message",
+        "reply_count": 7,
+        "reply_users_count": 7,
+        "reactions": [],
+        "latest_reply": "1751724522.132760"
+      },
+      {
+        "ts": "1752350690.363622",
+        "user": "user-16",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1763600002.827315",
+        "reactions": [
+          {
+            "name": "+1",
+            "count": 1,
+            "users": ["user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1754875148.452261",
+        "user": "user-12",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1763600002.827315",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 4,
+            "users": ["user-16", "user-8", "user-12", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1741794789.466111",
+        "user": "user-19",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1763600002.827315",
+        "reactions": [
+          {
+            "name": "eyes",
+            "count": 4,
+            "users": ["user-16", "user-8", "user-12", "user-6"]
+          }
+        ]
+      },
+      {
+        "ts": "1750344608.975849",
+        "user": "user-3",
+        "text": "I'll check and get back to you",
+        "type": "message",
+        "thread_ts": "1763600002.827315",
+        "reactions": []
+      },
+      {
+        "ts": "1758734172.842964",
+        "user": "user-16",
+        "text": "cc @Iris @Kate",
+        "type": "message",
+        "thread_ts": "1763600002.827315",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 1,
+            "users": ["user-16"]
+          },
+          {
+            "name": "pray",
+            "count": 3,
+            "users": ["user-16", "user-8", "user-12"]
+          },
+          {
+            "name": "+1",
+            "count": 5,
+            "users": ["user-16", "user-8", "user-12", "user-6", "user-3"]
+          }
+        ]
+      },
+      {
+        "ts": "1758575339.141180",
+        "user": "user-16",
+        "text": "This is blocking our release",
+        "type": "message",
+        "thread_ts": "1763600002.827315",
+        "reactions": []
+      },
+      {
+        "ts": "1751724522.132760",
+        "user": "user-8",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1763600002.827315",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      },
+      {
+        "id": "user-3",
+        "displayName": "Iris Moore",
+        "email": "frank.smith@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=3"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      }
+    ],
+    "created_at": "2025-07-31T21:58:33.581Z",
+    "updated_at": "2025-11-24T20:01:41.949Z"
+  },
+  {
+    "id": "thread-0045",
+    "channel": "C006",
+    "channel_name": "devops",
+    "title": "Need help with caching strategy",
+    "messages": [
+      {
+        "ts": "1741306251.601109",
+        "user": "user-8",
+        "text": "Need help with caching strategy",
+        "type": "message",
+        "reply_count": 6,
+        "reply_users_count": 2,
+        "reactions": [],
+        "latest_reply": "1738382239.786049"
+      },
+      {
+        "ts": "1738485826.837757",
+        "user": "user-4",
+        "text": "cc @Kate @David",
+        "type": "message",
+        "thread_ts": "1741306251.601109",
+        "reactions": []
+      },
+      {
+        "ts": "1744214081.646804",
+        "user": "user-2",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1741306251.601109",
+        "reactions": [
+          {
+            "name": "clap",
+            "count": 3,
+            "users": ["user-8", "user-4", "user-2"]
+          },
+          {
+            "name": "+1",
+            "count": 2,
+            "users": ["user-8", "user-4"]
+          }
+        ]
+      },
+      {
+        "ts": "1763676789.402313",
+        "user": "user-2",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1741306251.601109",
+        "reactions": [
+          {
+            "name": "warning",
+            "count": 1,
+            "users": ["user-8"]
+          }
+        ]
+      },
+      {
+        "ts": "1739345378.648204",
+        "user": "user-8",
+        "text": "Thanks for flagging this!",
+        "type": "message",
+        "thread_ts": "1741306251.601109",
+        "reactions": []
+      },
+      {
+        "ts": "1755765461.975878",
+        "user": "user-8",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1741306251.601109",
+        "reactions": []
+      },
+      {
+        "ts": "1738382239.786049",
+        "user": "user-2",
+        "text": "Looking into this now",
+        "type": "message",
+        "thread_ts": "1741306251.601109",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-4",
+        "displayName": "Tina Jackson",
+        "email": "rachel.garcia@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=4"
+      },
+      {
+        "id": "user-2",
+        "displayName": "David Gonzalez",
+        "email": "jack.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=2"
+      }
+    ],
+    "created_at": "2025-08-12T10:07:44.163Z",
+    "updated_at": "2025-11-16T06:26:04.902Z"
+  },
+  {
+    "id": "thread-0046",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "Bug report: file upload limits",
+    "messages": [
+      {
+        "ts": "1738065960.428927",
+        "user": "user-20",
+        "text": "Bug report: file upload limits",
+        "type": "message",
+        "reply_count": 6,
+        "reply_users_count": 3,
+        "reactions": [],
+        "latest_reply": "1754331270.356129"
+      },
+      {
+        "ts": "1757263499.866485",
+        "user": "user-20",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1738065960.428927",
+        "reactions": []
+      },
+      {
+        "ts": "1735998433.181045",
+        "user": "user-20",
+        "text": "Approved :white_check_mark:",
+        "type": "message",
+        "thread_ts": "1738065960.428927",
+        "reactions": []
+      },
+      {
+        "ts": "1752727904.476344",
+        "user": "user-6",
+        "text": "Fixed in the latest deploy",
+        "type": "message",
+        "thread_ts": "1738065960.428927",
+        "reactions": []
+      },
+      {
+        "ts": "1739805024.672360",
+        "user": "user-20",
+        "text": "I'll handle this",
+        "type": "message",
+        "thread_ts": "1738065960.428927",
+        "reactions": [
+          {
+            "name": "heart",
+            "count": 4,
+            "users": ["user-20", "user-6", "user-6", "user-12"]
+          },
+          {
+            "name": "tada",
+            "count": 1,
+            "users": ["user-20"]
+          }
+        ]
+      },
+      {
+        "ts": "1755850741.625792",
+        "user": "user-20",
+        "text": "Should we create a ticket for this?",
+        "type": "message",
+        "thread_ts": "1738065960.428927",
+        "reactions": []
+      },
+      {
+        "ts": "1754331270.356129",
+        "user": "user-6",
+        "text": "I think @Carol might know more about this",
+        "type": "message",
+        "thread_ts": "1738065960.428927",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-12",
+        "displayName": "Carol Taylor",
+        "email": "jack.anderson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=12"
+      }
+    ],
+    "created_at": "2025-07-16T08:17:06.499Z",
+    "updated_at": "2025-11-19T03:06:27.784Z"
+  },
+  {
+    "id": "thread-0047",
+    "channel": "C006",
+    "channel_name": "devops",
+    "title": "Update on database migration",
+    "messages": [
+      {
+        "ts": "1760891188.371513",
+        "user": "user-17",
+        "text": "Update on database migration",
+        "type": "message",
+        "reply_count": 1,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1740485554.409854"
+      },
+      {
+        "ts": "1740485554.409854",
+        "user": "user-1",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1760891188.371513",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-1",
+        "displayName": "Iris Davis",
+        "email": "uma.jones@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=1"
+      },
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-20",
+        "displayName": "Olivia Martin",
+        "email": "sam.miller@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=20"
+      }
+    ],
+    "created_at": "2025-09-23T07:54:49.095Z",
+    "updated_at": "2025-11-22T07:20:41.212Z"
+  },
+  {
+    "id": "thread-0048",
+    "channel": "C002",
+    "channel_name": "engineering",
+    "title": "Bug report: search functionality",
+    "messages": [
+      {
+        "ts": "1759489707.477658",
+        "user": "user-5",
+        "text": "Bug report: search functionality",
+        "type": "message",
+        "reply_count": 2,
+        "reply_users_count": 2,
+        "reactions": [],
+        "latest_reply": "1749639827.437911"
+      },
+      {
+        "ts": "1757796518.907292",
+        "user": "user-11",
+        "text": "Needs more testing",
+        "type": "message",
+        "thread_ts": "1759489707.477658",
+        "reactions": [
+          {
+            "name": "fire",
+            "count": 2,
+            "users": ["user-5", "user-11"]
+          },
+          {
+            "name": "fire",
+            "count": 4,
+            "users": ["user-5", "user-11", "user-8", "user-13"]
+          },
+          {
+            "name": "heart",
+            "count": 3,
+            "users": ["user-5", "user-11", "user-8"]
+          }
+        ]
+      },
+      {
+        "ts": "1749639827.437911",
+        "user": "user-9",
+        "text": "+1, facing the same issue",
+        "type": "message",
+        "thread_ts": "1759489707.477658",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-5",
+        "displayName": "Quinn Anderson",
+        "email": "iris.miller@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=5"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      },
+      {
+        "id": "user-8",
+        "displayName": "Kate Garcia",
+        "email": "carol.gonzalez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=8"
+      },
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-6",
+        "displayName": "Carol Jackson",
+        "email": "quinn.hernandez@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=6"
+      },
+      {
+        "id": "user-9",
+        "displayName": "Tina Smith",
+        "email": "frank.lopez@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=9"
+      }
+    ],
+    "created_at": "2025-07-17T18:56:22.419Z",
+    "updated_at": "2025-11-02T00:22:42.798Z"
+  },
+  {
+    "id": "thread-0049",
+    "channel": "C008",
+    "channel_name": "customer-feedback",
+    "title": "Quick question about file upload limits",
+    "messages": [
+      {
+        "ts": "1749175334.884294",
+        "user": "user-17",
+        "text": "Quick question about file upload limits",
+        "type": "message",
+        "reply_count": 2,
+        "reply_users_count": 2,
+        "reactions": [],
+        "latest_reply": "1746456090.527042"
+      },
+      {
+        "ts": "1736552771.777632",
+        "user": "user-15",
+        "text": "ETA on the fix?",
+        "type": "message",
+        "thread_ts": "1749175334.884294",
+        "reactions": [
+          {
+            "name": "white_check_mark",
+            "count": 5,
+            "users": ["user-17", "user-17", "user-18", "user-16", "user-15"]
+          },
+          {
+            "name": "thumbsup",
+            "count": 4,
+            "users": ["user-17", "user-17", "user-18", "user-16"]
+          }
+        ]
+      },
+      {
+        "ts": "1746456090.527042",
+        "user": "user-17",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1749175334.884294",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-17",
+        "displayName": "Frank Smith",
+        "email": "bob.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=17"
+      },
+      {
+        "id": "user-18",
+        "displayName": "Frank Taylor",
+        "email": "wendy.johnson@acme.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=18"
+      },
+      {
+        "id": "user-16",
+        "displayName": "Bob Johnson",
+        "email": "bob.garcia@demo.dev",
+        "avatarUrl": "https://i.pravatar.cc/150?img=16"
+      },
+      {
+        "id": "user-15",
+        "displayName": "Kate Moore",
+        "email": "iris.williams@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=15"
+      },
+      {
+        "id": "user-19",
+        "displayName": "Uma Williams",
+        "email": "jack.thomas@test.io",
+        "avatarUrl": "https://i.pravatar.cc/150?img=19"
+      },
+      {
+        "id": "user-10",
+        "displayName": "Xander Taylor",
+        "email": "henry.thomas@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=10"
+      },
+      {
+        "id": "user-11",
+        "displayName": "Sam Davis",
+        "email": "david.lopez@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=11"
+      }
+    ],
+    "created_at": "2025-06-16T17:45:13.212Z",
+    "updated_at": "2025-11-10T08:27:21.646Z"
+  },
+  {
+    "id": "thread-0050",
+    "channel": "C001",
+    "channel_name": "general",
+    "title": "Update on error handling",
+    "messages": [
+      {
+        "ts": "1758181029.467361",
+        "user": "user-13",
+        "text": "Update on error handling",
+        "type": "message",
+        "reply_count": 1,
+        "reply_users_count": 1,
+        "reactions": [],
+        "latest_reply": "1735095692.933759"
+      },
+      {
+        "ts": "1735095692.933759",
+        "user": "user-13",
+        "text": "I've seen this before - let me find the solution",
+        "type": "message",
+        "thread_ts": "1758181029.467361",
+        "reactions": []
+      }
+    ],
+    "participants": [
+      {
+        "id": "user-13",
+        "displayName": "Nathan Davis",
+        "email": "henry.wilson@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=13"
+      },
+      {
+        "id": "user-4",
+        "displayName": "Tina Jackson",
+        "email": "rachel.garcia@example.com",
+        "avatarUrl": "https://i.pravatar.cc/150?img=4"
+      }
+    ],
+    "created_at": "2025-09-23T15:53:11.101Z",
+    "updated_at": "2025-11-06T20:13:16.411Z"
+  }
+]

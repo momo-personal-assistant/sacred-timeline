@@ -18,12 +18,17 @@ interface ExperimentDoc {
   content: string;
   metadata: Record<string, unknown>;
   config_file?: string;
-  // New fields for orphan detection
+  folder_type?: 'completed' | 'plans' | 'rejected' | 'root';
+  // Orphan detection
   db_id?: number;
   is_orphan?: boolean;
 }
 
-function parseExperimentDoc(content: string, filename: string): Partial<ExperimentDoc> {
+function parseExperimentDoc(
+  content: string,
+  filename: string,
+  folderType: string
+): Partial<ExperimentDoc> {
   const metadata: Record<string, unknown> = {};
 
   // Extract YAML frontmatter from markdown code block
@@ -33,6 +38,9 @@ function parseExperimentDoc(content: string, filename: string): Partial<Experime
     const lines = yamlContent.split('\n');
 
     for (const line of lines) {
+      // Skip comments
+      if (line.trim().startsWith('#')) continue;
+
       const colonIndex = line.indexOf(':');
       if (colonIndex > 0) {
         const key = line.substring(0, colonIndex).trim();
@@ -42,15 +50,24 @@ function parseExperimentDoc(content: string, filename: string): Partial<Experime
         if (value.startsWith('"') && value.endsWith('"')) {
           value = value.slice(1, -1);
         }
+        if (value.startsWith("'") && value.endsWith("'")) {
+          value = value.slice(1, -1);
+        }
 
+        // Parse numbers
+        if (!isNaN(Number(value)) && value !== '') {
+          metadata[key] = Number(value);
+        }
         // Parse arrays
-        if (value.startsWith('[') && value.endsWith(']')) {
+        else if (value.startsWith('[') && value.endsWith(']')) {
           try {
             metadata[key] = JSON.parse(value.replace(/'/g, '"'));
           } catch {
             metadata[key] = value;
           }
-        } else {
+        }
+        // Parse strings
+        else {
           metadata[key] = value;
         }
       }
@@ -71,13 +88,14 @@ function parseExperimentDoc(content: string, filename: string): Partial<Experime
     tags: (metadata.tags as string[]) || [],
     content,
     metadata,
+    folder_type: folderType as 'completed' | 'plans' | 'rejected' | 'root',
   };
 }
 
 export async function GET() {
   try {
-    // Path to experiment docs
-    const docsPath = path.join(process.cwd(), '..', '..', 'docs', 'research', 'experiments');
+    // Path to experiment docs (updated to new structure)
+    const docsPath = path.join(process.cwd(), '..', '..', 'docs', 'experiments');
 
     // Check if directory exists
     if (!fs.existsSync(docsPath)) {
@@ -89,15 +107,50 @@ export async function GET() {
       });
     }
 
-    // Read all markdown files
-    const files = fs.readdirSync(docsPath).filter((f) => f.endsWith('.md') && !f.startsWith('_'));
-
     const experiments: ExperimentDoc[] = [];
 
-    for (const file of files) {
+    // Read from organized folders
+    const folders = ['completed', 'plans', 'rejected'];
+
+    for (const folder of folders) {
+      const folderPath = path.join(docsPath, folder);
+
+      if (!fs.existsSync(folderPath)) continue;
+
+      const files = fs
+        .readdirSync(folderPath)
+        .filter((f) => f.endsWith('.md') && !f.startsWith('_'));
+
+      for (const file of files) {
+        const filePath = path.join(folderPath, file);
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const parsed = parseExperimentDoc(content, file, folder);
+
+        experiments.push({
+          id: parsed.id || file,
+          filename: file,
+          title: parsed.title || file,
+          date: parsed.date || '',
+          status: parsed.status || 'unknown',
+          decision: parsed.decision || 'pending',
+          tags: parsed.tags || [],
+          content: parsed.content || '',
+          metadata: parsed.metadata || {},
+          config_file: (parsed.metadata?.config_file as string) || undefined,
+          folder_type: parsed.folder_type,
+        });
+      }
+    }
+
+    // Also read from root level (for backward compatibility)
+    const rootFiles = fs
+      .readdirSync(docsPath)
+      .filter((f) => f.endsWith('.md') && !f.startsWith('_'));
+
+    for (const file of rootFiles) {
       const filePath = path.join(docsPath, file);
       const content = fs.readFileSync(filePath, 'utf-8');
-      const parsed = parseExperimentDoc(content, file);
+      const parsed = parseExperimentDoc(content, file, 'root');
 
       experiments.push({
         id: parsed.id || file,
@@ -110,6 +163,7 @@ export async function GET() {
         content: parsed.content || '',
         metadata: parsed.metadata || {},
         config_file: (parsed.metadata?.config_file as string) || undefined,
+        folder_type: 'root',
       });
     }
 
@@ -159,11 +213,20 @@ export async function GET() {
       }
     }
 
+    // Group by folder type for stats
+    const byFolder = {
+      completed: experiments.filter((e) => e.folder_type === 'completed').length,
+      plans: experiments.filter((e) => e.folder_type === 'plans').length,
+      rejected: experiments.filter((e) => e.folder_type === 'rejected').length,
+      root: experiments.filter((e) => e.folder_type === 'root').length,
+    };
+
     return NextResponse.json({
       experiments,
       orphanDocs,
       count: experiments.length,
       orphanCount: orphanDocs.length,
+      byFolder,
     });
   } catch (error) {
     console.error('Error reading experiment docs:', error);

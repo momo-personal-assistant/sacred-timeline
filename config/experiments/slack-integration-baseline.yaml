@@ -1,0 +1,49 @@
+# Slack Integration Baseline
+# First experiment with complete 3-platform dataset (Linear + Zendesk + Slack)
+# Using structural-only ground truth (no circular validation)
+
+name: "slack-integration-baseline"
+description: "Baseline with Slack data added. First proper GT evaluation."
+created_at: "2025-11-27"
+
+# Embedding Configuration
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+# Chunking Configuration
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+# Retrieval Configuration
+retrieval:
+  similarityThreshold: 0.35
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+# Relation Inference Configuration
+relationInference:
+  similarityThreshold: 0.35
+  keywordOverlapThreshold: 0.65
+  includeInferred: true
+  useSemanticSimilarity: true
+  semanticWeight: 0.7
+
+# Validation Configuration
+validation:
+  runOnSave: true
+  autoSaveExperiment: true
+  scenarios:
+    - "normal"
+
+# Metadata
+metadata:
+  baseline: false
+  platforms: ["linear", "zendesk", "slack"]
+  total_objects: 260
+  notes: "First experiment with 3 platforms. GT now uses structural relations only."

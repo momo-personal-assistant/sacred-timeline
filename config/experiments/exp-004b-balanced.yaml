@@ -1,0 +1,50 @@
+# EXP-004B: Balanced Hybrid Strategy
+# Fix: semantic weight back to 0.7, moderate threshold
+
+name: "exp-004b-balanced"
+description: "Balanced hybrid: semantic weight 0.7, threshold 0.45"
+created_at: "2025-11-27"
+
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.45
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+relationInference:
+  # Moderate threshold - balance precision and recall
+  similarityThreshold: 0.45
+  keywordOverlapThreshold: 0.5
+  includeInferred: true
+  useSemanticSimilarity: true
+  # Keep semantic as primary signal
+  semanticWeight: 0.7
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: true
+  scenarios:
+    - "normal"
+
+metadata:
+  baseline: false
+  platforms: ["linear", "zendesk", "slack"]
+  experiment_series: "EXP-004"
+  hypothesis: |
+    - Threshold 0.45 balances precision/recall better than 0.35 or 0.5
+    - Semantic weight 0.7 maintains signal strength
+  comparison:
+    baseline_0.35: "Too many FP (20k relations)"
+    threshold_0.5: "Better but still 1% precision"
+    exp_004_hybrid: "Threshold too high, semantic weight too low"

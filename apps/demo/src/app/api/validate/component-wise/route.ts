@@ -168,11 +168,67 @@ function calculateStageMetrics(
   };
 }
 
+/**
+ * Persist layer metrics to the database
+ * Stores graph layer metrics from component-wise validation
+ */
+async function persistLayerMetrics(
+  pool: any,
+  experimentId: number,
+  metrics: ComponentMetrics,
+  durationMs: number
+): Promise<void> {
+  // Store graph layer metrics (this API evaluates the graph/relation extraction layer)
+  const graphMetrics = {
+    explicit: metrics.explicit,
+    similarity: metrics.similarity,
+    overall: metrics.overall,
+    by_type: metrics.by_type,
+    scenario: metrics.scenario,
+  };
+
+  await pool.query(
+    `INSERT INTO layer_metrics (experiment_id, layer, evaluation_method, metrics, duration_ms)
+     VALUES ($1, $2, $3, $4::jsonb, $5)
+     ON CONFLICT (experiment_id, layer, evaluation_method)
+     DO UPDATE SET
+       metrics = $4::jsonb,
+       duration_ms = $5,
+       created_at = NOW()`,
+    [experimentId, 'graph', 'ground_truth', JSON.stringify(graphMetrics), durationMs]
+  );
+
+  // Also store validation layer metrics (overall end-to-end F1)
+  const validationMetrics = {
+    f1_score: metrics.overall.f1_score,
+    precision: metrics.overall.precision,
+    recall: metrics.overall.recall,
+    true_positives: metrics.overall.true_positives,
+    false_positives: metrics.overall.false_positives,
+    false_negatives: metrics.overall.false_negatives,
+  };
+
+  await pool.query(
+    `INSERT INTO layer_metrics (experiment_id, layer, evaluation_method, metrics, duration_ms)
+     VALUES ($1, $2, $3, $4::jsonb, $5)
+     ON CONFLICT (experiment_id, layer, evaluation_method)
+     DO UPDATE SET
+       metrics = $4::jsonb,
+       duration_ms = $5,
+       created_at = NOW()`,
+    [experimentId, 'validation', 'ground_truth', JSON.stringify(validationMetrics), durationMs]
+  );
+}
+
 export async function GET(request: NextRequest) {
+  const startTime = Date.now();
+
   try {
     const { searchParams } = new URL(request.url);
     const scenario = searchParams.get('scenario') || 'normal';
     const useSemanticSimilarity = searchParams.get('semantic') === 'true';
+    const experimentId = searchParams.get('experimentId');
+    const persistMetrics = searchParams.get('persist') === 'true';
 
     // Initialize database
     const db = new UnifiedMemoryDB({
@@ -260,9 +316,23 @@ export async function GET(request: NextRequest) {
       scenario
     );
 
+    const durationMs = Date.now() - startTime;
+
+    // Persist metrics to layer_metrics table if requested
+    if (experimentId && persistMetrics) {
+      const expId = parseInt(experimentId, 10);
+      if (!isNaN(expId)) {
+        await persistLayerMetrics(pool, expId, metrics, durationMs);
+      }
+    }
+
     await db.close();
 
-    return NextResponse.json(metrics);
+    return NextResponse.json({
+      ...metrics,
+      duration_ms: durationMs,
+      persisted: persistMetrics && !!experimentId,
+    });
   } catch (error: any) {
     console.error('Component-wise validation failed:', error);
     return NextResponse.json(

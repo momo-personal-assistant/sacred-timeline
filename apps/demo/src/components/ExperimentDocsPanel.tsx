@@ -1,14 +1,32 @@
 'use client';
 
-import { CheckCircle2, FileEdit, FlaskConical, Loader2, Play, Star, XCircle } from 'lucide-react';
+import {
+  CheckCircle2,
+  FileEdit,
+  FileText,
+  FlaskConical,
+  Loader2,
+  Play,
+  Star,
+  XCircle,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import ExperimentTrendChart from '@/components/charts/ExperimentTrendChart';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 type ExperimentStatus = 'draft' | 'running' | 'completed' | 'failed';
 
@@ -75,6 +93,7 @@ interface ExperimentDoc {
   content: string;
   metadata: Record<string, unknown>;
   config_file?: string;
+  folder_type?: 'completed' | 'plans' | 'rejected' | 'root';
 }
 
 const statusConfig: Record<
@@ -92,7 +111,33 @@ const statusConfig: Record<
   failed: { icon: XCircle, color: 'text-red-600', label: 'Failed', bgColor: 'bg-red-500/10' },
 };
 
-function MetricsRow({ results, trend }: { results: ExperimentResults; trend?: number | null }) {
+const folderConfig: Record<
+  'completed' | 'plans' | 'rejected' | 'root',
+  { color: string; label: string; bgColor: string }
+> = {
+  completed: {
+    color: 'text-emerald-700 dark:text-emerald-400',
+    label: 'Completed',
+    bgColor: 'bg-emerald-500/10 border-emerald-500/20',
+  },
+  plans: {
+    color: 'text-blue-700 dark:text-blue-400',
+    label: 'Plan',
+    bgColor: 'bg-blue-500/10 border-blue-500/20',
+  },
+  rejected: {
+    color: 'text-rose-700 dark:text-rose-400',
+    label: 'Rejected',
+    bgColor: 'bg-rose-500/10 border-rose-500/20',
+  },
+  root: {
+    color: 'text-slate-700 dark:text-slate-400',
+    label: 'Uncategorized',
+    bgColor: 'bg-slate-500/10 border-slate-500/20',
+  },
+};
+
+function _MetricsRow({ results, trend }: { results: ExperimentResults; trend?: number | null }) {
   return (
     <div className="flex items-baseline gap-8 text-sm border-b pb-4">
       <div>
@@ -133,12 +178,16 @@ function ExperimentDetailView({
   experiment,
   experimentDoc,
   baselineExperiment,
+  allExperiments,
+  byFolder,
   onRun,
   onSetBaseline,
 }: {
   experiment: Experiment;
   experimentDoc: ExperimentDoc | null;
   baselineExperiment: Experiment | null;
+  allExperiments: Experiment[];
+  byFolder: { completed: number; plans: number; rejected: number; root: number } | null;
   onRun: () => void;
   onSetBaseline: () => void;
 }) {
@@ -256,6 +305,14 @@ function ExperimentDetailView({
                   Baseline
                 </Badge>
               )}
+              {experimentDoc?.folder_type && experimentDoc.folder_type !== 'root' && (
+                <Badge
+                  variant="outline"
+                  className={`${folderConfig[experimentDoc.folder_type].bgColor} ${folderConfig[experimentDoc.folder_type].color} shrink-0 border`}
+                >
+                  {folderConfig[experimentDoc.folder_type].label}
+                </Badge>
+              )}
               <h1 className="text-lg font-semibold truncate">{experiment.name}</h1>
               <span className="text-xs text-muted-foreground shrink-0">
                 {new Date(experiment.created_at).toLocaleDateString()}
@@ -265,21 +322,40 @@ function ExperimentDetailView({
               {isDraft && (
                 <Button onClick={handleRun} disabled={isRunning} size="sm">
                   {isRunning ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <>
+                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                      Running...
+                    </>
                   ) : (
-                    <Play className="h-4 w-4" />
+                    <>
+                      <Play className="h-4 w-4 mr-1.5" />
+                      Run
+                    </>
                   )}
                 </Button>
               )}
-              {!experiment.is_baseline && !isDraft && !isExperimentRunning && (
-                <Button
-                  variant="outline"
-                  onClick={handleSetBaseline}
-                  disabled={isSettingBaseline}
-                  size="sm"
-                >
-                  <Star className="h-4 w-4" />
-                </Button>
+              {!isDraft && !isExperimentRunning && (
+                <>
+                  <Button variant="outline" onClick={handleRun} disabled={isRunning} size="sm">
+                    {isRunning ? (
+                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                    ) : (
+                      <Play className="h-4 w-4 mr-1.5" />
+                    )}
+                    Run Again
+                  </Button>
+                  {!experiment.is_baseline && (
+                    <Button
+                      variant="outline"
+                      onClick={handleSetBaseline}
+                      disabled={isSettingBaseline}
+                      size="sm"
+                    >
+                      <Star className="h-4 w-4 mr-1.5" />
+                      Set Baseline
+                    </Button>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -293,9 +369,88 @@ function ExperimentDetailView({
         {/* Content */}
         <ScrollArea className="flex-1">
           <div className="p-6 space-y-6 max-w-[65%] mx-auto">
-            {/* Metrics Row */}
+            {/* Folder Statistics Card */}
+            {experimentDoc && byFolder && (
+              <Card className="bg-muted/30 border-dashed">
+                <CardContent className="pt-4 pb-3">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Experiment Documentation:</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {byFolder.completed > 0 && (
+                        <Badge
+                          variant="outline"
+                          className={`${folderConfig.completed.bgColor} ${folderConfig.completed.color} border text-xs`}
+                        >
+                          {byFolder.completed} Completed
+                        </Badge>
+                      )}
+                      {byFolder.plans > 0 && (
+                        <Badge
+                          variant="outline"
+                          className={`${folderConfig.plans.bgColor} ${folderConfig.plans.color} border text-xs`}
+                        >
+                          {byFolder.plans} Plans
+                        </Badge>
+                      )}
+                      {byFolder.rejected > 0 && (
+                        <Badge
+                          variant="outline"
+                          className={`${folderConfig.rejected.bgColor} ${folderConfig.rejected.color} border text-xs`}
+                        >
+                          {byFolder.rejected} Rejected
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Trend Chart */}
+            {hasResults && experiment.results && allExperiments.length > 1 && (
+              <ExperimentTrendChart
+                experiments={allExperiments}
+                currentExperimentId={experiment.id}
+              />
+            )}
+
+            {/* Quick Metrics */}
             {hasResults && experiment.results && (
-              <MetricsRow results={experiment.results} trend={improvementVsBaseline} />
+              <div className="flex items-baseline gap-8 text-sm border-b pb-4">
+                <div>
+                  <span className="text-muted-foreground">F1</span>{' '}
+                  <span className="font-mono font-medium text-lg">
+                    {(experiment.results.f1_score * 100).toFixed(1)}%
+                  </span>
+                  {improvementVsBaseline !== null && (
+                    <span
+                      className={`ml-1 text-xs ${improvementVsBaseline >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                    >
+                      {improvementVsBaseline >= 0 ? '+' : ''}
+                      {improvementVsBaseline.toFixed(1)}%
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Precision</span>{' '}
+                  <span className="font-mono font-medium">
+                    {(experiment.results.precision * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Recall</span>{' '}
+                  <span className="font-mono font-medium">
+                    {(experiment.results.recall * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Response</span>{' '}
+                  <span className="font-mono font-medium">
+                    {(experiment.results.retrieval_time_ms / 1000).toFixed(1)}s
+                  </span>
+                </div>
+              </div>
             )}
 
             {/* No Results State */}
@@ -339,63 +494,113 @@ function ExperimentDetailView({
             {/* Configuration */}
             {experiment.config && (
               <Card>
-                <CardHeader className="pb-2">
+                <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium">Configuration</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-                    {experiment.config?.embedding && (
-                      <div className="space-y-1">
-                        <p className="font-medium text-muted-foreground">Embedding</p>
-                        <p className="font-mono">{experiment.config.embedding.model}</p>
-                        {experiment.config.embedding.dimensions && (
-                          <p className="text-muted-foreground">
-                            {experiment.config.embedding.dimensions}d
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    {experiment.config?.chunking && (
-                      <div className="space-y-1">
-                        <p className="font-medium text-muted-foreground">Chunking</p>
-                        <p className="font-mono">{experiment.config.chunking.strategy}</p>
-                        {experiment.config.chunking.maxChunkSize && (
-                          <p className="text-muted-foreground">
-                            max: {experiment.config.chunking.maxChunkSize}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    {experiment.config?.relationInference && (
-                      <div className="space-y-1">
-                        <p className="font-medium text-muted-foreground">Relation Inference</p>
-                        <p className="font-mono">
-                          Semantic:{' '}
-                          {experiment.config.relationInference.useSemanticSimilarity ? 'ON' : 'OFF'}
-                        </p>
-                        {experiment.config.relationInference.similarityThreshold !== undefined && (
-                          <p className="text-muted-foreground">
-                            threshold: {experiment.config.relationInference.similarityThreshold}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    {experiment.config?.retrieval && (
-                      <div className="space-y-1">
-                        <p className="font-medium text-muted-foreground">Retrieval</p>
-                        {experiment.config.retrieval.similarityThreshold !== undefined && (
-                          <p className="font-mono">
-                            threshold: {experiment.config.retrieval.similarityThreshold}
-                          </p>
-                        )}
-                        {experiment.config.retrieval.chunkLimit && (
-                          <p className="text-muted-foreground">
-                            limit: {experiment.config.retrieval.chunkLimit}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[180px]">Parameter</TableHead>
+                        <TableHead>Value</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody className="text-xs">
+                      {experiment.config?.embedding && (
+                        <>
+                          <TableRow>
+                            <TableCell className="font-medium text-muted-foreground">
+                              Embedding Model
+                            </TableCell>
+                            <TableCell className="font-mono">
+                              {experiment.config.embedding.model}
+                            </TableCell>
+                          </TableRow>
+                          {experiment.config.embedding.dimensions && (
+                            <TableRow>
+                              <TableCell className="font-medium text-muted-foreground">
+                                Dimensions
+                              </TableCell>
+                              <TableCell className="font-mono">
+                                {experiment.config.embedding.dimensions}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </>
+                      )}
+                      {experiment.config?.chunking && (
+                        <>
+                          <TableRow>
+                            <TableCell className="font-medium text-muted-foreground">
+                              Chunking Strategy
+                            </TableCell>
+                            <TableCell className="font-mono">
+                              {experiment.config.chunking.strategy}
+                            </TableCell>
+                          </TableRow>
+                          {experiment.config.chunking.maxChunkSize && (
+                            <TableRow>
+                              <TableCell className="font-medium text-muted-foreground">
+                                Max Chunk Size
+                              </TableCell>
+                              <TableCell className="font-mono">
+                                {experiment.config.chunking.maxChunkSize}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </>
+                      )}
+                      {experiment.config?.relationInference && (
+                        <>
+                          <TableRow>
+                            <TableCell className="font-medium text-muted-foreground">
+                              Semantic Similarity
+                            </TableCell>
+                            <TableCell className="font-mono">
+                              {experiment.config.relationInference.useSemanticSimilarity
+                                ? 'Enabled'
+                                : 'Disabled'}
+                            </TableCell>
+                          </TableRow>
+                          {experiment.config.relationInference.similarityThreshold !==
+                            undefined && (
+                            <TableRow>
+                              <TableCell className="font-medium text-muted-foreground">
+                                Relation Threshold
+                              </TableCell>
+                              <TableCell className="font-mono">
+                                {experiment.config.relationInference.similarityThreshold}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </>
+                      )}
+                      {experiment.config?.retrieval && (
+                        <>
+                          {experiment.config.retrieval.similarityThreshold !== undefined && (
+                            <TableRow>
+                              <TableCell className="font-medium text-muted-foreground">
+                                Retrieval Threshold
+                              </TableCell>
+                              <TableCell className="font-mono">
+                                {experiment.config.retrieval.similarityThreshold}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                          {experiment.config.retrieval.chunkLimit && (
+                            <TableRow>
+                              <TableCell className="font-medium text-muted-foreground">
+                                Chunk Limit
+                              </TableCell>
+                              <TableCell className="font-mono">
+                                {experiment.config.retrieval.chunkLimit}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </>
+                      )}
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
             )}
@@ -516,6 +721,12 @@ export default function ExperimentDocsPanel({
   onRefresh,
 }: ExperimentDocsPanelProps) {
   const [experimentDocs, setExperimentDocs] = useState<ExperimentDoc[]>([]);
+  const [byFolder, setByFolder] = useState<{
+    completed: number;
+    plans: number;
+    rejected: number;
+    root: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch experiment docs
@@ -524,6 +735,7 @@ export default function ExperimentDocsPanel({
       .then((res) => res.json())
       .then((data) => {
         setExperimentDocs(data.experiments || []);
+        setByFolder(data.byFolder || null);
         setLoading(false);
       })
       .catch(() => {
@@ -587,6 +799,8 @@ export default function ExperimentDocsPanel({
       experiment={selectedExperiment}
       experimentDoc={selectedDoc}
       baselineExperiment={baselineExperiment}
+      allExperiments={experiments}
+      byFolder={byFolder}
       onRun={onRefresh}
       onSetBaseline={onRefresh}
     />

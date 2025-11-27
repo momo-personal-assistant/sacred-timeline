@@ -1,22 +1,38 @@
 {
-  "generated_at": "2025-11-24T06:22:32.349Z",
+  "generated_at": "2025-11-27T01:51:15.032Z",
   "config": {
     "linearCount": 100,
     "zendeskCount": 100,
+    "slackCount": 50,
     "includeSubIssues": true,
-    "outputDir": "/Users/williamjung/conductor/sacred-timeline/.conductor/harare/data"
+    "outputDir": "/Users/williamjung/conductor/sacred-timeline/.conductor/santo-v1/data"
   },
   "linear": {
     "total_issues": 110,
-    "total_comments": 892,
-    "avg_comments_per_issue": 8.1,
+    "total_comments": 1284,
+    "avg_comments_per_issue": 11.7,
     "with_sub_issues": 10
   },
   "zendesk": {
     "total_tickets": 100,
-    "total_comments": 823,
-    "avg_comments_per_ticket": 8.2,
-    "with_attachments": 57
+    "total_comments": 896,
+    "avg_comments_per_ticket": 9,
+    "with_attachments": 49
+  },
+  "slack": {
+    "total_threads": 50,
+    "total_messages": 413,
+    "avg_messages_per_thread": 8.3,
+    "by_channel": {
+      "incidents": 4,
+      "general": 9,
+      "engineering": 4,
+      "design": 6,
+      "devops": 8,
+      "product": 6,
+      "support": 8,
+      "customer-feedback": 5
+    }
   },
   "worst_cases": {
     "total_cases": 20,

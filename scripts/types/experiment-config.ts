@@ -46,6 +46,10 @@ export interface ExperimentConfig {
     useSemanticSimilarity?: boolean;
     semanticWeight?: number;
 
+    // EXP-006 Stage 2: Project metadata signal
+    useProjectMetadata?: boolean;
+    projectWeight?: number;
+
     // Contrastive ICL (Paper 003)
     useContrastiveICL?: boolean;
     contrastiveExamples?: {

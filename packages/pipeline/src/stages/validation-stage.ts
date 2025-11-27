@@ -30,6 +30,9 @@ export class ValidationStage implements PipelineStage {
       includeInferred: config.relationInference.includeInferred,
       useSemanticSimilarity: config.relationInference.useSemanticSimilarity,
       semanticWeight: config.relationInference.semanticWeight,
+      // EXP-006 Stage 2: Project metadata options
+      useProjectMetadata: config.relationInference.useProjectMetadata,
+      projectWeight: config.relationInference.projectWeight,
       useContrastiveICL: config.relationInference.useContrastiveICL,
     });
 
@@ -70,9 +73,10 @@ export class ValidationStage implements PipelineStage {
       inferred = inferrer.inferAllWithEmbeddings(objects as any, embeddingsMap);
     }
 
-    // Fetch ground truth
+    // Fetch ground truth - only positive relations (exclude unrelated/uncertain labels)
     const groundTruthResult = await pool.query(
-      'SELECT from_id, to_id, relation_type as type FROM ground_truth_relations'
+      `SELECT from_id, to_id, relation_type as type FROM ground_truth_relations
+       WHERE relation_type NOT IN ('human_verified_unrelated', 'human_uncertain')`
     );
     const groundTruth = groundTruthResult.rows as Relation[];
 
@@ -117,9 +121,11 @@ export class ValidationStage implements PipelineStage {
 
   private calculateMetrics(inferred: Relation[], groundTruth: Relation[]): ValidationMetrics {
     // Normalize relation by sorting IDs to handle bidirectional relations
+    // NOTE: We ignore relation type for matching - GT says "these are related",
+    // inference finds the specific type (explicit, semantic, etc.)
     const normalizeRelation = (rel: Relation) => {
       const [id1, id2] = [rel.from_id, rel.to_id].sort();
-      return `${id1}|${id2}|${rel.type}`;
+      return `${id1}|${id2}`; // Only compare IDs, not type
     };
 
     const groundTruthSet = new Set(groundTruth.map(normalizeRelation));

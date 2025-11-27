@@ -7,11 +7,13 @@
  * Usage:
  *   pnpm run experiment                         # Uses config/default.yaml
  *   pnpm run experiment config/experiments/my-exp.yaml
+ *   pnpm run experiment --all                   # Run on ALL database objects
  *
  * Examples:
  *   pnpm run experiment                                    # Baseline
  *   pnpm run experiment config/templates/chunking.yaml     # Template
  *   pnpm run experiment config/experiments/exp-001.yaml    # Saved experiment
+ *   pnpm run experiment --all config/default.yaml          # All objects from DB
  */
 
 import { execSync } from 'child_process';
@@ -88,8 +90,10 @@ function toPipelineConfig(config: ExperimentConfig): PipelineConfig {
  * Main execution function
  */
 async function main() {
-  // Get config path from args
-  const configPath = process.argv[2] || DEFAULT_CONFIG_PATH;
+  // Parse arguments
+  const args = process.argv.slice(2);
+  const useAllObjects = args.includes('--all') || args.includes('--from-db');
+  const configPath = args.find((arg) => !arg.startsWith('--')) || DEFAULT_CONFIG_PATH;
 
   printHeader('Configuration-Driven Experiment System');
 
@@ -101,6 +105,9 @@ async function main() {
   if (config.metadata.git_commit) {
     printKV('Git commit', config.metadata.git_commit.substring(0, 8));
   }
+  if (useAllObjects) {
+    printKV('Data source', 'All objects from database');
+  }
   console.log();
 
   // Initialize database
@@ -108,6 +115,15 @@ async function main() {
   printSuccess('Database connected');
 
   try {
+    // Load all objects if --all flag is provided
+    let objects;
+    if (useAllObjects) {
+      console.log('\n📦 Loading all canonical objects from database...');
+      objects = await db.searchCanonicalObjects({}, 10000); // Increased limit
+      printKV('Objects loaded', objects.length);
+      console.log();
+    }
+
     // Create orchestrator with callbacks
     const orchestrator = new PipelineOrchestrator({
       openaiApiKey: process.env.OPENAI_API_KEY,
@@ -127,7 +143,7 @@ async function main() {
     const pipelineConfig = toPipelineConfig(config);
 
     console.log('\n🔄 Executing pipeline...\n');
-    const result = await orchestrator.execute(pipelineConfig, db);
+    const result = await orchestrator.execute(pipelineConfig, db, objects);
 
     // Print results
     printHeader('Experiment Complete');

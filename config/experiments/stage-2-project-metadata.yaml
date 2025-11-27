@@ -1,0 +1,50 @@
+# EXP-006 Stage 2: Project Metadata Signal
+# Adding project metadata as third signal to improve precision
+
+name: "stage-2-project-metadata"
+description: "Three-signal fusion: semantic + keyword + project metadata"
+created_at: "2025-11-27"
+
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.30  # Optimal from Stage 1
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+relationInference:
+  similarityThreshold: 0.30  # Optimal from Stage 1
+  keywordOverlapThreshold: 0.65
+  includeInferred: true
+  useSemanticSimilarity: true
+  semanticWeight: 0.7  # Will be adjusted to 0.49 after project weight
+
+  # EXP-006 Stage 2: Project metadata signal
+  useProjectMetadata: true
+  projectWeight: 0.3  # Strong signal for same-project objects
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: true
+  scenarios:
+    - "normal"
+
+metadata:
+  baseline: false
+  experiment_series: "EXP-006"
+  stage: "2-project-metadata"
+  hypothesis: "Project metadata will reduce FP rate by boosting same-project pairs"
+  baseline_f1: 43.6  # From threshold-0.30 (Stage 1)
+  target_f1: 50-55
+  formula: "score = 0.49*semantic + 0.21*keyword + 0.30*project"
+  expected_improvement: "Precision +10-15%, F1 +5-10%"

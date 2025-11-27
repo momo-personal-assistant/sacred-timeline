@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get('status');
+    const showArchived = searchParams.get('archived') === 'true';
 
     const db = new UnifiedMemoryDB({
       host: process.env.POSTGRES_HOST || 'localhost',
@@ -50,9 +51,24 @@ export async function GET(request: NextRequest) {
     await db.initialize();
     const pool = (db as any).pool;
 
-    // Build query with optional status filter
-    const whereClause = statusFilter ? `WHERE e.status = $1` : '';
-    const queryParams = statusFilter ? [statusFilter] : [];
+    // Build query with optional filters
+    const whereClauses: string[] = [];
+    const queryParams: any[] = [];
+    let paramIndex = 1;
+
+    // Filter by status if provided
+    if (statusFilter) {
+      whereClauses.push(`e.status = $${paramIndex}`);
+      queryParams.push(statusFilter);
+      paramIndex++;
+    }
+
+    // Exclude archived experiments by default
+    if (!showArchived) {
+      whereClauses.push(`(e.archived IS NULL OR e.archived = FALSE)`);
+    }
+
+    const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
     // Get all experiments with their results
     const result = await pool.query(
@@ -63,6 +79,7 @@ export async function GET(request: NextRequest) {
         e.description,
         e.config,
         e.is_baseline,
+        e.archived,
         e.paper_ids,
         e.git_commit,
         e.created_at,
@@ -98,6 +115,7 @@ export async function GET(request: NextRequest) {
       description: row.description,
       config: row.config,
       is_baseline: row.is_baseline,
+      archived: row.archived || false,
       paper_ids: row.paper_ids || [],
       git_commit: row.git_commit,
       created_at: row.created_at,

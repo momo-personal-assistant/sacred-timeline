@@ -4,13 +4,14 @@
  *
  * Usage:
  *   npm run generate:samples
- *   npm run generate:samples -- --linear-count=50 --zendesk-count=50
+ *   npm run generate:samples -- --linear-count=50 --zendesk-count=50 --slack-count=30
  */
 
 import fs from 'fs/promises';
 import path from 'path';
 
 import { generateLinearSamples, analyzeLinearSamples, type LinearIssue } from './linear';
+import { generateSlackSamples, analyzeSlackSamples, type SlackThread } from './slack';
 import { generateAllWorstCases, type WorstCase } from './worst-cases';
 import { generateZendeskSamples, analyzeZendeskSamples, type ZendeskTicket } from './zendesk';
 
@@ -21,6 +22,7 @@ import { generateZendeskSamples, analyzeZendeskSamples, type ZendeskTicket } fro
 interface GenerationConfig {
   linearCount: number;
   zendeskCount: number;
+  slackCount: number;
   includeSubIssues: boolean;
   outputDir: string;
 }
@@ -30,6 +32,7 @@ function parseArgs(): GenerationConfig {
   const config: GenerationConfig = {
     linearCount: 100,
     zendeskCount: 100,
+    slackCount: 50,
     includeSubIssues: true,
     outputDir: path.join(process.cwd(), 'data'),
   };
@@ -39,6 +42,8 @@ function parseArgs(): GenerationConfig {
       config.linearCount = parseInt(arg.split('=')[1], 10);
     } else if (arg.startsWith('--zendesk-count=')) {
       config.zendeskCount = parseInt(arg.split('=')[1], 10);
+    } else if (arg.startsWith('--slack-count=')) {
+      config.slackCount = parseInt(arg.split('=')[1], 10);
     } else if (arg === '--no-sub-issues') {
       config.includeSubIssues = false;
     } else if (arg.startsWith('--output-dir=')) {
@@ -93,6 +98,12 @@ interface GenerationSummary {
     avg_comments_per_ticket: number;
     with_attachments: number;
   };
+  slack: {
+    total_threads: number;
+    total_messages: number;
+    avg_messages_per_thread: number;
+    by_channel: Record<string, number>;
+  };
   worst_cases: {
     total_cases: number;
     by_category: Record<string, number>;
@@ -103,6 +114,7 @@ function generateSummary(
   config: GenerationConfig,
   linearSamples: LinearIssue[],
   zendeskSamples: ZendeskTicket[],
+  slackSamples: SlackThread[],
   worstCases: WorstCase[]
 ): GenerationSummary {
   // Linear stats
@@ -120,6 +132,16 @@ function generateSummary(
   const zendeskWithAttachments = zendeskSamples.filter((ticket) =>
     ticket.comments.some((comment) => comment.attachments && comment.attachments.length > 0)
   ).length;
+
+  // Slack stats
+  const totalSlackMessages = slackSamples.reduce((sum, thread) => sum + thread.messages.length, 0);
+  const slackByChannel = slackSamples.reduce(
+    (acc, thread) => {
+      acc[thread.channel_name] = (acc[thread.channel_name] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   // Worst cases stats
   const worstCasesByCategory = worstCases.reduce(
@@ -147,6 +169,12 @@ function generateSummary(
       ),
       with_attachments: zendeskWithAttachments,
     },
+    slack: {
+      total_threads: slackSamples.length,
+      total_messages: totalSlackMessages,
+      avg_messages_per_thread: parseFloat((totalSlackMessages / slackSamples.length).toFixed(1)),
+      by_channel: slackByChannel,
+    },
     worst_cases: {
       total_cases: worstCases.length,
       by_category: worstCasesByCategory,
@@ -168,6 +196,7 @@ async function main(): Promise<void> {
   console.log('\n⚙️  Configuration:');
   console.log(`  Linear issues: ${config.linearCount}`);
   console.log(`  Zendesk tickets: ${config.zendeskCount}`);
+  console.log(`  Slack threads: ${config.slackCount}`);
   console.log(`  Include sub-issues: ${config.includeSubIssues}`);
   console.log(`  Output directory: ${config.outputDir}`);
 
@@ -187,6 +216,12 @@ async function main(): Promise<void> {
   });
   analyzeZendeskSamples(zendeskSamples);
 
+  // Generate Slack samples
+  const slackSamples = await generateSlackSamples({
+    count: config.slackCount,
+  });
+  analyzeSlackSamples(slackSamples);
+
   // Generate worst cases
   const worstCases = generateAllWorstCases();
 
@@ -200,10 +235,12 @@ async function main(): Promise<void> {
 
   await writeJsonFile(path.join(samplesDir, 'zendesk.json'), zendeskSamples, 'Zendesk samples');
 
+  await writeJsonFile(path.join(samplesDir, 'slack.json'), slackSamples, 'Slack samples');
+
   await writeJsonFile(path.join(worstCasesDir, 'cases.json'), worstCases, 'Worst cases');
 
   // Generate and write summary
-  const summary = generateSummary(config, linearSamples, zendeskSamples, worstCases);
+  const summary = generateSummary(config, linearSamples, zendeskSamples, slackSamples, worstCases);
   await writeJsonFile(
     path.join(config.outputDir, 'generation-summary.json'),
     summary,
@@ -220,6 +257,9 @@ async function main(): Promise<void> {
   );
   console.log(
     `  Zendesk: ${summary.zendesk.total_tickets} tickets, ${summary.zendesk.total_comments} comments`
+  );
+  console.log(
+    `  Slack: ${summary.slack.total_threads} threads, ${summary.slack.total_messages} messages`
   );
   console.log(`  Worst cases: ${summary.worst_cases.total_cases} cases`);
   console.log('\n✨ All files written successfully!\n');

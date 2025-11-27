@@ -1,0 +1,457 @@
+# Project-based Synthetic Data Generation Templates
+# Purpose: Generate data with clear ground truth relations
+# Rule: Same project = related, Different project = unrelated
+
+metadata:
+  total_projects: 15
+  objects_per_project: 8-12
+  total_objects: ~150
+  expected_gt_relations: ~700
+
+projects:
+  # ========================================
+  # 1. User Authentication Revamp
+  # ========================================
+  - id: "auth-revamp"
+    name: "User Authentication System Overhaul"
+    description: "Replace legacy auth with modern OAuth2 + 2FA"
+    timeline:
+      start: "2024-01-15"
+      end: "2024-03-30"
+    team:
+      - "alice@company.com"
+      - "bob@company.com"
+      - "charlie@company.com"
+    priority: "high"
+
+    linear_issues:
+      - title: "Implement OAuth2 provider integration"
+        description: "Research and integrate Auth0 for OAuth2 authentication. Replace current JWT-based system."
+        labels: ["backend", "security"]
+
+      - title: "Add 2FA support via SMS and authenticator app"
+        description: "Implement two-factor authentication using Twilio for SMS and TOTP for authenticator apps."
+        labels: ["backend", "security"]
+
+      - title: "Migrate existing users to new auth system"
+        description: "Create migration script for 50K+ existing users. Zero downtime required."
+        labels: ["backend", "database"]
+
+      - title: "Update frontend login/signup flows"
+        description: "Redesign login page to support OAuth providers and 2FA."
+        labels: ["frontend", "ui"]
+
+    zendesk_tickets:
+      - title: "Users unable to login after password reset"
+        description: "Multiple users reporting they can't login even with correct password after reset. Affecting ~200 users."
+        priority: "urgent"
+
+      - title: "2FA codes not being received via SMS"
+        description: "Users in certain regions not receiving SMS codes. Twilio API issues suspected."
+        priority: "high"
+
+      - title: "OAuth login redirects to 404 page"
+        description: "Google OAuth flow redirecting to /auth/callback which doesn't exist."
+        priority: "medium"
+
+    slack_threads:
+      - title: "Discussion: OAuth provider selection (Auth0 vs Okta)"
+        description: "Team debating which OAuth provider to use. Cost vs features comparison."
+        channel: "engineering"
+
+      - title: "Decision made: Use Auth0 for OAuth"
+        description: "Final decision to go with Auth0. Better pricing for our scale."
+        channel: "engineering"
+
+      - title: "Migration plan review meeting notes"
+        description: "Reviewed migration approach. Decided on phased rollout over 2 weeks."
+        channel: "engineering"
+
+  # ========================================
+  # 2. Dashboard Performance Optimization
+  # ========================================
+  - id: "dashboard-perf"
+    name: "Dashboard Performance Optimization"
+    description: "Reduce dashboard load time from 8s to under 2s"
+    timeline:
+      start: "2024-02-01"
+      end: "2024-04-15"
+    team:
+      - "diana@company.com"
+      - "edward@company.com"
+    priority: "medium"
+
+    linear_issues:
+      - title: "Optimize analytics query performance"
+        description: "Current analytics queries taking 5-8 seconds. Add database indexes and query optimization."
+        labels: ["backend", "performance"]
+
+      - title: "Implement Redis caching layer for dashboard data"
+        description: "Cache frequently accessed dashboard metrics in Redis with 5-minute TTL."
+        labels: ["backend", "infrastructure"]
+
+      - title: "Frontend: Lazy load chart components"
+        description: "Defer loading of heavy chart libraries until needed."
+        labels: ["frontend", "performance"]
+
+      - title: "Add performance monitoring to dashboard"
+        description: "Integrate DataDog RUM to track real user performance metrics."
+        labels: ["devops", "monitoring"]
+
+    zendesk_tickets:
+      - title: "Dashboard loading is extremely slow"
+        description: "Enterprise customer reporting 10+ second load times for main dashboard."
+        priority: "high"
+
+      - title: "Charts not rendering on dashboard"
+        description: "Pie charts and bar graphs showing blank on some browsers."
+        priority: "medium"
+
+    slack_threads:
+      - title: "Performance analysis: Database query bottleneck identified"
+        description: "Profiling shows analytics queries are the main bottleneck. ~80% of load time."
+        channel: "engineering"
+
+      - title: "Caching strategy discussion for dashboard"
+        description: "Debating Redis vs in-memory caching. Decided on Redis for multi-server setup."
+        channel: "engineering"
+
+  # ========================================
+  # 3. Payment Gateway Integration
+  # ========================================
+  - id: "payment-integration"
+    name: "Stripe Payment Gateway Integration"
+    description: "Add Stripe for subscription payments"
+    timeline:
+      start: "2024-01-20"
+      end: "2024-03-10"
+    team:
+      - "frank@company.com"
+      - "grace@company.com"
+    priority: "high"
+
+    linear_issues:
+      - title: "Integrate Stripe SDK for subscription billing"
+        description: "Implement Stripe Billing API for monthly/annual subscriptions."
+        labels: ["backend", "payments"]
+
+      - title: "Build payment settings page in user dashboard"
+        description: "UI for users to manage payment methods and view invoices."
+        labels: ["frontend", "ui"]
+
+      - title: "Implement webhook handlers for Stripe events"
+        description: "Handle payment_succeeded, payment_failed, subscription_cancelled events."
+        labels: ["backend", "webhooks"]
+
+      - title: "Add invoice generation and email delivery"
+        description: "Generate PDF invoices and email to customers on successful payment."
+        labels: ["backend", "email"]
+
+    zendesk_tickets:
+      - title: "Payment failed but subscription still active"
+        description: "Customer's card was declined but they still have access to premium features."
+        priority: "urgent"
+
+      - title: "Cannot update payment method"
+        description: "Update payment method button not working. Console shows 500 error."
+        priority: "high"
+
+    slack_threads:
+      - title: "Stripe webhook security review"
+        description: "Discussed signature verification for webhooks. Implemented HMAC validation."
+        channel: "engineering"
+
+      - title: "PCI compliance checklist for payment flow"
+        description: "Reviewed PCI DSS requirements. Using Stripe Elements to avoid storing card data."
+        channel: "engineering"
+
+  # ========================================
+  # 4. Customer Support Chatbot
+  # ========================================
+  - id: "support-chatbot"
+    name: "AI-Powered Customer Support Chatbot"
+    description: "Build chatbot to handle tier-1 support queries"
+    timeline:
+      start: "2024-02-15"
+      end: "2024-05-01"
+    team:
+      - "hannah@company.com"
+      - "ivan@company.com"
+    priority: "medium"
+
+    linear_issues:
+      - title: "Integrate GPT-4 API for natural language understanding"
+        description: "Use OpenAI API to understand customer queries and generate responses."
+        labels: ["backend", "ai"]
+
+      - title: "Build knowledge base from existing Zendesk articles"
+        description: "Scrape and structure 500+ support articles for RAG system."
+        labels: ["backend", "data"]
+
+      - title: "Create chat widget UI component"
+        description: "Embeddable chat widget for website and app."
+        labels: ["frontend", "ui"]
+
+      - title: "Implement fallback to human agent"
+        description: "If chatbot confidence < 0.7, escalate to human support."
+        labels: ["backend", "logic"]
+
+    zendesk_tickets:
+      - title: "Chatbot giving incorrect billing information"
+        description: "Chatbot told customer their plan costs $99/mo when it's actually $49/mo."
+        priority: "high"
+
+      - title: "Chat widget not appearing on mobile"
+        description: "Widget shows on desktop but not on iOS Safari."
+        priority: "medium"
+
+    slack_threads:
+      - title: "RAG architecture decision: Pinecone vs Weaviate"
+        description: "Comparing vector databases for knowledge base. Chose Pinecone for ease of use."
+        channel: "engineering"
+
+      - title: "Chatbot accuracy metrics review"
+        description: "Current accuracy: 78%. Goal: 85%+. Need more training data."
+        channel: "product"
+
+  # ========================================
+  # 5. API Rate Limiting System
+  # ========================================
+  - id: "rate-limiting"
+    name: "API Rate Limiting and Quota Management"
+    description: "Implement tiered rate limits for API access"
+    timeline:
+      start: "2024-03-01"
+      end: "2024-04-20"
+    team:
+      - "jack@company.com"
+      - "kate@company.com"
+    priority: "high"
+
+    linear_issues:
+      - title: "Implement Redis-based rate limiter middleware"
+        description: "Token bucket algorithm with Redis for distributed rate limiting."
+        labels: ["backend", "infrastructure"]
+
+      - title: "Define rate limit tiers (Free: 100/hr, Pro: 1000/hr, Enterprise: 10000/hr)"
+        description: "Set up tiered limits based on subscription plan."
+        labels: ["backend", "product"]
+
+      - title: "Add rate limit headers to API responses"
+        description: "Return X-RateLimit-Remaining, X-RateLimit-Reset headers."
+        labels: ["backend", "api"]
+
+      - title: "Build rate limit usage dashboard for users"
+        description: "Show current usage, limits, and upgrade prompts."
+        labels: ["frontend", "analytics"]
+
+    zendesk_tickets:
+      - title: "API returning 429 errors unexpectedly"
+        description: "Enterprise customer hitting rate limits despite having 10K/hr quota."
+        priority: "urgent"
+
+      - title: "Need higher rate limit for data migration"
+        description: "Customer needs temporary limit increase for one-time data import."
+        priority: "medium"
+
+    slack_threads:
+      - title: "Rate limiting strategy: Token bucket vs Sliding window"
+        description: "Chose token bucket for simplicity and fair burst handling."
+        channel: "engineering"
+
+      - title: "Redis cluster setup for rate limiter"
+        description: "Configured Redis Cluster with 3 masters for HA."
+        channel: "devops"
+
+  # ========================================
+  # 6. Mobile Push Notifications
+  # ========================================
+  - id: "push-notifications"
+    name: "Mobile App Push Notification System"
+    description: "Implement FCM/APNS for iOS and Android push"
+    timeline:
+      start: "2024-02-10"
+      end: "2024-04-05"
+    team:
+      - "liam@company.com"
+      - "mia@company.com"
+    priority: "medium"
+
+    linear_issues:
+      - title: "Integrate Firebase Cloud Messaging for Android"
+        description: "Set up FCM for Android push notifications."
+        labels: ["mobile", "android"]
+
+      - title: "Integrate Apple Push Notification Service for iOS"
+        description: "Configure APNS with production certificates."
+        labels: ["mobile", "ios"]
+
+      - title: "Build notification preferences API"
+        description: "Allow users to opt in/out of notification types."
+        labels: ["backend", "api"]
+
+      - title: "Implement notification delivery tracking"
+        description: "Track sent, delivered, opened rates."
+        labels: ["backend", "analytics"]
+
+    zendesk_tickets:
+      - title: "Not receiving push notifications on iOS"
+        description: "Users on iOS 17+ not getting notifications. APNS cert issue suspected."
+        priority: "high"
+
+      - title: "Push notifications sent multiple times"
+        description: "Duplicate notifications being sent. Queue processing bug."
+        priority: "medium"
+
+    slack_threads:
+      - title: "APNS certificate renewal process"
+        description: "Renewed production cert. Deployed to all servers."
+        channel: "mobile-team"
+
+      - title: "Push notification A/B test results"
+        description: "Personalized notifications have 2.3x higher open rate."
+        channel: "product"
+
+  # ========================================
+  # 7. Database Migration to PostgreSQL
+  # ========================================
+  - id: "db-migration"
+    name: "MySQL to PostgreSQL Migration"
+    description: "Migrate 500GB database from MySQL to PostgreSQL"
+    timeline:
+      start: "2024-01-05"
+      end: "2024-03-15"
+    team:
+      - "noah@company.com"
+      - "olivia@company.com"
+    priority: "high"
+
+    linear_issues:
+      - title: "Set up PostgreSQL cluster (primary + 2 replicas)"
+        description: "Configure PostgreSQL 15 with streaming replication."
+        labels: ["devops", "database"]
+
+      - title: "Build data migration scripts"
+        description: "pgloader for initial dump, custom scripts for ongoing sync."
+        labels: ["backend", "database"]
+
+      - title: "Update ORM queries for PostgreSQL compatibility"
+        description: "Fix MySQL-specific queries (LIMIT syntax, date functions, etc)."
+        labels: ["backend"]
+
+      - title: "Performance testing and index optimization"
+        description: "Ensure query performance matches or exceeds MySQL."
+        labels: ["backend", "performance"]
+
+    zendesk_tickets:
+      - title: "Database queries timing out after migration"
+        description: "Certain analytics queries that worked on MySQL now timeout on PostgreSQL."
+        priority: "urgent"
+
+      - title: "Data inconsistency in orders table"
+        description: "Some order records showing incorrect timestamps after migration."
+        priority: "high"
+
+    slack_threads:
+      - title: "PostgreSQL migration dry run results"
+        description: "Test migration completed in 18 hours. Production should be similar."
+        channel: "devops"
+
+      - title: "Rollback plan for migration"
+        description: "Documented rollback procedure. Can revert within 4 hours if needed."
+        channel: "engineering"
+
+  # ========================================
+  # 8. Search Functionality Enhancement
+  # ========================================
+  - id: "search-enhancement"
+    name: "Advanced Search with Elasticsearch"
+    description: "Replace basic SQL search with Elasticsearch"
+    timeline:
+      start: "2024-03-10"
+      end: "2024-05-20"
+    team:
+      - "peter@company.com"
+      - "quinn@company.com"
+    priority: "medium"
+
+    linear_issues:
+      - title: "Set up Elasticsearch cluster"
+        description: "Deploy 3-node ES cluster with proper sharding."
+        labels: ["devops", "search"]
+
+      - title: "Implement full-text search with relevance scoring"
+        description: "BM25 scoring with custom boosting for title vs content."
+        labels: ["backend", "search"]
+
+      - title: "Add search filters (date, category, author)"
+        description: "Faceted search with aggregations."
+        labels: ["backend", "search"]
+
+      - title: "Build search suggestions (autocomplete)"
+        description: "Implement search-as-you-type with prefix matching."
+        labels: ["frontend", "search"]
+
+    zendesk_tickets:
+      - title: "Search results not showing recent content"
+        description: "Content published today not appearing in search. Index lag suspected."
+        priority: "medium"
+
+      - title: "Special characters breaking search"
+        description: "Searching for 'C++' or 'C#' returns no results."
+        priority: "low"
+
+    slack_threads:
+      - title: "Elasticsearch vs Algolia comparison"
+        description: "Decided on self-hosted ES for cost savings. Algolia is 10x more expensive."
+        channel: "engineering"
+
+      - title: "Search relevance tuning session"
+        description: "Adjusted field boosting. Title: 3x, Content: 1x, Tags: 2x."
+        channel: "product"
+
+  # ========================================
+  # Additional projects (9-15) - Abbreviated
+  # ========================================
+
+  - id: "email-notifications"
+    name: "Email Notification System Overhaul"
+    timeline: { start: "2024-02-20", end: "2024-04-30" }
+    team: ["rachel@company.com", "sam@company.com"]
+    priority: "low"
+
+  - id: "admin-security"
+    name: "Admin Panel Security Hardening"
+    timeline: { start: "2024-03-05", end: "2024-04-25" }
+    team: ["tom@company.com", "uma@company.com"]
+    priority: "high"
+
+  - id: "third-party-api"
+    name: "Third-party API Integration (Twilio, SendGrid)"
+    timeline: { start: "2024-01-25", end: "2024-03-20" }
+    team: ["victor@company.com", "wendy@company.com"]
+    priority: "medium"
+
+  - id: "file-upload"
+    name: "File Upload & Cloud Storage System (S3)"
+    timeline: { start: "2024-02-28", end: "2024-04-18" }
+    team: ["xander@company.com", "yara@company.com"]
+    priority: "medium"
+
+  - id: "real-time-collab"
+    name: "Real-time Collaboration Features (WebSockets)"
+    timeline: { start: "2024-03-15", end: "2024-06-01" }
+    team: ["zoe@company.com", "adam@company.com"]
+    priority: "low"
+
+  - id: "audit-logging"
+    name: "Audit Logging System for Compliance"
+    timeline: { start: "2024-01-10", end: "2024-02-28" }
+    team: ["bella@company.com", "chris@company.com"]
+    priority: "high"
+
+  - id: "i18n-support"
+    name: "Multi-language Support (i18n)"
+    timeline: { start: "2024-04-01", end: "2024-06-15" }
+    team: ["david@company.com", "emma@company.com"]
+    priority: "low"

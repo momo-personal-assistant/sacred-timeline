@@ -2,11 +2,19 @@
 /**
  * Create Ground Truth Relations for Sample Data
  *
- * Analyzes canonical objects and creates ground truth relations based on:
- * - Explicit relations (parent issues, linked tickets)
- * - Semantic similarity (similar topics/content)
- * - Actor connections (same assignees, creators)
- * - Temporal proximity (created within same time window)
+ * IMPORTANT: Ground Truth must be INDEPENDENT from the inference algorithm.
+ * This means we ONLY use structural/explicit relations that are 100% verifiable,
+ * NOT semantic similarity (which is what the inference tries to discover).
+ *
+ * Ground Truth sources (used for evaluation):
+ * - Explicit parent/child relations (from data schema)
+ * - Explicit mentions (Issue A mentions "LIN-123" in description)
+ * - Explicit links (ticket references another ticket)
+ *
+ * NOT included in Ground Truth (inference should discover these):
+ * - Semantic similarity (embedding-based) ← This is what we evaluate!
+ * - Actor connections (same assignees)
+ * - Temporal proximity
  * - Tag/label overlap
  *
  * Usage:
@@ -119,16 +127,25 @@ function createExplicitRelations(objects: CanonicalObject[]): GroundTruthRelatio
 }
 
 /**
- * Create relations based on embedding-based semantic similarity
- * Uses 'related_to' to match the inferrer's relation type
- * Uses embeddings and cosine similarity to match production inference method
+ * DEPRECATED: Semantic relations should NOT be in Ground Truth
+ *
+ * This function is kept for reference/comparison but should NOT be used
+ * in the final ground truth set. Semantic similarity is what the inference
+ * algorithm tries to discover - using it as GT creates circular validation.
+ *
+ * @deprecated Use only for debugging/comparison, not for GT
  */
 function createSemanticRelations(
   objects: CanonicalObject[],
   embeddingsMap: Map<string, number[]>
 ): GroundTruthRelation[] {
+  console.warn('⚠️  WARNING: createSemanticRelations should NOT be used for Ground Truth!');
+  console.warn(
+    '    Semantic similarity is what inference discovers - using it as GT is circular validation.'
+  );
+
   const relations: GroundTruthRelation[] = [];
-  const SIMILARITY_THRESHOLD = 0.35; // Match config threshold
+  const SIMILARITY_THRESHOLD = 0.35;
 
   for (let i = 0; i < objects.length; i++) {
     for (let j = i + 1; j < objects.length; j++) {
@@ -138,7 +155,6 @@ function createSemanticRelations(
       const emb1 = embeddingsMap.get(obj1.id);
       const emb2 = embeddingsMap.get(obj2.id);
 
-      // Skip if either object doesn't have embeddings
       if (!emb1 || !emb2) continue;
 
       const similarity = cosineSimilarity(emb1, emb2);
@@ -147,13 +163,69 @@ function createSemanticRelations(
         relations.push({
           from_id: obj1.id,
           to_id: obj2.id,
-          relation_type: 'similar_to', // Match inferrer's relation type
+          relation_type: 'similar_to',
           confidence: similarity,
           source: 'semantic_embedding',
           metadata: {
             evidence: [`embedding_cosine_similarity:${similarity.toFixed(3)}`],
             similarity_score: similarity,
             similarity_method: 'cosine',
+            _warning: 'THIS SHOULD NOT BE IN GROUND TRUTH - circular validation',
+          },
+        });
+      }
+    }
+  }
+
+  return relations;
+}
+
+/**
+ * Create relations based on explicit mentions in text
+ * e.g., Issue A's description contains "LIN-123" which is Issue B's identifier
+ *
+ * This is a valid Ground Truth source because:
+ * - It's 100% verifiable from the data
+ * - It's independent of the inference algorithm
+ * - A human would also identify this as a relation
+ */
+function createExplicitMentionRelations(objects: CanonicalObject[]): GroundTruthRelation[] {
+  const relations: GroundTruthRelation[] = [];
+
+  // Build a map of identifiers to objects
+  const identifierMap = new Map<string, CanonicalObject>();
+
+  for (const obj of objects) {
+    // Linear issues have identifiers like "LIN-123"
+    if (obj.platform === 'linear' && obj.properties.identifier) {
+      identifierMap.set(obj.properties.identifier, obj);
+    }
+    // Zendesk tickets have IDs
+    if (obj.platform === 'zendesk' && obj.properties.ticket_id) {
+      identifierMap.set(`#${obj.properties.ticket_id}`, obj);
+      identifierMap.set(`ticket-${obj.properties.ticket_id}`, obj);
+    }
+  }
+
+  // Check each object's text for mentions of other objects
+  for (const obj of objects) {
+    const textToSearch = `${obj.title || ''} ${obj.body || ''}`.toLowerCase();
+
+    for (const [identifier, targetObj] of identifierMap.entries()) {
+      // Don't link to self
+      if (targetObj.id === obj.id) continue;
+
+      // Check if this object mentions the identifier
+      if (textToSearch.includes(identifier.toLowerCase())) {
+        relations.push({
+          from_id: obj.id,
+          to_id: targetObj.id,
+          relation_type: 'mentions',
+          confidence: 1.0, // Explicit mention = 100% confidence
+          source: 'explicit_mention',
+          metadata: {
+            evidence: [`text_contains_identifier:${identifier}`],
+            mentioned_identifier: identifier,
           },
         });
       }
@@ -377,30 +449,46 @@ async function main() {
       process.exit(1);
     }
 
-    // Generate relations using different strategies
-    console.log('🔍 Analyzing relations...\n');
+    // Generate relations using ONLY structural/explicit sources
+    // These are 100% verifiable and independent of the inference algorithm
+    console.log('🔍 Analyzing structural relations (Ground Truth)...\n');
 
     const explicitRelations = createExplicitRelations(objects);
-    console.log(`   Explicit relations: ${explicitRelations.length}`);
+    console.log(`   ✅ Parent-child relations: ${explicitRelations.length}`);
+
+    const mentionRelations = createExplicitMentionRelations(objects);
+    console.log(`   ✅ Explicit mention relations: ${mentionRelations.length}`);
+
+    // These are NOT included in Ground Truth
+    // They are what the inference algorithm should discover
+    console.log('\n📊 Reference: What inference should discover (NOT in GT)...');
 
     const semanticRelations = createSemanticRelations(objects, embeddingsMap);
-    console.log(`   Semantic relations (embedding-based): ${semanticRelations.length}`);
+    console.log(`   ⚠️  Semantic relations (for comparison only): ${semanticRelations.length}`);
 
     const actorRelations = createActorRelations(objects);
-    console.log(`   Actor relations: ${actorRelations.length}`);
+    console.log(`   ℹ️  Actor relations (not in GT): ${actorRelations.length}`);
 
     const temporalRelations = createTemporalRelations(objects);
-    console.log(`   Temporal relations: ${temporalRelations.length}`);
+    console.log(`   ℹ️  Temporal relations (not in GT): ${temporalRelations.length}`);
 
     const labelRelations = createLabelRelations(objects);
-    console.log(`   Label relations: ${labelRelations.length}`);
+    console.log(`   ℹ️  Label relations (not in GT): ${labelRelations.length}`);
 
-    // Combine all relations
-    // Note: Only using explicit and semantic relations to match what the inferrer produces
-    // Actor, temporal, and label relations are excluded because the inferrer doesn't create these types
-    const allRelations = [...explicitRelations, ...semanticRelations];
+    // CRITICAL: Ground Truth = ONLY structural/explicit relations
+    // Semantic similarity is what the inference discovers - NOT ground truth
+    const allRelations = [...explicitRelations, ...mentionRelations];
 
-    console.log(`\n📝 Total ground truth relations: ${allRelations.length}\n`);
+    console.log('\n' + '═'.repeat(60));
+    console.log('📝 GROUND TRUTH COMPOSITION (structural only):');
+    console.log('═'.repeat(60));
+    console.log(`   Parent-child:      ${explicitRelations.length}`);
+    console.log(`   Explicit mentions: ${mentionRelations.length}`);
+    console.log(`   ─────────────────────────────`);
+    console.log(`   TOTAL GT:          ${allRelations.length}`);
+    console.log('═'.repeat(60));
+    console.log(`\n⚠️  Semantic relations (${semanticRelations.length}) are EXCLUDED from GT`);
+    console.log('   → These are what inference should discover\n');
 
     if (dryRun) {
       console.log('✅ DRY RUN: Would create these relations');

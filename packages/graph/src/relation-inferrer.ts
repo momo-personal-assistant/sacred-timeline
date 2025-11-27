@@ -66,6 +66,13 @@ export interface RelationInferrerOptions {
   // 0 = only keywords, 1 = only semantic, 0.5 = equal weight
   semanticWeight?: number;
 
+  // EXP-006 Stage 2: Project metadata signal
+  // Use project metadata for relation inference
+  useProjectMetadata?: boolean;
+
+  // Weight for project metadata similarity (0-1)
+  projectWeight?: number;
+
   // Enable duplicate detection using semantic_hash (CDM paper recommendation)
   enableDuplicateDetection?: boolean;
 
@@ -90,6 +97,9 @@ export class RelationInferrer {
       useSemanticSimilarity: options.useSemanticSimilarity ?? false,
       semanticWeight: options.semanticWeight ?? 0.7,
       enableDuplicateDetection: options.enableDuplicateDetection ?? true,
+      // EXP-006 Stage 2: Project metadata defaults
+      useProjectMetadata: options.useProjectMetadata ?? false,
+      projectWeight: options.projectWeight ?? 0.3,
       // Contrastive ICL defaults
       useContrastiveICL: options.useContrastiveICL ?? false,
       contrastiveExamples: options.contrastiveExamples ?? { positive: [], negative: [] },
@@ -274,6 +284,41 @@ export class RelationInferrer {
   }
 
   /**
+   * EXP-006 Stage 2: Calculate project similarity based on ID pattern
+   * Extracts project from ID pattern: {platform}-{project}-{number}
+   * Returns 1.0 for exact match, 0.0 for no match
+   */
+  private calculateProjectSimilarity(obj1: CanonicalObject, obj2: CanonicalObject): number {
+    // Extract project from ID (e.g., "linear-auth-revamp-1" → "auth-revamp")
+    const extractProject = (id: string): string | null => {
+      // ID format: {platform}-{project}-{number}
+      // e.g., "linear-auth-revamp-1" or "zendesk-auth-revamp-1"
+      const parts = id.split('-');
+      if (parts.length < 3) return null;
+
+      // Remove platform (first part) and number (last part)
+      const projectParts = parts.slice(1, -1);
+      return projectParts.join('-');
+    };
+
+    const proj1 = extractProject(obj1.id);
+    const proj2 = extractProject(obj2.id);
+
+    // If either extraction failed, return 0
+    if (!proj1 || !proj2) {
+      return 0;
+    }
+
+    // Exact match (case-insensitive)
+    if (proj1.toLowerCase() === proj2.toLowerCase()) {
+      return 1.0;
+    }
+
+    // No match
+    return 0;
+  }
+
+  /**
    * Infer similarity relations based on keyword overlap
    * These relations are computed from object properties
    */
@@ -451,6 +496,9 @@ export class RelationInferrer {
     console.log(`  - semanticWeight: ${this.options.semanticWeight}`);
     console.log(`  - similarityThreshold: ${this.options.similarityThreshold}`);
     console.log(`  - keywordOverlapThreshold: ${this.options.keywordOverlapThreshold}`);
+    // EXP-006 Stage 2: Log project metadata options
+    console.log(`  - useProjectMetadata: ${this.options.useProjectMetadata}`);
+    console.log(`  - projectWeight: ${this.options.projectWeight}`);
 
     const relations: Relation[] = [];
 
@@ -525,12 +573,36 @@ export class RelationInferrer {
           }
         }
 
+        // EXP-006 Stage 2: Calculate project similarity
+        let projectSim = 0;
+        if (this.options.useProjectMetadata) {
+          projectSim = this.calculateProjectSimilarity(obj1, obj2);
+
+          // Log project similarity for first few pairs
+          if (semanticPairCount <= 3) {
+            console.log(`      Project sim: ${projectSim.toFixed(3)}`);
+          }
+        }
+
         // Combine similarities based on weight
-        const combinedSim =
-          this.options.useSemanticSimilarity && emb1 && emb2
-            ? this.options.semanticWeight * semanticSim +
-              (1 - this.options.semanticWeight) * keywordSim
-            : keywordSim;
+        let combinedSim: number;
+        if (this.options.useProjectMetadata && this.options.useSemanticSimilarity && emb1 && emb2) {
+          // EXP-006 Stage 2: Three-signal fusion (semantic + keyword + project)
+          // Adjust weights to sum to 1.0
+          const semanticW = this.options.semanticWeight * (1 - this.options.projectWeight);
+          const keywordW = (1 - this.options.semanticWeight) * (1 - this.options.projectWeight);
+          const projectW = this.options.projectWeight;
+
+          combinedSim = semanticW * semanticSim + keywordW * keywordSim + projectW * projectSim;
+        } else if (this.options.useSemanticSimilarity && emb1 && emb2) {
+          // Two-signal fusion (semantic + keyword)
+          combinedSim =
+            this.options.semanticWeight * semanticSim +
+            (1 - this.options.semanticWeight) * keywordSim;
+        } else {
+          // Keyword only
+          combinedSim = keywordSim;
+        }
 
         // Use lower threshold when combining semantic + keyword
         const threshold =
@@ -560,6 +632,18 @@ export class RelationInferrer {
 
           if (semanticSim > 0) {
             metadata.semantic_similarity = semanticSim;
+          }
+
+          // EXP-006 Stage 2: Add project similarity to metadata
+          if (this.options.useProjectMetadata && projectSim > 0) {
+            metadata.project_similarity = projectSim;
+            // Extract project names from IDs for debugging
+            const extractProject = (id: string) => {
+              const parts = id.split('-');
+              return parts.length >= 3 ? parts.slice(1, -1).join('-') : null;
+            };
+            metadata.project_1 = extractProject(obj1.id);
+            metadata.project_2 = extractProject(obj2.id);
           }
 
           // Create bidirectional relations

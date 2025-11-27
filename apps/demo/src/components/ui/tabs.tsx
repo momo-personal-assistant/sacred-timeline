@@ -45,6 +45,8 @@ const TabsContent = React.forwardRef<
     ref={ref}
     className={cn(
       'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      // Hide inactive tabs completely to prevent them from taking space in flex containers
+      'data-[state=inactive]:hidden',
       className
     )}
     {...props}

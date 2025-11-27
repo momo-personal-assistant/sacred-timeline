@@ -28,16 +28,16 @@ retrieval:
 
 # Relation Inference Configuration
 relationInference:
-  similarityThreshold: 0.85             # Threshold for semantic similarity (0-1)
+  similarityThreshold: 0.35             # Threshold for semantic similarity (0-1)
   keywordOverlapThreshold: 0.65         # Threshold for keyword-based Jaccard similarity (0-1)
   includeInferred: true                 # Include computed relations (vs only explicit)
-  useSemanticSimilarity: false          # Use embedding-based similarity (requires embeddings)
+  useSemanticSimilarity: true           # Use embedding-based similarity (requires embeddings)
   semanticWeight: 0.7                   # Weight for semantic vs keyword (0=keyword only, 1=semantic only)
 
 # Validation Configuration
 validation:
   runOnSave: true                       # Automatically run validation after embedding
-  autoSaveExperiment: false             # Automatically save to experiments table (usually false for manual review)
+  autoSaveExperiment: true              # Automatically save to experiments table
   scenarios:                            # Validation scenarios to run
     - "normal"
     - "sales_heavy"
