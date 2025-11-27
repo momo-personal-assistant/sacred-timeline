@@ -3,7 +3,6 @@
 import { Database, Star } from 'lucide-react';
 import * as React from 'react';
 
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sidebar,
   SidebarContent,
@@ -88,52 +87,53 @@ function ExperimentCard({
     : null;
 
   return (
-    <button
-      onClick={() => {
-        onClick();
-        onTabChange();
-      }}
-      className={`w-full max-w-full min-w-0 text-left px-3 py-2 rounded-md transition-colors ${
-        isSelected ? 'bg-accent' : 'hover:bg-accent/50'
-      }`}
-    >
-      <div className="space-y-1 min-w-0 w-full overflow-hidden">
-        {/* Experiment Name */}
-        <div className="flex items-center gap-2 min-w-0 w-full overflow-hidden">
-          <div className="text-sm font-medium truncate flex-1 min-w-0">{experiment.name}</div>
-          {experiment.is_baseline && (
-            <Star className="h-3 w-3 fill-current text-primary shrink-0" />
-          )}
-        </div>
-
-        {/* F1 Score, Delta & Time */}
-        <div className="flex items-center justify-between gap-2 text-xs min-w-0 w-full overflow-hidden">
-          <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-            {f1Score && (
-              <>
-                <span className="font-mono text-muted-foreground shrink-0">F1: {f1Score}%</span>
-                {delta !== null && (
-                  <span
-                    className={`font-mono shrink-0 ${
-                      delta >= 0
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    }`}
-                  >
-                    {delta >= 0 ? '+' : ''}
-                    {delta.toFixed(1)}%
-                  </span>
-                )}
-              </>
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        isActive={isSelected}
+        onClick={() => {
+          onClick();
+          onTabChange();
+        }}
+        className="h-auto py-2"
+      >
+        <div className="flex flex-col gap-1 w-full min-w-0">
+          {/* Experiment Name */}
+          <div className="flex items-center gap-2 min-w-0 w-full">
+            <span className="text-sm font-medium truncate flex-1 min-w-0">{experiment.name}</span>
+            {experiment.is_baseline && (
+              <Star className="h-3 w-3 fill-current text-primary shrink-0" />
             )}
-            {status === 'draft' && <span className={`${statusColor} shrink-0`}>Draft</span>}
-            {status === 'running' && <span className={`${statusColor} shrink-0`}>Running</span>}
-            {status === 'failed' && <span className={`${statusColor} shrink-0`}>Failed</span>}
           </div>
-          <span className="text-muted-foreground shrink-0">{timeAgo(experiment.created_at)}</span>
+
+          {/* F1 Score, Delta & Time */}
+          <div className="flex items-center justify-between gap-2 text-xs min-w-0 w-full">
+            <div className="flex items-center gap-2 min-w-0 overflow-hidden">
+              {f1Score && (
+                <>
+                  <span className="font-mono text-muted-foreground shrink-0">F1: {f1Score}%</span>
+                  {delta !== null && (
+                    <span
+                      className={`font-mono shrink-0 ${
+                        delta >= 0
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-red-600 dark:text-red-400'
+                      }`}
+                    >
+                      {delta >= 0 ? '+' : ''}
+                      {delta.toFixed(1)}%
+                    </span>
+                  )}
+                </>
+              )}
+              {status === 'draft' && <span className={`${statusColor} shrink-0`}>Draft</span>}
+              {status === 'running' && <span className={`${statusColor} shrink-0`}>Running</span>}
+              {status === 'failed' && <span className={`${statusColor} shrink-0`}>Failed</span>}
+            </div>
+            <span className="text-muted-foreground shrink-0">{timeAgo(experiment.created_at)}</span>
+          </div>
         </div>
-      </div>
-    </button>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 }
 
@@ -183,29 +183,27 @@ export function AppSidebar({
         </SidebarGroup>
 
         {/* Experiments List */}
-        <SidebarGroup className="flex-1 min-h-0">
+        <SidebarGroup>
           <SidebarGroupLabel>Experiments</SidebarGroupLabel>
-          <SidebarGroupContent className="flex-1 min-h-0">
-            <ScrollArea className="flex-1 w-full">
-              <div className="space-y-1 w-full pr-3">
-                {experiments.length === 0 ? (
-                  <div className="text-xs text-muted-foreground p-3 text-center">
-                    No experiments yet
-                  </div>
-                ) : (
-                  experiments.map((exp, index) => (
-                    <ExperimentCard
-                      key={exp.id}
-                      experiment={exp}
-                      delta={calculateDelta(experiments, index)}
-                      isSelected={selectedExperimentId === exp.id}
-                      onClick={() => onExperimentSelect?.(exp.id)}
-                      onTabChange={() => onTabChange('experiment')}
-                    />
-                  ))
-                )}
-              </div>
-            </ScrollArea>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {experiments.length === 0 ? (
+                <div className="text-xs text-muted-foreground p-3 text-center">
+                  No experiments yet
+                </div>
+              ) : (
+                experiments.map((exp, index) => (
+                  <ExperimentCard
+                    key={exp.id}
+                    experiment={exp}
+                    delta={calculateDelta(experiments, index)}
+                    isSelected={selectedExperimentId === exp.id}
+                    onClick={() => onExperimentSelect?.(exp.id)}
+                    onTabChange={() => onTabChange('experiment')}
+                  />
+                ))
+              )}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
