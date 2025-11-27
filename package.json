@@ -39,7 +39,7 @@
     "benchmark:chunking": "tsx scripts/benchmark/benchmark-chunking.ts",
     "benchmark:embedding": "tsx scripts/benchmark/benchmark-embedding.ts",
     "benchmark:relations": "tsx scripts/benchmark/benchmark-relation-inference.ts",
-    "prepare": "husky install"
+    "prepare": "husky install || true"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
