@@ -114,6 +114,7 @@ export default function MomoDBPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const [workspace, setWorkspace] = useState<'sample' | 'tenxai'>('sample');
 
   const [vocData, setVocData] = useState<VOCResponse | null>(null);
   const [issuesData, setIssuesData] = useState<IssuesResponse | null>(null);
@@ -126,10 +127,10 @@ export default function MomoDBPanel() {
 
     try {
       const [vocRes, issuesRes, feedbackRes, relationsRes] = await Promise.all([
-        fetch('/api/momo/voc'),
-        fetch('/api/momo/issues'),
-        fetch('/api/momo/feedback'),
-        fetch('/api/momo/relations'),
+        fetch(`/api/momo/voc?workspace=${workspace}`),
+        fetch(`/api/momo/issues?workspace=${workspace}`),
+        fetch(`/api/momo/feedback?workspace=${workspace}`),
+        fetch(`/api/momo/relations?workspace=${workspace}`),
       ]);
 
       if (!vocRes.ok || !issuesRes.ok || !feedbackRes.ok || !relationsRes.ok) {
@@ -152,7 +153,7 @@ export default function MomoDBPanel() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [workspace]);
 
   useEffect(() => {
     fetchData();
@@ -241,6 +242,17 @@ export default function MomoDBPanel() {
             <span className="font-mono font-medium">{summary.relations}</span>
           </div>
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 border-r pr-2">
+              <span className="text-muted-foreground">Workspace:</span>
+              <Button
+                onClick={() => setWorkspace(workspace === 'sample' ? 'tenxai' : 'sample')}
+                variant={workspace === 'tenxai' ? 'default' : 'outline'}
+                size="sm"
+                className="h-7 px-2"
+              >
+                {workspace === 'sample' ? '🧪 Sample' : '🚀 TenxAI'}
+              </Button>
+            </div>
             <Button
               onClick={fetchData}
               variant="ghost"

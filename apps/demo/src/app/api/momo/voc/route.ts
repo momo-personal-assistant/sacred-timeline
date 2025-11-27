@@ -13,7 +13,10 @@ export interface VOCItem {
   linkedIssue?: string;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const workspace = searchParams.get('workspace') || process.env.WORKSPACE || 'sample';
+
   const db = new UnifiedMemoryDB({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
@@ -26,11 +29,14 @@ export async function GET() {
   try {
     await db.initialize();
     const pool = (
-      db as unknown as { pool: { query: (sql: string) => Promise<{ rows: unknown[] }> } }
+      db as unknown as {
+        pool: { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> };
+      }
     ).pool;
 
-    // Query VOC items from canonical_objects
-    const result = await pool.query(`
+    // Query VOC items from canonical_objects (filtered by workspace)
+    const result = await pool.query(
+      `
       SELECT
         id,
         platform,
@@ -43,9 +49,13 @@ export async function GET() {
         properties->>'linkedIssue' as linked_issue,
         relations->>'resulted_in_issue' as resulted_in_issue
       FROM canonical_objects
-      WHERE platform = 'discord' AND object_type = 'voc'
+      WHERE platform = 'discord'
+        AND object_type = 'voc'
+        AND id LIKE $1
       ORDER BY timestamps->>'created_at' DESC
-    `);
+    `,
+      [`discord|${workspace}|%`]
+    );
 
     await db.close();
 

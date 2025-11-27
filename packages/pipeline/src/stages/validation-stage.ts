@@ -80,15 +80,23 @@ export class ValidationStage implements PipelineStage {
       inferred = inferrer.inferAllWithEmbeddings(objects as any, embeddingsMap);
     }
 
-    // Fetch ground truth - only positive relations (exclude unrelated/uncertain labels)
+    // Fetch ground truth - positive relations (exclude unrelated/uncertain labels)
     const groundTruthResult = await pool.query(
       `SELECT from_id, to_id, relation_type as type FROM ground_truth_relations
        WHERE relation_type NOT IN ('human_verified_unrelated', 'human_uncertain')`
     );
     const groundTruth = groundTruthResult.rows as Relation[];
 
-    // Calculate metrics
-    const metrics = this.calculateMetrics(inferred, groundTruth);
+    // Fetch negative ground truth - relations explicitly marked as unrelated
+    // These are "trap" pairs that should NOT be inferred as related
+    const negativeGtResult = await pool.query(
+      `SELECT from_id, to_id, relation_type as type FROM ground_truth_relations
+       WHERE relation_type = 'human_verified_unrelated'`
+    );
+    const negativeGroundTruth = negativeGtResult.rows as Relation[];
+
+    // Calculate metrics (including negative GT awareness)
+    const metrics = this.calculateMetrics(inferred, groundTruth, negativeGroundTruth);
     const durationMs = Date.now() - startTime;
 
     // Persist layer metrics if experiment ID is available
@@ -109,6 +117,7 @@ export class ValidationStage implements PipelineStage {
       embeddings_loaded: embeddingsMap.size,
       inferred_relations: inferred.length,
       ground_truth_relations: groundTruth.length,
+      negative_ground_truth_relations: negativeGroundTruth.length,
       relation_inference_config: config.relationInference,
     });
 
@@ -126,7 +135,11 @@ export class ValidationStage implements PipelineStage {
     return context.config.validation.runOnSave;
   }
 
-  private calculateMetrics(inferred: Relation[], groundTruth: Relation[]): ValidationMetrics {
+  private calculateMetrics(
+    inferred: Relation[],
+    groundTruth: Relation[],
+    negativeGroundTruth: Relation[] = []
+  ): ValidationMetrics {
     // Normalize relation by sorting IDs to handle bidirectional relations
     // NOTE: We ignore relation type for matching - GT says "these are related",
     // inference finds the specific type (explicit, semantic, etc.)
@@ -136,15 +149,32 @@ export class ValidationStage implements PipelineStage {
     };
 
     const groundTruthSet = new Set(groundTruth.map(normalizeRelation));
+    const negativeGtSet = new Set(negativeGroundTruth.map(normalizeRelation));
     const inferredSet = new Set(inferred.map(normalizeRelation));
 
+    // True Positives: inferred relations that match positive GT
     const truePositives = inferred.filter((rel) => groundTruthSet.has(normalizeRelation(rel)));
+
+    // False Positives: inferred relations that don't match positive GT
+    // This includes both unknown relations AND relations that match negative GT
     const falsePositives = inferred.filter((rel) => !groundTruthSet.has(normalizeRelation(rel)));
+
+    // Additionally track "trap violations" - relations explicitly marked as unrelated
+    const trapViolations = inferred.filter((rel) => negativeGtSet.has(normalizeRelation(rel)));
+
+    // False Negatives: positive GT relations not found in inferred
     const falseNegatives = groundTruth.filter((rel) => !inferredSet.has(normalizeRelation(rel)));
 
     const tp = truePositives.length;
     const fp = falsePositives.length;
     const fn = falseNegatives.length;
+
+    // Log trap violations for visibility
+    if (trapViolations.length > 0) {
+      console.log(
+        `[ValidationStage] ⚠️ Trap violations: ${trapViolations.length} inferred relations match negative GT (should not be related)`
+      );
+    }
 
     const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
     const recall = tp + fn > 0 ? tp / (tp + fn) : 0;

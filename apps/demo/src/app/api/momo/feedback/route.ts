@@ -14,7 +14,10 @@ export interface FeedbackItem {
   note_type?: string;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const workspace = searchParams.get('workspace') || process.env.WORKSPACE || 'sample';
+
   const db = new UnifiedMemoryDB({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
@@ -27,11 +30,14 @@ export async function GET() {
   try {
     await db.initialize();
     const pool = (
-      db as unknown as { pool: { query: (sql: string) => Promise<{ rows: unknown[] }> } }
+      db as unknown as {
+        pool: { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> };
+      }
     ).pool;
 
-    // Query Notion feedback/meeting notes from canonical_objects
-    const result = await pool.query(`
+    // Query Notion feedback/meeting notes from canonical_objects (filtered by workspace)
+    const result = await pool.query(
+      `
       SELECT
         id,
         platform,
@@ -44,9 +50,13 @@ export async function GET() {
         properties->>'note_type' as note_type,
         relations->'validated_by' as validated_by
       FROM canonical_objects
-      WHERE platform = 'notion' AND object_type IN ('meeting_note', 'feedback', 'page')
+      WHERE platform = 'notion'
+        AND object_type IN ('meeting_note', 'feedback', 'page')
+        AND id LIKE $1
       ORDER BY timestamps->>'created_at' DESC
-    `);
+    `,
+      [`notion|${workspace}|%`]
+    );
 
     await db.close();
 

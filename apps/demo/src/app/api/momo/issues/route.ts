@@ -12,7 +12,10 @@ export interface LinearIssue {
   status: string;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const workspace = searchParams.get('workspace') || process.env.WORKSPACE || 'sample';
+
   const db = new UnifiedMemoryDB({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
@@ -25,11 +28,14 @@ export async function GET() {
   try {
     await db.initialize();
     const pool = (
-      db as unknown as { pool: { query: (sql: string) => Promise<{ rows: unknown[] }> } }
+      db as unknown as {
+        pool: { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> };
+      }
     ).pool;
 
-    // Query Linear issues from canonical_objects
-    const result = await pool.query(`
+    // Query Linear issues from canonical_objects (filtered by workspace)
+    const result = await pool.query(
+      `
       SELECT
         id,
         platform,
@@ -40,9 +46,13 @@ export async function GET() {
         timestamps->>'created_at' as timestamp,
         properties->>'status' as status
       FROM canonical_objects
-      WHERE platform = 'linear' AND object_type = 'issue'
+      WHERE platform = 'linear'
+        AND object_type = 'issue'
+        AND id LIKE $1
       ORDER BY timestamps->>'created_at' DESC
-    `);
+    `,
+      [`linear|${workspace}|%`]
+    );
 
     await db.close();
 

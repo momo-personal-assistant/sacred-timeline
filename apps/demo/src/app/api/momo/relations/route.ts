@@ -13,7 +13,10 @@ export interface RelationItem {
   confidence: number;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const workspace = searchParams.get('workspace') || process.env.WORKSPACE || 'sample';
+
   const db = new UnifiedMemoryDB({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
@@ -26,11 +29,14 @@ export async function GET() {
   try {
     await db.initialize();
     const pool = (
-      db as unknown as { pool: { query: (sql: string) => Promise<{ rows: unknown[] }> } }
+      db as unknown as {
+        pool: { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> };
+      }
     ).pool;
 
-    // Query VOC → Issue relations (triggered_by)
-    const vocToIssueResult = await pool.query(`
+    // Query VOC → Issue relations (triggered_by) - filtered by workspace
+    const vocToIssueResult = await pool.query(
+      `
       SELECT
         voc.id as from_id,
         voc.title as from_title,
@@ -44,12 +50,16 @@ export async function GET() {
       WHERE voc.platform = 'discord'
         AND voc.object_type = 'voc'
         AND voc.relations->>'resulted_in_issue' IS NOT NULL
+        AND voc.id LIKE $1
       ORDER BY voc.timestamps->>'created_at' DESC
-    `);
+    `,
+      [`discord|${workspace}|%`]
+    );
 
-    // Query Issue → Feedback relations (validated_by)
+    // Query Issue → Feedback relations (validated_by) - filtered by workspace
     // Note: validated_by is stored as an array in JSONB
-    const issueToFeedbackResult = await pool.query(`
+    const issueToFeedbackResult = await pool.query(
+      `
       SELECT
         issue.id as from_id,
         issue.title as from_title,
@@ -66,8 +76,11 @@ export async function GET() {
       WHERE feedback.platform = 'notion'
         AND feedback.object_type IN ('meeting_note', 'feedback', 'page')
         AND feedback.relations->'validated_by' IS NOT NULL
+        AND feedback.id LIKE $1
       ORDER BY feedback.timestamps->>'created_at' DESC
-    `);
+    `,
+      [`notion|${workspace}|%`]
+    );
 
     // Combine results
     const allRows = [...vocToIssueResult.rows, ...issueToFeedbackResult.rows];
