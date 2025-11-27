@@ -25,9 +25,17 @@
       "@unified-memory/shared": ["../../packages/shared/src"],
       "@unified-memory/shared/*": ["../../packages/shared/src/*"],
       "@unified-memory/transformers": ["../../packages/transformers/src"],
+      "@momo/ingestion": ["../../packages/ingestion/src"],
+      "@momo/transformers": ["../../packages/transformers/src"],
       "@momo/embedding": ["../../packages/embedding/src"],
       "@momo/graph": ["../../packages/graph/src"],
-      "@momo/query": ["../../packages/query/src"]
+      "@momo/chunking": ["../../packages/chunking/src"],
+      "@momo/query": ["../../packages/query/src"],
+      "@momo/temporal": ["../../packages/temporal/src"],
+      "@momo/consolidation": ["../../packages/consolidation/src"],
+      "@momo/clustering": ["../../packages/clustering/src"],
+      "@momo/reasoning": ["../../packages/reasoning/src"],
+      "@momo/pipeline": ["../../packages/pipeline/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
