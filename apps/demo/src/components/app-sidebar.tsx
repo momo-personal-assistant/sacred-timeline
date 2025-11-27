@@ -93,14 +93,14 @@ function ExperimentCard({
         onClick();
         onTabChange();
       }}
-      className={`w-full min-w-0 overflow-hidden text-left px-3 py-2.5 rounded-md transition-colors ${
+      className={`w-full max-w-full min-w-0 overflow-hidden text-left px-3 py-2.5 rounded-md transition-colors ${
         isSelected ? 'bg-accent' : 'hover:bg-accent/50'
       }`}
     >
-      <div className="space-y-1.5 min-w-0">
+      <div className="space-y-1.5 min-w-0 w-full">
         {/* Experiment Name */}
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="text-sm font-medium truncate flex-1">{experiment.name}</div>
+        <div className="flex items-center gap-2 min-w-0 w-full">
+          <div className="text-sm font-medium truncate flex-1 min-w-0">{experiment.name}</div>
           {experiment.is_baseline && (
             <Star className="h-3 w-3 fill-current text-primary shrink-0" />
           )}
@@ -198,11 +198,11 @@ export function AppSidebar({
         </SidebarGroup>
 
         {/* Experiments List */}
-        <SidebarGroup>
+        <SidebarGroup className="flex-1 min-h-0">
           <SidebarGroupLabel>Experiments</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <ScrollArea className="flex-1">
-              <div className="space-y-1">
+          <SidebarGroupContent className="flex-1 min-h-0">
+            <ScrollArea className="flex-1 w-full">
+              <div className="space-y-1 w-full pr-3">
                 {experiments.length === 0 ? (
                   <div className="text-xs text-muted-foreground p-3 text-center">
                     No experiments yet
