@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get('status');
-    const showArchived = searchParams.get('archived') === 'true';
 
     const db = new UnifiedMemoryDB({
       host: process.env.POSTGRES_HOST || 'localhost',
@@ -63,11 +62,6 @@ export async function GET(request: NextRequest) {
       paramIndex++;
     }
 
-    // Exclude archived experiments by default
-    if (!showArchived) {
-      whereClauses.push(`(e.archived IS NULL OR e.archived = FALSE)`);
-    }
-
     const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
     // Get all experiments with their results
@@ -79,7 +73,6 @@ export async function GET(request: NextRequest) {
         e.description,
         e.config,
         e.is_baseline,
-        e.archived,
         e.paper_ids,
         e.git_commit,
         e.created_at,
@@ -115,7 +108,6 @@ export async function GET(request: NextRequest) {
       description: row.description,
       config: row.config,
       is_baseline: row.is_baseline,
-      archived: row.archived || false,
       paper_ids: row.paper_ids || [],
       git_commit: row.git_commit,
       created_at: row.created_at,
