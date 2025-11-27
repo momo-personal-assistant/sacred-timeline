@@ -207,9 +207,30 @@ export default function MomoDBPanel() {
             <span className="text-muted-foreground">Relations:</span>
             <span className="font-mono font-medium">{summary.relations}</span>
           </div>
-          <Button onClick={fetchData} variant="ghost" size="sm" className="h-7 px-2">
-            <RefreshCw className="h-3 w-3" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={fetchData}
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2"
+              title="Refresh data"
+            >
+              <RefreshCw className="h-3 w-3" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 px-3 text-xs"
+              onClick={() => {
+                alert(
+                  'To sync latest Linear issues:\n\n1. Ask Claude: "Please sync Linear issues to Momo DB"\n2. Claude will fetch latest data from Linear using MCP\n3. New/updated issues will be saved to the database'
+                );
+              }}
+              title="Sync Linear issues via Claude"
+            >
+              Sync Linear
+            </Button>
+          </div>
         </div>
       </div>
 
