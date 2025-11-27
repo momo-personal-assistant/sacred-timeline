@@ -20,6 +20,11 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@': path.resolve(__dirname, 'src'),
+      '@unified-memory/db': path.resolve(__dirname, '../../packages/db/src'),
+      '@unified-memory/shared': path.resolve(__dirname, '../../packages/shared/src'),
+      '@momo/embedding': path.resolve(__dirname, '../../packages/embedding/src'),
+      '@momo/graph': path.resolve(__dirname, '../../packages/graph/src'),
+      '@momo/query': path.resolve(__dirname, '../../packages/query/src'),
     };
     return config;
   },
