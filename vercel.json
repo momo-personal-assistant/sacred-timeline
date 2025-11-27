@@ -4,6 +4,5 @@
   "devCommand": "cd apps/demo && pnpm dev",
   "installCommand": "pnpm install",
   "framework": null,
-  "outputDirectory": "apps/demo/.next",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/demo"
+  "outputDirectory": "apps/demo/.next"
 }
