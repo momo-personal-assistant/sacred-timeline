@@ -33,6 +33,13 @@ export class ValidationStage implements PipelineStage {
       // EXP-006 Stage 2: Project metadata options
       useProjectMetadata: config.relationInference.useProjectMetadata,
       projectWeight: config.relationInference.projectWeight,
+      // EXP-007: Schema-based signal options
+      useSchemaSignal: config.relationInference.useSchemaSignal,
+      schemaWeight: config.relationInference.schemaWeight,
+      // EXP-008: Two-stage threshold options
+      useDocumentThreshold: config.relationInference.useDocumentThreshold,
+      documentThreshold: config.relationInference.documentThreshold,
+      minChunkMatches: config.relationInference.minChunkMatches,
       useContrastiveICL: config.relationInference.useContrastiveICL,
     });
 

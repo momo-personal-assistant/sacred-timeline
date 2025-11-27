@@ -1,0 +1,62 @@
+# EXP-008 Stage 1b: Two-Stage Threshold (Strict)
+# Testing with higher document threshold to filter more aggressively
+# Goal: Test if stricter filtering improves precision without hurting recall too much
+
+name: "exp-008-stage-1b-strict-threshold"
+description: "Two-stage threshold with stricter document threshold (0.35)"
+created_at: "2025-11-27"
+
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.30
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+relationInference:
+  # Stage 1: Chunk-level threshold (same as EXP-007)
+  similarityThreshold: 0.30
+  keywordOverlapThreshold: 0.65
+  includeInferred: true
+  useSemanticSimilarity: true
+  semanticWeight: 0.7
+
+  # EXP-006: Project metadata signal
+  useProjectMetadata: true
+  projectWeight: 0.25
+
+  # EXP-007: Schema-based signal
+  useSchemaSignal: true
+  schemaWeight: 0.20
+
+  # EXP-008 Stage 1b: Stricter two-stage threshold
+  useDocumentThreshold: true
+  documentThreshold: 0.35  # Higher threshold - filter project pairs with avg < 0.35
+  minChunkMatches: 2       # Require at least 2 matching pairs
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: true
+  scenarios:
+    - "normal"
+
+metadata:
+  baseline: false
+  experiment_series: "EXP-008"
+  stage: "1b-strict-threshold"
+  hypothesis: "Stricter document threshold (0.35) and minChunkMatches (2) filters weak project pairs more aggressively"
+  baseline_f1: 86.0  # From EXP-007
+  target_precision: 82
+  formula: |
+    Stage 1: score = 0.385*semantic + 0.165*keyword + 0.25*project + 0.20*schema (threshold >= 0.30)
+    Stage 2: avg_score(project_pair) >= 0.35 AND matches >= 2

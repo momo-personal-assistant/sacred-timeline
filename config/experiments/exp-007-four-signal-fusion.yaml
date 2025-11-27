@@ -1,0 +1,62 @@
+# EXP-007: Four-Signal Fusion
+# Adding schema-based signal to improve precision further
+# Signals: semantic + keyword + project + schema
+
+name: "exp-007-four-signal-fusion"
+description: "Four-signal fusion: semantic + keyword + project metadata + schema"
+created_at: "2025-11-27"
+
+embedding:
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  batchSize: 100
+
+chunking:
+  strategy: "semantic"
+  maxChunkSize: 500
+  overlap: 50
+  preserveMetadata: true
+
+retrieval:
+  similarityThreshold: 0.30
+  chunkLimit: 20
+  includeRelations: true
+  relationDepth: 1
+
+relationInference:
+  similarityThreshold: 0.30
+  keywordOverlapThreshold: 0.65
+  includeInferred: true
+  useSemanticSimilarity: true
+  semanticWeight: 0.7
+
+  # EXP-006: Project metadata signal
+  useProjectMetadata: true
+  projectWeight: 0.25  # Reduced slightly to make room for schema
+
+  # EXP-007: Schema-based signal (actor overlap, explicit links)
+  useSchemaSignal: true
+  schemaWeight: 0.20  # Significant but not dominant
+
+validation:
+  runOnSave: true
+  autoSaveExperiment: true
+  scenarios:
+    - "normal"
+
+metadata:
+  baseline: false
+  experiment_series: "EXP-007"
+  stage: "four-signal-fusion"
+  hypothesis: "Schema signal (actor overlap, explicit links) will improve precision by identifying operationally related items"
+  baseline_f1: 86.1  # From EXP-006 Stage 2
+  target_f1: "90+"
+  formula: "score = 0.385*semantic + 0.165*keyword + 0.25*project + 0.20*schema"
+  expected_improvement: "Precision +5-10%, F1 +3-5%"
+  schema_signals:
+    - "Same assignee (weight: 1.0)"
+    - "Same creator (weight: 0.7)"
+    - "Participant overlap (weight: 0.5 * overlap_ratio)"
+    - "Explicit link (weight: 1.0)"
+    - "Parent-child (weight: 1.0)"
+    - "Same parent/siblings (weight: 0.8)"

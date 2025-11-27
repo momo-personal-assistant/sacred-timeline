@@ -73,6 +73,23 @@ export interface RelationInferrerOptions {
   // Weight for project metadata similarity (0-1)
   projectWeight?: number;
 
+  // EXP-007: Schema-based signal (actor overlap, explicit links)
+  // Use schema information for relation inference
+  useSchemaSignal?: boolean;
+
+  // Weight for schema-based similarity (0-1)
+  schemaWeight?: number;
+
+  // EXP-008: Two-stage threshold (SuperMemory pattern)
+  // Enable document-level threshold filtering after chunk-level threshold
+  useDocumentThreshold?: boolean;
+
+  // Document threshold - average similarity across chunks must meet this threshold
+  documentThreshold?: number;
+
+  // Minimum chunk matches required for a document to qualify
+  minChunkMatches?: number;
+
   // Enable duplicate detection using semantic_hash (CDM paper recommendation)
   enableDuplicateDetection?: boolean;
 
@@ -100,6 +117,13 @@ export class RelationInferrer {
       // EXP-006 Stage 2: Project metadata defaults
       useProjectMetadata: options.useProjectMetadata ?? false,
       projectWeight: options.projectWeight ?? 0.3,
+      // EXP-007: Schema-based signal defaults
+      useSchemaSignal: options.useSchemaSignal ?? false,
+      schemaWeight: options.schemaWeight ?? 0.2,
+      // EXP-008: Two-stage threshold defaults
+      useDocumentThreshold: options.useDocumentThreshold ?? false,
+      documentThreshold: options.documentThreshold ?? 0.25,
+      minChunkMatches: options.minChunkMatches ?? 1,
       // Contrastive ICL defaults
       useContrastiveICL: options.useContrastiveICL ?? false,
       contrastiveExamples: options.contrastiveExamples ?? { positive: [], negative: [] },
@@ -319,6 +343,99 @@ export class RelationInferrer {
   }
 
   /**
+   * EXP-007: Calculate schema-based similarity between two objects
+   * Uses actor overlap, explicit links, and structural relationships
+   * Returns 0-1 based on schema signal strength
+   */
+  private calculateSchemaSimilarity(obj1: CanonicalObject, obj2: CanonicalObject): number {
+    let score = 0;
+    let signals = 0;
+
+    // Parse actors if they're strings (from DB JSON)
+    const actors1 = typeof obj1.actors === 'string' ? JSON.parse(obj1.actors) : obj1.actors || {};
+    const actors2 = typeof obj2.actors === 'string' ? JSON.parse(obj2.actors) : obj2.actors || {};
+
+    // Signal 1: Same assignee (strong signal for related work items)
+    const assignees1 = new Set(actors1.assignees || []);
+    const assignees2 = new Set(actors2.assignees || []);
+    if (assignees1.size > 0 && assignees2.size > 0) {
+      const assigneeOverlap = [...assignees1].filter((a) => assignees2.has(a)).length;
+      if (assigneeOverlap > 0) {
+        score += 1.0; // Full score for any assignee overlap
+      }
+      signals++;
+    }
+
+    // Signal 2: Same creator (moderate signal)
+    if (actors1.created_by && actors2.created_by) {
+      if (actors1.created_by === actors2.created_by) {
+        score += 0.7; // Slightly lower than assignee
+      }
+      signals++;
+    }
+
+    // Signal 3: Participant overlap (for Slack threads)
+    const participants1 = new Set(actors1.participants || []);
+    const participants2 = new Set(actors2.participants || []);
+    if (participants1.size > 0 && participants2.size > 0) {
+      const participantOverlap = [...participants1].filter((p) => participants2.has(p)).length;
+      const minSize = Math.min(participants1.size, participants2.size);
+      if (minSize > 0) {
+        score += (participantOverlap / minSize) * 0.5; // Scaled by overlap ratio
+        signals++;
+      }
+    }
+
+    // Parse relations if they're strings (from DB JSON)
+    const relations1 =
+      typeof obj1.relations === 'string' ? JSON.parse(obj1.relations) : obj1.relations || {};
+    const relations2 =
+      typeof obj2.relations === 'string' ? JSON.parse(obj2.relations) : obj2.relations || {};
+
+    // Signal 4: Explicit link (very strong signal)
+    const linkedIssues1 = new Set(relations1.linked_issues || []);
+    const linkedPrs1 = new Set(relations1.linked_prs || []);
+    const linkedIssues2 = new Set(relations2.linked_issues || []);
+    const linkedPrs2 = new Set(relations2.linked_prs || []);
+
+    // Check if obj1 links to obj2 or vice versa
+    if (
+      linkedIssues1.has(obj2.id) ||
+      linkedIssues2.has(obj1.id) ||
+      linkedPrs1.has(obj2.id) ||
+      linkedPrs2.has(obj1.id)
+    ) {
+      score += 1.0; // Full score for explicit links
+      signals++;
+    }
+
+    // Signal 5: Parent-child relationship
+    if (relations1.parent_id === obj2.id || relations2.parent_id === obj1.id) {
+      score += 1.0; // Full score for direct parent-child
+      signals++;
+    }
+
+    // Signal 6: Same parent (siblings)
+    if (
+      relations1.parent_id &&
+      relations2.parent_id &&
+      relations1.parent_id === relations2.parent_id
+    ) {
+      score += 0.8; // High score for siblings
+      signals++;
+    }
+
+    // Normalize score (0-1)
+    // If no signals available, return 0
+    if (signals === 0) {
+      return 0;
+    }
+
+    // Return average score across available signals, capped at 1.0
+    return Math.min(score / signals, 1.0);
+  }
+
+  /**
    * Infer similarity relations based on keyword overlap
    * These relations are computed from object properties
    */
@@ -499,6 +616,13 @@ export class RelationInferrer {
     // EXP-006 Stage 2: Log project metadata options
     console.log(`  - useProjectMetadata: ${this.options.useProjectMetadata}`);
     console.log(`  - projectWeight: ${this.options.projectWeight}`);
+    // EXP-007: Log schema signal options
+    console.log(`  - useSchemaSignal: ${this.options.useSchemaSignal}`);
+    console.log(`  - schemaWeight: ${this.options.schemaWeight}`);
+    // EXP-008: Log two-stage threshold options
+    console.log(`  - useDocumentThreshold: ${this.options.useDocumentThreshold}`);
+    console.log(`  - documentThreshold: ${this.options.documentThreshold}`);
+    console.log(`  - minChunkMatches: ${this.options.minChunkMatches}`);
 
     const relations: Relation[] = [];
 
@@ -584,17 +708,54 @@ export class RelationInferrer {
           }
         }
 
+        // EXP-007: Calculate schema similarity
+        let schemaSim = 0;
+        if (this.options.useSchemaSignal) {
+          schemaSim = this.calculateSchemaSimilarity(obj1, obj2);
+
+          // Log schema similarity for first few pairs
+          if (semanticPairCount <= 3) {
+            console.log(`      Schema sim: ${schemaSim.toFixed(3)}`);
+          }
+        }
+
         // Combine similarities based on weight
+        // EXP-007: Four-signal fusion (semantic + keyword + project + schema)
         let combinedSim: number;
-        if (this.options.useProjectMetadata && this.options.useSemanticSimilarity && emb1 && emb2) {
-          // EXP-006 Stage 2: Three-signal fusion (semantic + keyword + project)
-          // Adjust weights to sum to 1.0
+        const hasEmbeddings = this.options.useSemanticSimilarity && emb1 && emb2;
+        const hasProject = this.options.useProjectMetadata;
+        const hasSchema = this.options.useSchemaSignal;
+
+        if (hasEmbeddings && hasProject && hasSchema) {
+          // Four-signal fusion: semantic + keyword + project + schema
+          // Normalize weights to sum to 1.0
+          const totalExtraWeight = this.options.projectWeight + this.options.schemaWeight;
+          const baseWeight = 1 - totalExtraWeight;
+          const semanticW = this.options.semanticWeight * baseWeight;
+          const keywordW = (1 - this.options.semanticWeight) * baseWeight;
+          const projectW = this.options.projectWeight;
+          const schemaW = this.options.schemaWeight;
+
+          combinedSim =
+            semanticW * semanticSim +
+            keywordW * keywordSim +
+            projectW * projectSim +
+            schemaW * schemaSim;
+        } else if (hasEmbeddings && hasProject) {
+          // Three-signal fusion (semantic + keyword + project)
           const semanticW = this.options.semanticWeight * (1 - this.options.projectWeight);
           const keywordW = (1 - this.options.semanticWeight) * (1 - this.options.projectWeight);
           const projectW = this.options.projectWeight;
 
           combinedSim = semanticW * semanticSim + keywordW * keywordSim + projectW * projectSim;
-        } else if (this.options.useSemanticSimilarity && emb1 && emb2) {
+        } else if (hasEmbeddings && hasSchema) {
+          // Three-signal fusion (semantic + keyword + schema)
+          const semanticW = this.options.semanticWeight * (1 - this.options.schemaWeight);
+          const keywordW = (1 - this.options.semanticWeight) * (1 - this.options.schemaWeight);
+          const schemaW = this.options.schemaWeight;
+
+          combinedSim = semanticW * semanticSim + keywordW * keywordSim + schemaW * schemaSim;
+        } else if (hasEmbeddings) {
           // Two-signal fusion (semantic + keyword)
           combinedSim =
             this.options.semanticWeight * semanticSim +
@@ -646,6 +807,11 @@ export class RelationInferrer {
             metadata.project_2 = extractProject(obj2.id);
           }
 
+          // EXP-007: Add schema similarity to metadata
+          if (this.options.useSchemaSignal && schemaSim > 0) {
+            metadata.schema_similarity = schemaSim;
+          }
+
           // Create bidirectional relations
           relations.push({
             from_id: obj1.id,
@@ -670,13 +836,116 @@ export class RelationInferrer {
       }
     }
 
-    console.log(`\n[RelationInferrer] Summary:`);
+    console.log(`\n[RelationInferrer] Stage 1 Summary (Chunk-level):`);
     console.log(`  - Total pairs compared: ${pairCount}`);
     console.log(`  - Pairs with semantic similarity: ${semanticPairCount}`);
-    console.log(`  - Pairs that passed threshold: ${passedThresholdCount}`);
-    console.log(`  - Relations created: ${relations.length}`);
+    console.log(`  - Pairs that passed chunk threshold: ${passedThresholdCount}`);
+    console.log(`  - Relations before document filter: ${relations.length}`);
+
+    // EXP-008: Two-Stage Threshold - Document-level filtering
+    if (this.options.useDocumentThreshold && relations.length > 0) {
+      const filteredRelations = this.applyDocumentThreshold(relations);
+      console.log(`\n[RelationInferrer] Stage 2 Summary (Document-level):`);
+      console.log(`  - Document threshold: ${this.options.documentThreshold}`);
+      console.log(`  - Min chunk matches: ${this.options.minChunkMatches}`);
+      console.log(`  - Relations before filter: ${relations.length}`);
+      console.log(`  - Relations after filter: ${filteredRelations.length}`);
+      console.log(`  - Relations filtered out: ${relations.length - filteredRelations.length}`);
+      return filteredRelations;
+    }
 
     return relations;
+  }
+
+  /**
+   * EXP-008: Apply document-level threshold filtering
+   * Groups relations by project pairs and filters based on average similarity
+   *
+   * Two-Stage Threshold Logic (SuperMemory pattern):
+   * 1. Stage 1: Individual pair similarity >= chunkThreshold (already applied)
+   * 2. Stage 2: Average similarity across all pairs between two projects >= documentThreshold
+   *
+   * This filters out cases where only one or two pairs have high similarity
+   * but the overall project relationship is weak.
+   */
+  private applyDocumentThreshold(relations: Relation[]): Relation[] {
+    // Extract project from ID (e.g., "linear-auth-revamp-1" → "auth-revamp")
+    const extractProject = (id: string): string => {
+      const parts = id.split('-');
+      if (parts.length < 3) return id;
+      return parts.slice(1, -1).join('-');
+    };
+
+    // Group relations by project pair
+    // Key format: "projectA|projectB" (alphabetically sorted for consistency)
+    const projectPairScores = new Map<string, { scores: number[]; relations: Relation[] }>();
+
+    for (const relation of relations) {
+      const proj1 = extractProject(relation.from_id);
+      const proj2 = extractProject(relation.to_id);
+
+      // Skip same-project relations (self-links within a project)
+      if (proj1 === proj2) {
+        // Same project - always keep these relations
+        const key = `${proj1}|${proj1}`;
+        const existing = projectPairScores.get(key) || { scores: [], relations: [] };
+        existing.scores.push(relation.confidence);
+        existing.relations.push(relation);
+        projectPairScores.set(key, existing);
+        continue;
+      }
+
+      // Create consistent key (alphabetically sorted)
+      const [sortedProj1, sortedProj2] = [proj1, proj2].sort();
+      const key = `${sortedProj1}|${sortedProj2}`;
+
+      const existing = projectPairScores.get(key) || { scores: [], relations: [] };
+      existing.scores.push(relation.confidence);
+      existing.relations.push(relation);
+      projectPairScores.set(key, existing);
+    }
+
+    // Apply document threshold: keep only project pairs with sufficient average similarity
+    const filteredRelations: Relation[] = [];
+    let filteredProjectPairs = 0;
+    let keptProjectPairs = 0;
+
+    for (const [key, data] of projectPairScores) {
+      const { scores, relations: pairRelations } = data;
+      const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+      const matchCount = scores.length;
+
+      // Check document threshold criteria
+      const meetsThreshold = avgScore >= this.options.documentThreshold;
+      const meetsMinMatches = matchCount >= this.options.minChunkMatches;
+
+      // Same-project pairs always pass (key format: "proj|proj")
+      const isSameProject = key.split('|')[0] === key.split('|')[1];
+
+      if (isSameProject || (meetsThreshold && meetsMinMatches)) {
+        filteredRelations.push(...pairRelations);
+        keptProjectPairs++;
+
+        // Log first few kept pairs for debugging
+        if (keptProjectPairs <= 3) {
+          console.log(`    [KEEP] ${key}: avgScore=${avgScore.toFixed(3)}, matches=${matchCount}`);
+        }
+      } else {
+        filteredProjectPairs++;
+
+        // Log first few filtered pairs for debugging
+        if (filteredProjectPairs <= 3) {
+          console.log(
+            `    [FILTER] ${key}: avgScore=${avgScore.toFixed(3)}, matches=${matchCount}`
+          );
+        }
+      }
+    }
+
+    console.log(`  - Project pairs kept: ${keptProjectPairs}`);
+    console.log(`  - Project pairs filtered: ${filteredProjectPairs}`);
+
+    return filteredRelations;
   }
 
   /**

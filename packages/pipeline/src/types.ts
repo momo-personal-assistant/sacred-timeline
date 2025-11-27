@@ -38,6 +38,13 @@ export interface PipelineConfig {
     // EXP-006 Stage 2: Project metadata
     useProjectMetadata?: boolean;
     projectWeight?: number;
+    // EXP-007: Schema-based signal
+    useSchemaSignal?: boolean;
+    schemaWeight?: number;
+    // EXP-008: Two-stage threshold
+    useDocumentThreshold?: boolean;
+    documentThreshold?: number;
+    minChunkMatches?: number;
     useContrastiveICL?: boolean;
   };
 
