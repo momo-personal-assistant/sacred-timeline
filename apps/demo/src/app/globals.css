@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Note: OpenAI Apps SDK UI requires Tailwind 4, but this project uses Tailwind 3.
+   We use shadcn/ui components with OpenAI-inspired styling instead.
+   SDK components can still be imported for JS functionality if needed. */
+
 @layer base {
   :root {
     /* Base Colors */
@@ -53,6 +57,7 @@
     --transition-duration: 150ms;
     --transition-timing: cubic-bezier(0.4, 0, 0.2, 1)
   ;
+    --sidebar-width: 20rem;
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -87,6 +92,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%
   ;
+    --sidebar-width: 20rem;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

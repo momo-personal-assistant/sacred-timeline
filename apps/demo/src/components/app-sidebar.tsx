@@ -1,34 +1,19 @@
 'use client';
 
-import {
-  Activity,
-  BarChart3,
-  BeakerIcon,
-  CheckCircle2,
-  ChevronRight,
-  Database,
-  FileEdit,
-  FileText,
-  Loader2,
-  Search,
-  Star,
-  XCircle,
-} from 'lucide-react';
+import { Database, Star } from 'lucide-react';
 import * as React from 'react';
 
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sidebar,
   SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarSeparator,
 } from '@/components/ui/sidebar';
 
 type ExperimentStatus = 'draft' | 'running' | 'completed' | 'failed';
@@ -39,99 +24,142 @@ interface ExperimentForSidebar {
   status?: ExperimentStatus;
   is_baseline?: boolean;
   results?: { f1_score: number } | null;
+  created_at: string;
 }
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  activeTab: 'query' | 'experiments' | 'activity' | 'reports' | 'benchmark' | 'database';
-  onTabChange: (
-    tab: 'query' | 'experiments' | 'activity' | 'reports' | 'benchmark' | 'database'
-  ) => void;
-  reportExperiments?: ExperimentForSidebar[];
-  selectedReportId?: number;
-  onReportSelect?: (id: number) => void;
+  activeTab: 'database' | 'experiment';
+  onTabChange: (tab: 'database' | 'experiment') => void;
+  experiments?: ExperimentForSidebar[];
+  selectedExperimentId?: number;
+  onExperimentSelect?: (id: number) => void;
 }
 
-const navigationItems = [
-  {
-    title: 'Experiments',
-    value: 'experiments' as const,
-    icon: BeakerIcon,
-  },
-  {
-    title: 'Benchmark',
-    value: 'benchmark' as const,
-    icon: BarChart3,
-  },
-  {
-    title: 'Database',
-    value: 'database' as const,
-    icon: Database,
-  },
-  {
-    title: 'Query Interface',
-    value: 'query' as const,
-    icon: Search,
-  },
-  {
-    title: 'Activity',
-    value: 'activity' as const,
-    icon: Activity,
-  },
-];
-
-const statusIcons: Record<ExperimentStatus, typeof CheckCircle2> = {
-  completed: CheckCircle2,
-  running: Loader2,
-  draft: FileEdit,
-  failed: XCircle,
-};
-
 const statusColors: Record<ExperimentStatus, string> = {
-  completed: 'text-green-600',
-  running: 'text-blue-600',
-  draft: 'text-yellow-600',
-  failed: 'text-red-600',
+  completed: 'text-green-600 dark:text-green-400',
+  running: 'text-blue-600 dark:text-blue-400',
+  draft: 'text-yellow-600 dark:text-yellow-400',
+  failed: 'text-red-600 dark:text-red-400',
 };
+
+// Helper: Calculate time ago
+function timeAgo(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return '1d ago';
+  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+  return `${Math.floor(diffDays / 30)}mo ago`;
+}
+
+// Helper: Calculate delta from previous experiment
+function calculateDelta(experiments: ExperimentForSidebar[], currentIndex: number): number | null {
+  const current = experiments[currentIndex];
+  const previous = experiments[currentIndex + 1];
+
+  if (!current?.results?.f1_score || !previous?.results?.f1_score) {
+    return null;
+  }
+
+  return ((current.results.f1_score - previous.results.f1_score) / previous.results.f1_score) * 100;
+}
+
+function ExperimentCard({
+  experiment,
+  delta,
+  isSelected,
+  onClick,
+  onTabChange,
+}: {
+  experiment: ExperimentForSidebar;
+  delta: number | null;
+  isSelected: boolean;
+  onClick: () => void;
+  onTabChange: () => void;
+}) {
+  const status = experiment.status || 'completed';
+  const statusColor = statusColors[status];
+  const f1Score = experiment.results?.f1_score
+    ? (experiment.results.f1_score * 100).toFixed(1)
+    : null;
+
+  return (
+    <button
+      onClick={() => {
+        onClick();
+        onTabChange();
+      }}
+      className={`w-full min-w-0 overflow-hidden text-left px-3 py-2.5 rounded-md transition-colors ${
+        isSelected ? 'bg-accent' : 'hover:bg-accent/50'
+      }`}
+    >
+      <div className="space-y-1.5 min-w-0">
+        {/* Experiment Name */}
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="text-sm font-medium truncate flex-1">{experiment.name}</div>
+          {experiment.is_baseline && (
+            <Star className="h-3 w-3 fill-current text-primary shrink-0" />
+          )}
+        </div>
+
+        {/* Metadata Row */}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground overflow-hidden">
+          <span className="shrink-0">{timeAgo(experiment.created_at)}</span>
+          {status === 'draft' && (
+            <>
+              <span className="shrink-0">•</span>
+              <span className={`${statusColor} shrink-0`}>Draft</span>
+            </>
+          )}
+          {status === 'running' && (
+            <>
+              <span className="shrink-0">•</span>
+              <span className={`${statusColor} shrink-0`}>Running</span>
+            </>
+          )}
+          {status === 'failed' && (
+            <>
+              <span className="shrink-0">•</span>
+              <span className={`${statusColor} shrink-0`}>Failed</span>
+            </>
+          )}
+        </div>
+
+        {/* F1 Score & Delta */}
+        {f1Score && (
+          <div className="flex items-center gap-2 text-xs overflow-hidden">
+            <span className="font-mono text-muted-foreground shrink-0">F1: {f1Score}%</span>
+            {delta !== null && (
+              <span
+                className={`font-mono shrink-0 ${
+                  delta >= 0
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-red-600 dark:text-red-400'
+                }`}
+              >
+                {delta >= 0 ? '+' : ''}
+                {delta.toFixed(1)}%
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </button>
+  );
+}
 
 export function AppSidebar({
   activeTab,
   onTabChange,
-  reportExperiments = [],
-  selectedReportId,
-  onReportSelect,
+  experiments = [],
+  selectedExperimentId,
+  onExperimentSelect,
   ...props
 }: AppSidebarProps) {
-  const [reportsOpen, setReportsOpen] = React.useState(activeTab === 'reports');
-
-  // Group experiments by status
-  const groupedExperiments = React.useMemo(() => {
-    const groups: Record<string, ExperimentForSidebar[]> = {
-      running: [],
-      draft: [],
-      completed: [],
-      failed: [],
-    };
-
-    reportExperiments.forEach((exp) => {
-      const status = exp.status || 'completed';
-      if (groups[status]) {
-        groups[status].push(exp);
-      }
-    });
-
-    return groups;
-  }, [reportExperiments]);
-
-  const handleReportsClick = () => {
-    onTabChange('reports');
-    setReportsOpen(true);
-  };
-
-  const handleExperimentClick = (id: number) => {
-    onTabChange('reports');
-    onReportSelect?.(id);
-  };
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="border-b">
@@ -149,176 +177,53 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <SidebarMenu>
-          {navigationItems.map((item) => (
-            <SidebarMenuItem key={item.value}>
-              <SidebarMenuButton
-                isActive={activeTab === item.value}
-                onClick={() => onTabChange(item.value)}
-                tooltip={item.title}
-              >
-                <item.icon className="h-4 w-4" />
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-
-        <SidebarSeparator className="my-2" />
-
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <span className="px-2 text-xs font-medium text-muted-foreground">Guides</span>
-          </SidebarMenuItem>
-
-          {/* Experiment Reports with collapsible experiment list */}
-          <Collapsible
-            open={reportsOpen}
-            onOpenChange={setReportsOpen}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
+        {/* Database Button */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
                 <SidebarMenuButton
-                  isActive={activeTab === 'reports'}
-                  onClick={handleReportsClick}
-                  tooltip="Experiment Reports"
+                  isActive={activeTab === 'database'}
+                  onClick={() => onTabChange('database')}
+                  tooltip="Database"
                 >
-                  <FileText className="h-4 w-4" />
-                  <span>Experiment Reports</span>
-                  <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  <Database className="h-4 w-4" />
+                  <span>Database</span>
                 </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  <ScrollArea className="max-h-[50vh]">
-                    {/* Running */}
-                    {groupedExperiments.running.length > 0 && (
-                      <>
-                        <div className="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase">
-                          Running
-                        </div>
-                        {groupedExperiments.running.map((exp) => (
-                          <ExperimentSubItem
-                            key={exp.id}
-                            experiment={exp}
-                            isSelected={selectedReportId === exp.id}
-                            onClick={() => handleExperimentClick(exp.id)}
-                          />
-                        ))}
-                      </>
-                    )}
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-                    {/* Drafts */}
-                    {groupedExperiments.draft.length > 0 && (
-                      <>
-                        <div className="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase">
-                          Drafts
-                        </div>
-                        {groupedExperiments.draft.map((exp) => (
-                          <ExperimentSubItem
-                            key={exp.id}
-                            experiment={exp}
-                            isSelected={selectedReportId === exp.id}
-                            onClick={() => handleExperimentClick(exp.id)}
-                          />
-                        ))}
-                      </>
-                    )}
-
-                    {/* Completed */}
-                    {groupedExperiments.completed.length > 0 && (
-                      <>
-                        <div className="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase">
-                          Completed
-                        </div>
-                        {groupedExperiments.completed.map((exp) => (
-                          <ExperimentSubItem
-                            key={exp.id}
-                            experiment={exp}
-                            isSelected={selectedReportId === exp.id}
-                            onClick={() => handleExperimentClick(exp.id)}
-                          />
-                        ))}
-                      </>
-                    )}
-
-                    {/* Failed */}
-                    {groupedExperiments.failed.length > 0 && (
-                      <>
-                        <div className="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase">
-                          Failed
-                        </div>
-                        {groupedExperiments.failed.map((exp) => (
-                          <ExperimentSubItem
-                            key={exp.id}
-                            experiment={exp}
-                            isSelected={selectedReportId === exp.id}
-                            onClick={() => handleExperimentClick(exp.id)}
-                          />
-                        ))}
-                      </>
-                    )}
-
-                    {reportExperiments.length === 0 && (
-                      <div className="px-2 py-2 text-xs text-muted-foreground">
-                        No experiments yet
-                      </div>
-                    )}
-                  </ScrollArea>
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        </SidebarMenu>
+        {/* Experiments List */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Experiments</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <ScrollArea className="flex-1">
+              <div className="space-y-1">
+                {experiments.length === 0 ? (
+                  <div className="text-xs text-muted-foreground p-3 text-center">
+                    No experiments yet
+                  </div>
+                ) : (
+                  experiments.map((exp, index) => (
+                    <ExperimentCard
+                      key={exp.id}
+                      experiment={exp}
+                      delta={calculateDelta(experiments, index)}
+                      isSelected={selectedExperimentId === exp.id}
+                      onClick={() => onExperimentSelect?.(exp.id)}
+                      onTabChange={() => onTabChange('experiment')}
+                    />
+                  ))
+                )}
+              </div>
+            </ScrollArea>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  );
-}
-
-function ExperimentSubItem({
-  experiment,
-  isSelected,
-  onClick,
-}: {
-  experiment: ExperimentForSidebar;
-  isSelected: boolean;
-  onClick: () => void;
-}) {
-  const status = experiment.status || 'completed';
-  const StatusIcon = statusIcons[status];
-  const statusColor = statusColors[status];
-  const f1Score = experiment.results?.f1_score
-    ? (experiment.results.f1_score * 100).toFixed(0)
-    : null;
-
-  return (
-    <SidebarMenuSubItem>
-      <SidebarMenuSubButton
-        isActive={isSelected}
-        onClick={onClick}
-        className="flex items-center justify-between gap-1 pr-2"
-      >
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          <StatusIcon
-            className={`h-3 w-3 shrink-0 ${statusColor} ${status === 'running' ? 'animate-spin' : ''}`}
-          />
-          <span className="truncate text-xs">{experiment.name}</span>
-          {experiment.is_baseline && (
-            <Star className="h-2.5 w-2.5 shrink-0 fill-current text-primary" />
-          )}
-        </div>
-        {f1Score && (
-          <span
-            className={`text-[10px] font-mono shrink-0 ${
-              parseFloat(f1Score) >= 60 ? 'text-green-600' : 'text-orange-600'
-            }`}
-          >
-            {f1Score}%
-          </span>
-        )}
-      </SidebarMenuSubButton>
-    </SidebarMenuSubItem>
   );
 }
