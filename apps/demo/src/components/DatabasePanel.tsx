@@ -1,9 +1,10 @@
 'use client';
 
-import { Database, GitBranch, Loader2, RefreshCw, Table2 } from 'lucide-react';
+import { Database, GitBranch, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import GTGraphView from '@/components/charts/GTGraphView';
+import LabelingPanel from '@/components/LabelingPanel';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -96,7 +97,7 @@ const platformColors: Record<string, string> = {
 };
 
 export default function DatabasePanel() {
-  const [activeView, setActiveView] = useState<'db' | 'graph'>('db');
+  const [activeView, setActiveView] = useState<'db' | 'graph' | 'labeling'>('db');
   const [objectsData, setObjectsData] = useState<ObjectsData | null>(null);
   const [gtData, setGTData] = useState<GTData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -157,182 +158,170 @@ export default function DatabasePanel() {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 min-h-0">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Database Explorer</h1>
-          <p className="text-sm text-muted-foreground">
-            View canonical objects and ground truth relations
-          </p>
-        </div>
-        <Button onClick={fetchData} variant="outline" size="sm">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Refresh
-        </Button>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Objects</CardDescription>
-            <CardTitle className="text-2xl">{objectsData?.summary.total || 0}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Platforms</CardDescription>
-            <CardTitle className="text-2xl">
-              {objectsData?.summary.byPlatform.length || 0}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>GT Relations</CardDescription>
-            <CardTitle className="text-2xl">{gtData?.summary.totalRelations || 0}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Relation Types</CardDescription>
-            <CardTitle className="text-2xl">{gtData?.summary.byType.length || 0}</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
-
-      {/* View Tabs */}
-      <Tabs
-        value={activeView}
-        onValueChange={(v) => setActiveView(v as 'db' | 'graph')}
-        className="flex-1 flex flex-col min-h-0"
-      >
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="db" className="flex items-center gap-2">
-            <Table2 className="h-4 w-4" />
+    <Tabs
+      value={activeView}
+      onValueChange={(v) => setActiveView(v as 'db' | 'graph' | 'labeling')}
+      className="flex flex-1 flex-col gap-4 min-h-0 p-6"
+    >
+      {/* Header with Tabs and Stats */}
+      <div className="flex items-center justify-between gap-4">
+        <TabsList className="h-9">
+          <TabsTrigger value="db" className="text-xs">
             DB View
           </TabsTrigger>
-          <TabsTrigger value="graph" className="flex items-center gap-2">
-            <GitBranch className="h-4 w-4" />
+          <TabsTrigger value="graph" className="text-xs">
             GT Graph
+          </TabsTrigger>
+          <TabsTrigger value="labeling" className="text-xs">
+            Labeling
           </TabsTrigger>
         </TabsList>
 
-        {/* DB View Tab */}
-        <TabsContent value="db" className="flex-1 flex flex-col min-h-0 mt-4">
-          <div className="flex flex-col gap-4 flex-1 min-h-0">
-            {/* Platform Filter */}
-            <div className="flex gap-2 flex-wrap">
-              <Badge
-                variant={selectedPlatform === null ? 'default' : 'outline'}
-                className="cursor-pointer"
-                onClick={() => setSelectedPlatform(null)}
-              >
-                All ({objectsData?.summary.total})
-              </Badge>
-              {objectsData?.summary.byPlatform.map((p) => (
-                <Badge
-                  key={p.platform}
-                  variant={selectedPlatform === p.platform ? 'default' : 'outline'}
-                  className={`cursor-pointer ${selectedPlatform !== p.platform ? platformColors[p.platform] || '' : ''}`}
-                  onClick={() => setSelectedPlatform(p.platform)}
-                >
-                  {p.platform} ({p.count})
-                </Badge>
-              ))}
-            </div>
-
-            {/* Objects Table */}
-            <Card className="flex-1 flex flex-col min-h-0">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Database className="h-5 w-5" />
-                  Canonical Objects
-                </CardTitle>
-                <CardDescription>Objects stored in the canonical_objects table</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 min-h-0 p-0">
-                <ScrollArea className="h-[calc(100vh-500px)]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[200px]">ID</TableHead>
-                        <TableHead className="w-[100px]">Platform</TableHead>
-                        <TableHead className="w-[100px]">Type</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead className="w-[80px] text-right">Chunks</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredObjects?.map((obj) => (
-                        <TableRow key={obj.id}>
-                          <TableCell className="font-mono text-xs truncate max-w-[200px]">
-                            {obj.id}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className={platformColors[obj.platform] || ''}>
-                              {obj.platform}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-xs text-muted-foreground">
-                            {obj.object_type}
-                          </TableCell>
-                          <TableCell className="truncate max-w-[300px]">
-                            {obj.title || '(no title)'}
-                          </TableCell>
-                          <TableCell className="text-right font-mono">{obj.chunk_count}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-
-            {/* Ground Truth Summary */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <GitBranch className="h-5 w-5" />
-                  Ground Truth Summary
-                </CardTitle>
-                <CardDescription>Relations by type and source</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-3">
-                  {gtData?.summary.byType.map((t) => (
-                    <div
-                      key={`${t.relation_type}-${t.source}`}
-                      className="flex flex-col p-3 rounded-lg border bg-muted/50"
-                    >
-                      <span className="font-medium text-sm">{t.relation_type}</span>
-                      <span className="text-xs text-muted-foreground">{t.source}</span>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-lg font-bold">{t.count}</span>
-                        <span className="text-xs text-muted-foreground">
-                          avg: {(parseFloat(String(t.avg_confidence)) * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+        <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">Objects:</span>
+            <span className="font-mono font-medium">{objectsData?.summary.total || 0}</span>
           </div>
-        </TabsContent>
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">Platforms:</span>
+            <span className="font-mono font-medium">
+              {objectsData?.summary.byPlatform.length || 0}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">Relations:</span>
+            <span className="font-mono font-medium">{gtData?.summary.totalRelations || 0}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">Types:</span>
+            <span className="font-mono font-medium">{gtData?.summary.byType.length || 0}</span>
+          </div>
+          <Button onClick={fetchData} variant="ghost" size="sm" className="h-7 px-2">
+            <RefreshCw className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
 
-        {/* Graph View Tab */}
-        <TabsContent value="graph" className="flex-1 min-h-0 mt-4">
-          {gtData && (
-            <GTGraphView
-              relations={gtData.relations}
-              objects={gtData.objects}
-              summary={gtData.summary}
-            />
-          )}
-        </TabsContent>
-      </Tabs>
-    </div>
+      {/* View Content */}
+
+      {/* DB View Tab */}
+      <TabsContent value="db" className="flex-1 flex flex-col min-h-0 mt-4">
+        <div className="flex flex-col gap-4 flex-1 min-h-0">
+          {/* Platform Filter */}
+          <div className="flex gap-2 flex-wrap">
+            <Badge
+              variant={selectedPlatform === null ? 'default' : 'outline'}
+              className="cursor-pointer"
+              onClick={() => setSelectedPlatform(null)}
+            >
+              All ({objectsData?.summary.total})
+            </Badge>
+            {objectsData?.summary.byPlatform.map((p) => (
+              <Badge
+                key={p.platform}
+                variant={selectedPlatform === p.platform ? 'default' : 'outline'}
+                className={`cursor-pointer ${selectedPlatform !== p.platform ? platformColors[p.platform] || '' : ''}`}
+                onClick={() => setSelectedPlatform(p.platform)}
+              >
+                {p.platform} ({p.count})
+              </Badge>
+            ))}
+          </div>
+
+          {/* Objects Table */}
+          <Card className="flex-1 flex flex-col min-h-0">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Canonical Objects
+              </CardTitle>
+              <CardDescription>Objects stored in the canonical_objects table</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 min-h-0 p-0">
+              <ScrollArea className="h-[calc(100vh-500px)]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[200px]">ID</TableHead>
+                      <TableHead className="w-[100px]">Platform</TableHead>
+                      <TableHead className="w-[100px]">Type</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead className="w-[80px] text-right">Chunks</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredObjects?.map((obj) => (
+                      <TableRow key={obj.id}>
+                        <TableCell className="font-mono text-xs truncate max-w-[200px]">
+                          {obj.id}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={platformColors[obj.platform] || ''}>
+                            {obj.platform}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {obj.object_type}
+                        </TableCell>
+                        <TableCell className="truncate max-w-[300px]">
+                          {obj.title || '(no title)'}
+                        </TableCell>
+                        <TableCell className="text-right font-mono">{obj.chunk_count}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+
+          {/* Ground Truth Summary */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <GitBranch className="h-5 w-5" />
+                Ground Truth Summary
+              </CardTitle>
+              <CardDescription>Relations by type and source</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                {gtData?.summary.byType.map((t) => (
+                  <div
+                    key={`${t.relation_type}-${t.source}`}
+                    className="flex flex-col p-3 rounded-lg border bg-muted/50"
+                  >
+                    <span className="font-medium text-sm">{t.relation_type}</span>
+                    <span className="text-xs text-muted-foreground">{t.source}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-lg font-bold">{t.count}</span>
+                      <span className="text-xs text-muted-foreground">
+                        avg: {(parseFloat(String(t.avg_confidence)) * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+
+      {/* Graph View Tab */}
+      <TabsContent value="graph" className="flex-1 min-h-0 mt-4">
+        {gtData && (
+          <GTGraphView
+            relations={gtData.relations}
+            objects={gtData.objects}
+            summary={gtData.summary}
+          />
+        )}
+      </TabsContent>
+
+      {/* Labeling Tab */}
+      <TabsContent value="labeling" className="flex-1 flex flex-col min-h-0 mt-4">
+        <LabelingPanel />
+      </TabsContent>
+    </Tabs>
   );
 }
