@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -13,6 +15,13 @@ const nextConfig = {
   // Treat eslint warnings as warnings, not errors
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+    };
+    return config;
   },
 };
 
