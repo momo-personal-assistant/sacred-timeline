@@ -22,6 +22,7 @@
       "@/*": ["./src/*"],
       "@unified-memory/db": ["../../packages/db/src"],
       "@unified-memory/shared/*": ["../../packages/shared/src/*"],
+      "@unified-memory/transformers": ["../../packages/transformers/src"],
       "@momo/embedding": ["../../packages/embedding/src"],
       "@momo/graph": ["../../packages/graph/src"],
       "@momo/query": ["../../packages/query/src"]

@@ -90,12 +90,12 @@ export class SlackTransformer {
       // Relations
       relations: {
         channel_id: `slack|${this.workspace}|channel|${thread.channel}`,
-        triggered_by_ticket: thread.triggered_by_ticket
-          ? `zendesk|${this.workspace}|ticket|${thread.triggered_by_ticket}`
-          : undefined,
-        resulted_in_issue: thread.resulted_in_issue
-          ? `linear|${this.workspace}|issue|${thread.resulted_in_issue}`
-          : undefined,
+        ...(thread.triggered_by_ticket && {
+          triggered_by_ticket: `zendesk|${this.workspace}|ticket|${thread.triggered_by_ticket}`,
+        }),
+        ...(thread.resulted_in_issue && {
+          resulted_in_issue: `linear|${this.workspace}|issue|${thread.resulted_in_issue}`,
+        }),
       },
 
       // Properties

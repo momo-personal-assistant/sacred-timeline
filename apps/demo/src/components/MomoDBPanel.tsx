@@ -1,6 +1,6 @@
 'use client';
 
-import { GitBranch, Loader2, MessageSquare, RefreshCw } from 'lucide-react';
+import { FileText, GitBranch, Loader2, MessageSquare, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -71,6 +71,30 @@ interface RelationsResponse {
   };
 }
 
+interface FeedbackItem {
+  id: string;
+  platform: 'notion';
+  object_type: string;
+  title: string;
+  body: string;
+  participants: string[];
+  timestamp: string;
+  keywords?: string[];
+  linkedIssues?: string[];
+  note_type?: string;
+}
+
+interface FeedbackResponse {
+  items: FeedbackItem[];
+  summary: {
+    total: number;
+    meeting_notes: number;
+    feedback: number;
+    pages: number;
+    linkedCount: number;
+  };
+}
+
 const platformColors: Record<string, string> = {
   discord: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
   linear: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
@@ -86,13 +110,14 @@ const statusColors: Record<string, string> = {
 };
 
 export default function MomoDBPanel() {
-  const [activeView, setActiveView] = useState<'voc' | 'linear' | 'relations'>('voc');
+  const [activeView, setActiveView] = useState<'voc' | 'linear' | 'feedback' | 'relations'>('voc');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
 
   const [vocData, setVocData] = useState<VOCResponse | null>(null);
   const [issuesData, setIssuesData] = useState<IssuesResponse | null>(null);
+  const [feedbackData, setFeedbackData] = useState<FeedbackResponse | null>(null);
   const [relationsData, setRelationsData] = useState<RelationsResponse | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -100,24 +125,27 @@ export default function MomoDBPanel() {
     setError(null);
 
     try {
-      const [vocRes, issuesRes, relationsRes] = await Promise.all([
+      const [vocRes, issuesRes, feedbackRes, relationsRes] = await Promise.all([
         fetch('/api/momo/voc'),
         fetch('/api/momo/issues'),
+        fetch('/api/momo/feedback'),
         fetch('/api/momo/relations'),
       ]);
 
-      if (!vocRes.ok || !issuesRes.ok || !relationsRes.ok) {
+      if (!vocRes.ok || !issuesRes.ok || !feedbackRes.ok || !relationsRes.ok) {
         throw new Error('Failed to fetch Momo data');
       }
 
-      const [voc, issues, relations] = await Promise.all([
+      const [voc, issues, feedback, relations] = await Promise.all([
         vocRes.json(),
         issuesRes.json(),
+        feedbackRes.json(),
         relationsRes.json(),
       ]);
 
       setVocData(voc);
       setIssuesData(issues);
+      setFeedbackData(feedback);
       setRelationsData(relations);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -132,9 +160,10 @@ export default function MomoDBPanel() {
 
   const vocItems = vocData?.items || [];
   const linearItems = issuesData?.items || [];
+  const feedbackItems = feedbackData?.items || [];
   const relations = relationsData?.items || [];
 
-  const allItems = [...vocItems, ...linearItems];
+  const allItems = [...vocItems, ...linearItems, ...feedbackItems];
   const filteredItems = selectedPlatform
     ? allItems.filter((item) => item.platform === selectedPlatform)
     : allItems;
@@ -144,6 +173,7 @@ export default function MomoDBPanel() {
     byPlatform: [
       { platform: 'discord', count: vocItems.length },
       { platform: 'linear', count: linearItems.length },
+      { platform: 'notion', count: feedbackItems.length },
     ],
     relations: relations.length,
     resolvedVOC: vocData?.summary.resolved || 0,
@@ -173,7 +203,7 @@ export default function MomoDBPanel() {
   return (
     <Tabs
       value={activeView}
-      onValueChange={(v) => setActiveView(v as 'voc' | 'linear' | 'relations')}
+      onValueChange={(v) => setActiveView(v as 'voc' | 'linear' | 'feedback' | 'relations')}
       className="flex flex-1 flex-col gap-4 min-h-0 p-6"
     >
       {/* Header with Tabs and Stats */}
@@ -184,6 +214,9 @@ export default function MomoDBPanel() {
           </TabsTrigger>
           <TabsTrigger value="linear" className="text-xs">
             Linear View
+          </TabsTrigger>
+          <TabsTrigger value="feedback" className="text-xs">
+            Feedback
           </TabsTrigger>
           <TabsTrigger value="relations" className="text-xs">
             Relations
@@ -281,30 +314,50 @@ export default function MomoDBPanel() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredItems.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="font-mono text-xs">{item.id}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={platformColors[item.platform] || ''}>
-                            {item.platform}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="truncate max-w-[300px]">{item.title}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground truncate">
-                          {item.actor}
-                        </TableCell>
-                        <TableCell>
-                          {item.status && (
-                            <Badge variant="outline" className={statusColors[item.status] || ''}>
-                              {item.status}
+                    {filteredItems.map((item) => {
+                      const actor =
+                        'actor' in item
+                          ? item.actor
+                          : 'participants' in item && item.participants.length > 0
+                            ? item.participants[0]
+                            : '-';
+                      const linkedIssue =
+                        'linkedIssue' in item
+                          ? item.linkedIssue
+                          : 'linkedIssues' in item &&
+                              item.linkedIssues &&
+                              item.linkedIssues.length > 0
+                            ? item.linkedIssues[0]
+                            : undefined;
+
+                      return (
+                        <TableRow key={item.id}>
+                          <TableCell className="font-mono text-xs">{item.id}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className={platformColors[item.platform] || ''}
+                            >
+                              {item.platform}
                             </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-mono text-xs text-blue-600">
-                          {item.linkedIssue || '-'}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          </TableCell>
+                          <TableCell className="truncate max-w-[300px]">{item.title}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground truncate">
+                            {actor}
+                          </TableCell>
+                          <TableCell>
+                            {'status' in item && item.status && (
+                              <Badge variant="outline" className={statusColors[item.status] || ''}>
+                                {item.status}
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="font-mono text-xs text-blue-600">
+                            {linkedIssue || '-'}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </ScrollArea>
@@ -354,6 +407,103 @@ export default function MomoDBPanel() {
                 </TableBody>
               </Table>
             </ScrollArea>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Feedback View Tab */}
+      <TabsContent value="feedback" className="flex-1 flex flex-col min-h-0 mt-4">
+        <Card className="flex-1 flex flex-col min-h-0">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Notion Feedback & Meetings
+            </CardTitle>
+            <CardDescription>User feedback and meeting notes from Notion</CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 min-h-0 p-0">
+            <ScrollArea className="h-[calc(100vh-400px)]">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">ID</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead className="w-[100px]">Type</TableHead>
+                    <TableHead className="w-[150px]">Keywords</TableHead>
+                    <TableHead className="w-[100px]">Linked Issues</TableHead>
+                    <TableHead className="w-[120px]">Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {feedbackItems.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-mono text-xs text-gray-600">{item.id}</TableCell>
+                      <TableCell className="truncate max-w-[300px]">{item.title}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {item.object_type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {item.keywords && item.keywords.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {item.keywords.slice(0, 3).map((kw, i) => (
+                              <Badge key={i} variant="outline" className="text-xs">
+                                {kw}
+                              </Badge>
+                            ))}
+                            {item.keywords.length > 3 && (
+                              <span className="text-xs">+{item.keywords.length - 3}</span>
+                            )}
+                          </div>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-purple-600">
+                        {item.linkedIssues && item.linkedIssues.length > 0
+                          ? item.linkedIssues.join(', ')
+                          : '-'}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {item.timestamp}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        {/* Feedback Summary Card */}
+        <Card className="mt-4">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Feedback Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col p-3 rounded-lg border bg-muted/50">
+                <span className="text-xs text-muted-foreground">Total Feedback</span>
+                <span className="text-2xl font-bold">{feedbackItems.length}</span>
+              </div>
+              <div className="flex flex-col p-3 rounded-lg border bg-muted/50">
+                <span className="text-xs text-muted-foreground">Meeting Notes</span>
+                <span className="text-2xl font-bold">
+                  {feedbackData?.summary.meeting_notes || 0}
+                </span>
+              </div>
+              <div className="flex flex-col p-3 rounded-lg border bg-muted/50">
+                <span className="text-xs text-muted-foreground">User Feedback</span>
+                <span className="text-2xl font-bold">{feedbackData?.summary.feedback || 0}</span>
+              </div>
+              <div className="flex flex-col p-3 rounded-lg border bg-muted/50">
+                <span className="text-xs text-muted-foreground">Linked to Issues</span>
+                <span className="text-2xl font-bold text-green-600">
+                  {feedbackData?.summary.linkedCount || 0}
+                </span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </TabsContent>
