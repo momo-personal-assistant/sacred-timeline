@@ -96,13 +96,19 @@ export default function Home() {
     fetchExperiments();
   }, []);
 
+  // Filter out specific experiments from sidebar
+  const sidebarExperiments = experiments.filter((exp) => {
+    const name = exp.name.toLowerCase();
+    return !name.includes('exp-004') && !name.includes('slack-integration-baseline');
+  });
+
   return (
     <SidebarProvider>
       <AppSidebar
         variant="inset"
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        experiments={experiments}
+        experiments={sidebarExperiments}
         selectedExperimentId={selectedExperimentId}
         onExperimentSelect={setSelectedExperimentId}
       />
