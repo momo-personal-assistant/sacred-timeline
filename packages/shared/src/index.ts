@@ -14,5 +14,8 @@ export * from './types/benchmark';
 export * from './utils/logger';
 export * from './utils/semantic-hash';
 
+// Environment validation
+export * from './env';
+
 // Data
 export * from './data/sample-benchmark';

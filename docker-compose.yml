@@ -1,5 +1,5 @@
 services:
-  # PostgreSQL with pgvector extension
+  # PostgreSQL with pgvector extension (Production/Development)
   postgres:
     image: pgvector/pgvector:pg16
     container_name: unified-memory-postgres
@@ -19,6 +19,30 @@ services:
       retries: 5
     networks:
       - unified-memory-network
+
+  # PostgreSQL with pgvector extension (Test Database)
+  # Completely isolated from production/development data
+  postgres-test:
+    image: pgvector/pgvector:pg16
+    container_name: unified-memory-postgres-test
+    ports:
+      - '5435:5432'  # Different port for test database
+    environment:
+      - POSTGRES_USER=unified_memory
+      - POSTGRES_PASSWORD=unified_memory_dev
+      - POSTGRES_DB=unified_memory_test
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U unified_memory']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - unified-memory-network
+    profiles:
+      - test  # Only starts with: docker compose --profile test up
 
   # API Service (Next.js)
   # Uncomment to run API in Docker (optional - can run locally with pnpm dev:api)
@@ -102,6 +126,8 @@ services:
 
 volumes:
   postgres_data:
+    driver: local
+  postgres_test_data:
     driver: local
 
 networks:

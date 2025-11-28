@@ -1,10 +1,12 @@
-import { UnifiedMemoryDB } from '@unified-memory/db';
+import { getDb } from '@unified-memory/db';
 import { NextResponse } from 'next/server';
 
 /**
  * Match Linear issues with Notion feedback based on:
  * 1. Keyword overlap (feature names, issue IDs)
  * 2. Time proximity (issue completion ± 30 days)
+ *
+ * Optionally persists matches to the database for later retrieval.
  */
 
 interface MatchResult {
@@ -12,23 +14,23 @@ interface MatchResult {
   feedbackId: string;
   matchScore: number;
   matchReasons: string[];
+  keywordScore: number;
+  timeScore: number;
+}
+
+interface MatchRequestBody {
+  issueIds?: string[];
+  minScore?: number;
+  persistMatches?: boolean; // If true, store matches in DB
+  workspace?: string;
 }
 
 export async function POST(request: Request) {
-  const db = new UnifiedMemoryDB({
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
-    database: process.env.POSTGRES_DB || 'unified_memory',
-    user: process.env.POSTGRES_USER || 'unified_memory',
-    password: process.env.POSTGRES_PASSWORD || 'unified_memory_dev',
-    vectorDimensions: parseInt(process.env.VECTOR_DIMENSIONS || '1536', 10),
-  });
-
   try {
-    const body = await request.json();
-    const { issueIds, minScore = 0.3 } = body;
+    const body = (await request.json()) as MatchRequestBody;
+    const { issueIds, minScore = 0.3, persistMatches = false, workspace = 'tenxai' } = body;
 
-    await db.initialize();
+    const db = await getDb();
     const pool = (
       db as unknown as {
         pool: { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> };
@@ -42,7 +44,7 @@ export async function POST(request: Request) {
 
     const issuesResult = await pool.query(
       issuesQuery,
-      issueIds ? [issueIds.map((id: string) => `linear|tenxai|issue|${id}`)] : []
+      issueIds ? [issueIds.map((id: string) => `linear|${workspace}|issue|${id}`)] : []
     );
 
     // Fetch Notion feedback
@@ -73,9 +75,12 @@ export async function POST(request: Request) {
 
         const matchReasons: string[] = [];
         if (keywordScore > 0.5) {
-          matchReasons.push(
-            `Keyword overlap: ${Array.from(new Set([...issueKeywords].filter((k) => feedbackKeywords.includes(k)))).join(', ')}`
+          const overlappingKeywords = [...issueKeywords].filter((k) =>
+            feedbackKeywords.includes(k)
           );
+          if (overlappingKeywords.length > 0) {
+            matchReasons.push(`Keyword overlap: ${overlappingKeywords.join(', ')}`);
+          }
         }
         if (timeScore > 0.5) {
           const daysDiff = Math.abs(
@@ -94,6 +99,8 @@ export async function POST(request: Request) {
             feedbackId: feedbackShortId,
             matchScore: Math.round(totalScore * 100) / 100,
             matchReasons,
+            keywordScore: Math.round(keywordScore * 100) / 100,
+            timeScore: Math.round(timeScore * 100) / 100,
           });
         }
       }
@@ -102,7 +109,13 @@ export async function POST(request: Request) {
     // Sort by score descending
     matches.sort((a, b) => b.matchScore - a.matchScore);
 
-    await db.close();
+    // Persist matches to database if requested
+    let persistedCount = 0;
+    if (persistMatches && matches.length > 0) {
+      persistedCount = await persistMatchesToDb(pool, matches, workspace);
+    }
+
+    // Note: Don't close the singleton DB connection
 
     return NextResponse.json({
       success: true,
@@ -112,15 +125,11 @@ export async function POST(request: Request) {
         highConfidence: matches.filter((m) => m.matchScore >= 0.7).length,
         mediumConfidence: matches.filter((m) => m.matchScore >= 0.5 && m.matchScore < 0.7).length,
         lowConfidence: matches.filter((m) => m.matchScore < 0.5).length,
+        persistedCount,
       },
     });
   } catch (error) {
     console.error('Error matching feedback:', error);
-    try {
-      await db.close();
-    } catch {
-      // Ignore close error
-    }
     return NextResponse.json(
       {
         error: 'Failed to match feedback',
@@ -132,10 +141,57 @@ export async function POST(request: Request) {
 }
 
 /**
+ * Persist matches to the database by updating the relations JSONB
+ * Stores the match_confidence and validated_by references
+ */
+async function persistMatchesToDb(
+  pool: { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> },
+  matches: MatchResult[],
+  workspace: string
+): Promise<number> {
+  let persistedCount = 0;
+
+  for (const match of matches) {
+    const feedbackCanonicalId = `notion|${workspace}|feedback|${match.feedbackId}`;
+    const issueCanonicalId = `linear|${workspace}|issue|${match.issueId}`;
+
+    try {
+      // Update feedback to add validated_by reference and match_confidence
+      await pool.query(
+        `
+        UPDATE canonical_objects
+        SET relations = COALESCE(relations, '{}'::jsonb) || jsonb_build_object(
+          'validated_by', COALESCE(
+            (
+              SELECT jsonb_agg(DISTINCT elem)
+              FROM (
+                SELECT jsonb_array_elements_text(COALESCE(relations->'validated_by', '[]'::jsonb)) AS elem
+                UNION
+                SELECT $2::text
+              ) sub
+            ),
+            jsonb_build_array($2)
+          ),
+          'match_confidence', $3::numeric
+        )
+        WHERE id = $1
+      `,
+        [feedbackCanonicalId, issueCanonicalId, match.matchScore]
+      );
+      persistedCount++;
+    } catch (err) {
+      console.error(`Failed to persist match ${match.feedbackId} -> ${match.issueId}:`, err);
+    }
+  }
+
+  return persistedCount;
+}
+
+/**
  * Extract keywords from title and body
  */
 function extractKeywords(title: string, body: string): string[] {
-  const text = `${title} ${body}`.toLowerCase();
+  const text = `${title || ''} ${body || ''}`.toLowerCase();
   const keywords = new Set<string>();
 
   // Common feature keywords
@@ -213,7 +269,7 @@ function calculateTimeScore(issueDate: string, feedbackDate: string): number {
   );
 
   // Within 7 days: 1.0
-  // Within 30 days: 0.5
+  // Within 30 days: 0.5 to 1.0 (linear interpolation)
   // Beyond 30 days: exponential decay
   if (daysDiff <= 7) {
     return 1.0;

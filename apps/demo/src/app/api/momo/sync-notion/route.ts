@@ -1,29 +1,26 @@
-import { UnifiedMemoryDB } from '@unified-memory/db';
+import type { NotionPage } from '@momo/transformers';
+import { NotionTransformer } from '@momo/transformers';
+import { getDb } from '@unified-memory/db';
 import type { CreateCanonicalObjectInput } from '@unified-memory/db';
-import type { NotionPage } from '@unified-memory/transformers';
-import { NotionTransformer } from '@unified-memory/transformers';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
-  const db = new UnifiedMemoryDB({
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
-    database: process.env.POSTGRES_DB || 'unified_memory',
-    user: process.env.POSTGRES_USER || 'unified_memory',
-    password: process.env.POSTGRES_PASSWORD || 'unified_memory_dev',
-    vectorDimensions: parseInt(process.env.VECTOR_DIMENSIONS || '1536', 10),
-  });
+interface SyncRequestBody {
+  pages: NotionPage[];
+  workspace?: string;
+}
 
+export async function POST(request: Request) {
   try {
-    await db.initialize();
+    const db = await getDb();
 
     // Parse Notion pages from request body
-    const body = await request.json();
+    const body = (await request.json()) as SyncRequestBody;
     const notionPages: NotionPage[] = body.pages || [];
+    const workspace = body.workspace || 'tenxai';
 
-    // Initialize transformer
+    // Initialize transformer with workspace from request
     const transformer = new NotionTransformer({
-      workspace: 'tenxai',
+      workspace,
       includeMetadata: true,
       preserveRawData: false,
     });
@@ -95,7 +92,7 @@ export async function POST(request: Request) {
       }
     }
 
-    await db.close();
+    // Note: Don't close singleton DB connection
 
     return NextResponse.json({
       success: true,
@@ -108,11 +105,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Error syncing Notion pages:', error);
-    try {
-      await db.close();
-    } catch {
-      // Ignore close error
-    }
     return NextResponse.json(
       {
         error: 'Failed to sync Notion pages',

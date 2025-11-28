@@ -1,4 +1,4 @@
-import { UnifiedMemoryDB } from '@unified-memory/db';
+import { getDb } from '@unified-memory/db';
 import { NextResponse } from 'next/server';
 
 export interface VOCItem {
@@ -17,17 +17,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const workspace = searchParams.get('workspace') || process.env.WORKSPACE || 'sample';
 
-  const db = new UnifiedMemoryDB({
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
-    database: process.env.POSTGRES_DB || 'unified_memory',
-    user: process.env.POSTGRES_USER || 'unified_memory',
-    password: process.env.POSTGRES_PASSWORD || 'unified_memory_dev',
-    vectorDimensions: parseInt(process.env.VECTOR_DIMENSIONS || '1536', 10),
-  });
-
   try {
-    await db.initialize();
+    const db = await getDb();
     const pool = (
       db as unknown as {
         pool: { query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }> };
@@ -57,7 +48,7 @@ export async function GET(request: Request) {
       [`discord|${workspace}|%`]
     );
 
-    await db.close();
+    // Note: Don't close singleton DB connection
 
     // Transform DB results to API format
     const items: VOCItem[] = result.rows.map((row: unknown) => {
@@ -111,11 +102,6 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Error fetching VOC data:', error);
-    try {
-      await db.close();
-    } catch {
-      // Ignore close error
-    }
     return NextResponse.json(
       {
         error: 'Failed to fetch VOC data',

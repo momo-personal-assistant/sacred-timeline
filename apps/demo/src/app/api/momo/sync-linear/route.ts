@@ -1,4 +1,4 @@
-import { UnifiedMemoryDB } from '@unified-memory/db';
+import { getDb } from '@unified-memory/db';
 import type { CreateCanonicalObjectInput } from '@unified-memory/db';
 import { NextResponse } from 'next/server';
 
@@ -21,8 +21,16 @@ interface LinearIssue {
   teamId?: string;
 }
 
-function convertLinearToCanonical(issue: LinearIssue): CreateCanonicalObjectInput {
-  const canonicalId = `linear|tenxai|issue|${issue.identifier}`;
+interface SyncRequestBody {
+  issues: LinearIssue[];
+  workspace?: string;
+}
+
+function convertLinearToCanonical(
+  issue: LinearIssue,
+  workspace: string
+): CreateCanonicalObjectInput {
+  const canonicalId = `linear|${workspace}|issue|${issue.identifier}`;
 
   return {
     id: canonicalId,
@@ -50,24 +58,18 @@ function convertLinearToCanonical(issue: LinearIssue): CreateCanonicalObjectInpu
 }
 
 export async function POST(request: Request) {
-  const db = new UnifiedMemoryDB({
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5434', 10),
-    database: process.env.POSTGRES_DB || 'unified_memory',
-    user: process.env.POSTGRES_USER || 'unified_memory',
-    password: process.env.POSTGRES_PASSWORD || 'unified_memory_dev',
-    vectorDimensions: parseInt(process.env.VECTOR_DIMENSIONS || '1536', 10),
-  });
-
   try {
-    await db.initialize();
+    const db = await getDb();
 
     // Parse Linear issues from request body
-    const body = await request.json();
+    const body = (await request.json()) as SyncRequestBody;
     const linearIssues: LinearIssue[] = body.issues || [];
+    const workspace = body.workspace || 'tenxai';
 
     // Convert to CanonicalObject format
-    const canonicalObjects = linearIssues.map(convertLinearToCanonical);
+    const canonicalObjects = linearIssues.map((issue) =>
+      convertLinearToCanonical(issue, workspace)
+    );
 
     // Upsert to database
     let insertedCount = 0;
@@ -116,7 +118,7 @@ export async function POST(request: Request) {
       }
     }
 
-    await db.close();
+    // Note: Don't close singleton DB connection
 
     return NextResponse.json({
       success: true,
@@ -129,11 +131,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Error syncing Linear issues:', error);
-    try {
-      await db.close();
-    } catch {
-      // Ignore close error
-    }
     return NextResponse.json(
       {
         error: 'Failed to sync Linear issues',
