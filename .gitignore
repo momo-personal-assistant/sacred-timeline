@@ -56,3 +56,15 @@ docker-compose.override.yml
 
 # OS
 Thumbs.db
+
+# Database dumps and migration files
+data_*.sql
+supabase-complete-setup.sql
+supabase-migrations.sql
+supabase-part*.sql
+supabase-setup-clean.sql
+
+# One-time analysis scripts
+scripts/analyze-trap-violations.ts
+scripts/create-realistic-ground-truth.ts
+scripts/sync-linear-real.ts
