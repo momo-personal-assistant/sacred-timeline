@@ -114,7 +114,7 @@ export default function MomoDBPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
-  const [workspace, setWorkspace] = useState<'sample' | 'tenxai'>('sample');
+  const [workspace, setWorkspace] = useState<'sample' | 'tenxai'>('tenxai');
 
   const [vocData, setVocData] = useState<VOCResponse | null>(null);
   const [issuesData, setIssuesData] = useState<IssuesResponse | null>(null);
