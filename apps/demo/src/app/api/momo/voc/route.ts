@@ -15,7 +15,7 @@ export interface VOCItem {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const workspace = searchParams.get('workspace') || process.env.WORKSPACE || 'sample';
+  const workspace = searchParams.get('workspace') || process.env.WORKSPACE || 'tenxai';
 
   try {
     const db = await getDb();
